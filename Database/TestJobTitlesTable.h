@@ -15,9 +15,9 @@ private:
     bool TestUpdate(long lID, const CString szUodatedJobTitle);
     bool TestDelete(long lID);
 private:
-    const CString m_szNewJobTitle = _T("Cloud Infrastructure Engineer");
+    const CString m_szNewJobTitle = _T("Cloud Infrastructure Administrator");
     const long m_lSelectID = 3L;
-    const long m_lUpdateID = 21L;
+    long m_lUpdateID = 0L;
     const CString m_szUpdatedTitle = _T("Cloud Infrastructure Lead Developer");
-    const long m_lDeleteID = 21L;
+    long m_lDeleteID = 0L;
 };

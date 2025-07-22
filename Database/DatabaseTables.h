@@ -9,7 +9,7 @@ public:
     }
     virtual bool SelectAll(TTypeArray& oArray) = 0;
     virtual bool SelectWhereID(const long lID, TRecord& rec) = 0;
-    virtual bool UpdateWhereID(const long lID, const TRecord& rec) = 0;
+    virtual bool UpdateWhereID(const long lID, TRecord& rec) = 0;
     virtual bool Insert(TRecord& rec) = 0;
     virtual bool DeleteWhereID(const long lID) = 0;
     

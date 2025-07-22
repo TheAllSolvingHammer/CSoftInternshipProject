@@ -21,7 +21,7 @@ private:
 public:
    bool SelectAll(CUsersArray& oUsersArray) override;
    bool SelectWhereID(const long lID, USERS& recUser) override;
-   bool UpdateWhereID(const long lID, const USERS& recUser) override;
+   bool UpdateWhereID(const long lID, USERS& recUser) override;
    bool Insert(USERS& recUser) override;
    bool DeleteWhereID(const long lID) override;
 };

@@ -55,9 +55,6 @@ bool CJobTitlesTable::SelectWhereID(const long lID, JOB_TITLES& recJobTitle)
         return false;
     }
 
-    //structure name extract
-    //iznasqne oshte na abstraction
-    //m_oCommand opravi i iznesi ako mojesh
     CString strSQL;
     strSQL.Format(_T("SELECT * FROM JOB_TITLES WHERE ID = %d"), lID);
 
@@ -82,7 +79,7 @@ bool CJobTitlesTable::SelectWhereID(const long lID, JOB_TITLES& recJobTitle)
 }
 
 
-bool CJobTitlesTable::UpdateWhereID(const long lID, const JOB_TITLES& recJobTitle)
+bool CJobTitlesTable::UpdateWhereID(const long lID, JOB_TITLES& recJobTitle)
 {
     CDataSource oDataSource;
     CSession oSession;
@@ -107,19 +104,23 @@ bool CJobTitlesTable::UpdateWhereID(const long lID, const JOB_TITLES& recJobTitl
         return false;
     }
 
-    if (m_oCommand.MoveFirst() == S_OK) {
-        if (m_oCommand.m_recJobTitle.nUpdateCounter != recJobTitle.nUpdateCounter) {
-            CloseAll(oDataSource, oSession);
-            return false;
-        }
-
-        m_oCommand.m_recJobTitle = recJobTitle;
-        m_oCommand.m_recJobTitle.nUpdateCounter++;
-
-        hRes = m_oCommand.SetData(JOB_TITLES_DATA_ACCESSOR_INDEX);
+    if (m_oCommand.MoveFirst() != S_OK) {
         CloseAll(oDataSource, oSession);
-        return SUCCEEDED(hRes);
+        return false;
     }
+
+    if (m_oCommand.m_recJobTitle.nUpdateCounter != recJobTitle.nUpdateCounter) {
+        CloseAll(oDataSource, oSession);
+        return false;
+    }
+    
+    m_oCommand.m_recJobTitle = recJobTitle;
+    m_oCommand.m_recJobTitle.nUpdateCounter++;
+    recJobTitle = m_oCommand.m_recJobTitle;
+
+    hRes = m_oCommand.SetData(JOB_TITLES_DATA_ACCESSOR_INDEX);
+    CloseAll(oDataSource, oSession);
+    return SUCCEEDED(hRes);
 
     CloseAll(oDataSource, oSession);
     return false;

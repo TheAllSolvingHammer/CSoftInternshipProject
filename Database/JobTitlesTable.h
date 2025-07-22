@@ -20,7 +20,7 @@ private:
 public:
     bool SelectAll(CJobTitlesArray& oJobTitlesArray) override;
     bool SelectWhereID(const long lID, JOB_TITLES& recJobTitle) override;
-    bool UpdateWhereID(const long lID, const JOB_TITLES& recJobTitle) override;
+    bool UpdateWhereID(const long lID, JOB_TITLES& recJobTitle) override;
     bool Insert(JOB_TITLES& recJobTitle) override;
     bool DeleteWhereID(const long lID) override;
 };

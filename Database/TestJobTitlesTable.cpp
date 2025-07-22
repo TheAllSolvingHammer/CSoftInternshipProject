@@ -9,8 +9,8 @@ void CTestJobTitlesTable::RunAllTests()
     TestSelectAll();
     TestSelectByID(m_lSelectID);
     TestInsert(m_szNewJobTitle);
-    //TestUpdate(m_lUpdateID, m_szUpdatedTitle);
-    //TestDelete(m_lDeleteID);
+    TestUpdate(m_lUpdateID, m_szUpdatedTitle);
+    TestDelete(m_lDeleteID);
 }
 
 bool CTestJobTitlesTable::TestInsert(const CString szNewTitle)
@@ -23,6 +23,8 @@ bool CTestJobTitlesTable::TestInsert(const CString szNewTitle)
         AfxMessageBox(_T("Insert failed!"));
         return false;
     }
+    m_lUpdateID = recNewJobTitle.lID;
+    m_lDeleteID = recNewJobTitle.lID;
     CString oSuccessMessage;
     oSuccessMessage.Format(_T("Insert successful. New Job Title ID: %d"), recNewJobTitle.lID);
     AfxMessageBox(oSuccessMessage);

@@ -79,12 +79,15 @@ bool CUsersTable::SelectWhereID(const long lID, USERS& recUser)
 }
 
 
-bool CUsersTable::UpdateWhereID(const long lID, const USERS& recUser)
+bool CUsersTable::UpdateWhereID(const long lID, USERS& recUser)
 {
     CDataSource oDataSource;
     CSession oSession;
 
-    if (!OpenConnection(oDataSource, oSession)) return false;
+    if (!OpenConnection(oDataSource, oSession))
+    {
+        return false;
+    }
 
     CString strSQL;
     strSQL.Format(_T("SELECT * FROM USERS WHERE ID = %d"), lID);
@@ -101,19 +104,23 @@ bool CUsersTable::UpdateWhereID(const long lID, const USERS& recUser)
         return false;
     }
 
-    if (m_oCommand.MoveFirst() == S_OK) {
-        if (m_oCommand.m_recUser.nUpdateCounter != recUser.nUpdateCounter) {
-            CloseAll(oDataSource, oSession);
-            return false;
-        }
-
-        m_oCommand.m_recUser = recUser;
-        m_oCommand.m_recUser.nUpdateCounter++;
-
-        hRes = m_oCommand.SetData(USERS_DATA_ACCESSOR_INDEX);
+    if (m_oCommand.MoveFirst() != S_OK) {
         CloseAll(oDataSource, oSession);
-        return SUCCEEDED(hRes);
+        return false;
     }
+
+    if (m_oCommand.m_recUser.nUpdateCounter != recUser.nUpdateCounter) {
+        CloseAll(oDataSource, oSession);
+        return false;
+    }
+
+    m_oCommand.m_recUser = recUser;
+    m_oCommand.m_recUser.nUpdateCounter++;
+    recUser = m_oCommand.m_recUser;
+
+    hRes = m_oCommand.SetData(USERS_DATA_ACCESSOR_INDEX);
+    CloseAll(oDataSource, oSession);
+    return SUCCEEDED(hRes);
 
     CloseAll(oDataSource, oSession);
     return false;

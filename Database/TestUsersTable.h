@@ -16,10 +16,10 @@ private:
     bool TestDelete(long lID);
 private:
     const long m_lJobTitleID=5L;
-    const CString m_szNewEmail = _T("emai2332glfff2@gmail.com");
+    const CString m_szNewEmail = _T("compleatelynewemail@gmail.com");
     const CString m_szNewName = _T("Name");
     const long m_lSelectID = 3L;
-    const long m_lUpdateID = 23L;
-    const CString m_szUpdatedEmail = _T("mynewemail@notgmail.com");
-    const long m_lDeleteID = 29L;
+    long m_lUpdateID = 0L;
+    const CString m_szUpdatedEmail = _T("compleatelynewemail@notgmail.com");
+    long m_lDeleteID = 0L;
 };

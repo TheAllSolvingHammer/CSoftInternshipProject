@@ -8,9 +8,9 @@ void CTestUsersTable::RunAllTests()
     
     TestSelectAll();
     TestSelectByID(m_lSelectID);
-    //TestInsert(m_lJobTitleID,m_szNewEmail,m_szNewName);
-    //TestUpdate(m_lUpdateID,m_szUpdatedEmail);
-    //TestDelete(m_lDeleteID);
+    TestInsert(m_lJobTitleID,m_szNewEmail,m_szNewName);
+    TestUpdate(m_lUpdateID,m_szUpdatedEmail);
+    TestDelete(m_lDeleteID);
 }
 
 
@@ -27,6 +27,9 @@ bool CTestUsersTable::TestInsert(long lJobTitleID,const CString szNewEmail,const
         AfxMessageBox(_T("Insert failed!"));
         return false;
     }
+
+    m_lUpdateID = recNewUser.lID;
+    m_lDeleteID = recNewUser.lID;
 
     CString oMessage;
     oMessage.Format(
