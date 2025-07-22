@@ -12,7 +12,6 @@ public:
     CJobTitlesTable();
     ~CJobTitlesTable();
 private:
- /*   bool OpenConnection(CDataSource& oDataSource, CSession& oSession);*/
     void CloseAll(CDataSource& oDataSource, CSession& oSession);
 
 private:
