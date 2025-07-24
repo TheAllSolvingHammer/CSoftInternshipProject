@@ -25,6 +25,9 @@
     <Filter Include="Header Files\Test">
       <UniqueIdentifier>{291d9f61-ff9c-407a-8faf-94a5a175d1c1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Contexts">
+      <UniqueIdentifier>{d5abecde-a184-4c83-93a4-5130056f10c7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Database.cpp">
@@ -96,6 +99,9 @@
     </ClInclude>
     <ClInclude Include="TestJobTitlesTable.h">
       <Filter>Header Files\Test</Filter>
+    </ClInclude>
+    <ClInclude Include="DatabaseContext.h">
+      <Filter>Header Files\Contexts</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
