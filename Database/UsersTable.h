@@ -13,11 +13,10 @@ public:
     CUsersTable();
     ~CUsersTable();
     bool OpenRowByID(const long lID, CDataSource& oDataSource, CSession& oSession, bool bUpdatable);
-    void HandleUsersArray(CUsersArray& oUsersArray);
+    void HandleUsersArray(CUsersArray& oUsersArray);   
 private:
-    void CloseAll(CDataSource& oDataSource, CSession& oSession);
-    
-private:
+    CDataSource m_oDataSource;
+    CSession m_oSession;
     CCommand<CAccessor<CUsersAccessor>> m_oCommand;
 public:
    bool SelectAll(CUsersArray& oUsersArray) override;
