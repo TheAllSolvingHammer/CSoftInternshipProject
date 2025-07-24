@@ -10,7 +10,7 @@ CUsersTable::CUsersTable()
 
 CUsersTable::~CUsersTable()
 {
-
+    
 }
 
 
@@ -38,11 +38,22 @@ bool CUsersTable::SelectAll(CUsersArray& oUsersArray)
         return false;
     }
 
-    while (m_oCommand.MoveNext() == S_OK)
-        oUsersArray.Add(m_oCommand.m_recUser);
+    while (m_oCommand.MoveNext() == S_OK) {
+        USERS* pUser = new USERS();
+        (*pUser) = m_oCommand.m_recUser;
+        oUsersArray.Add(pUser);
+    }
 
     CloseAll(oDataSource, oSession);
     return true;
+}
+
+void CUsersTable::HandleUsersArray(CUsersArray& oUsersArray)
+{
+    for (INT_PTR i = 0;i < oUsersArray.GetCount();i++) {
+        delete oUsersArray[i];
+    }
+    oUsersArray.RemoveAll();
 }
 
 bool CUsersTable::SelectWhereID(const long lID, USERS& recUser)
@@ -50,66 +61,64 @@ bool CUsersTable::SelectWhereID(const long lID, USERS& recUser)
     CDataSource oDataSource;
     CSession oSession;
 
-    if (!OpenConnection(oDataSource, oSession)) 
+    if (!OpenRowByID(lID, oDataSource, oSession, false))
     {
+        CloseAll(oDataSource, oSession);
         return false;
     }
-        
+
+    recUser = m_oCommand.m_recUser;
+
+    CloseAll(oDataSource, oSession);
+    return true;
+}
+
+bool CUsersTable::OpenRowByID(long lID, CDataSource& oDataSource, CSession& oSession, bool bUpdatable)
+{
+    if (!OpenConnection(oDataSource, oSession))
+        return false;
+
     CString strSQL;
     strSQL.Format(_T("SELECT * FROM USERS WHERE ID = %d"), lID);
 
-    HRESULT hRes = m_oCommand.Open(oSession, strSQL);
-    if (FAILED(hRes)) 
+    HRESULT hRes;
+    if (bUpdatable)
     {
-        CloseAll(oDataSource, oSession);
-        return false;
+        CDBPropSet props(DBPROPSET_ROWSET);
+        props.AddProperty(DBPROP_CANFETCHBACKWARDS, true);
+        props.AddProperty(DBPROP_IRowsetScroll, true);
+        props.AddProperty(DBPROP_IRowsetChange, true);
+        props.AddProperty(DBPROP_UPDATABILITY, DBPROPVAL_UP_CHANGE);
+        hRes = m_oCommand.Open(oSession, strSQL, &props);
+    }
+    else
+    {
+        hRes = m_oCommand.Open(oSession, strSQL);
     }
 
-    if (m_oCommand.MoveFirst() == S_OK) 
-    {
-        recUser = m_oCommand.m_recUser;
-        CloseAll(oDataSource, oSession);
-        return true;
-    }
-    else 
-    {
-        CloseAll(oDataSource, oSession);
+    if (FAILED(hRes))
         return false;
-    }
+
+    if (m_oCommand.MoveFirst() != S_OK)
+        return false;
+
+    return true;
+
 }
-
 
 bool CUsersTable::UpdateWhereID(const long lID, USERS& recUser)
 {
     CDataSource oDataSource;
     CSession oSession;
 
-    if (!OpenConnection(oDataSource, oSession))
+    if (!OpenRowByID(lID, oDataSource, oSession, true))
     {
-        return false;
-    }
-
-    CString strSQL;
-    strSQL.Format(_T("SELECT * FROM USERS WHERE ID = %d"), lID);
-
-    CDBPropSet props(DBPROPSET_ROWSET);
-    props.AddProperty(DBPROP_CANFETCHBACKWARDS, true);
-    props.AddProperty(DBPROP_IRowsetScroll, true);
-    props.AddProperty(DBPROP_IRowsetChange, true);
-    props.AddProperty(DBPROP_UPDATABILITY, DBPROPVAL_UP_CHANGE);
-
-    HRESULT hRes = m_oCommand.Open(oSession, strSQL, &props);
-    if (FAILED(hRes)) {
         CloseAll(oDataSource, oSession);
         return false;
     }
 
-    if (m_oCommand.MoveFirst() != S_OK) {
-        CloseAll(oDataSource, oSession);
-        return false;
-    }
-
-    if (m_oCommand.m_recUser.nUpdateCounter != recUser.nUpdateCounter) {
+    if (m_oCommand.m_recUser.nUpdateCounter != recUser.nUpdateCounter)
+    {
         CloseAll(oDataSource, oSession);
         return false;
     }
@@ -118,12 +127,10 @@ bool CUsersTable::UpdateWhereID(const long lID, USERS& recUser)
     m_oCommand.m_recUser.nUpdateCounter++;
     recUser = m_oCommand.m_recUser;
 
-    hRes = m_oCommand.SetData(USERS_DATA_ACCESSOR_INDEX);
-    CloseAll(oDataSource, oSession);
-    return SUCCEEDED(hRes);
+    HRESULT hRes = m_oCommand.SetData(USERS_DATA_ACCESSOR_INDEX);
 
     CloseAll(oDataSource, oSession);
-    return false;
+    return SUCCEEDED(hRes);
 }
 
 bool CUsersTable::Insert(USERS& recUser)
@@ -165,6 +172,7 @@ bool CUsersTable::Insert(USERS& recUser)
         CloseAll(oDataSource, oSession);
         return false;
     }
+
     recUser = m_oCommand.m_recUser;
     CloseAll(oDataSource, oSession);
     return SUCCEEDED(hRes);

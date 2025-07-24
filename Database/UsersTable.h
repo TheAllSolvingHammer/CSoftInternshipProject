@@ -12,9 +12,11 @@ class DatabaseDLL_EXP CUsersTable: public IDatabaseTable<USERS,CUsersArray>, pro
 public:
     CUsersTable();
     ~CUsersTable();
+    bool OpenRowByID(const long lID, CDataSource& oDataSource, CSession& oSession, bool bUpdatable);
+    void HandleUsersArray(CUsersArray& oUsersArray);
 private:
     void CloseAll(CDataSource& oDataSource, CSession& oSession);
-
+    
 private:
     CCommand<CAccessor<CUsersAccessor>> m_oCommand;
 public:
