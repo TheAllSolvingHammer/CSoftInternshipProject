@@ -219,7 +219,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Database.h" />
-    <ClInclude Include="DatabaseContext.h" />
     <ClInclude Include="DatabaseTables.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="JobTitlesAccessor.h" />

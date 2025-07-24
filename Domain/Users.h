@@ -17,4 +17,4 @@ struct USERS {
     }
 };
 
-typedef CTypedPtrArray<CPtrArray, USERS*> CUsersArray;
+typedef CArray<USERS, USERS&> CUsersArray;
