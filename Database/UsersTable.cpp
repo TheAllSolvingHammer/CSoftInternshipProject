@@ -96,11 +96,15 @@ bool CUsersTable::OpenRowByID(long lID, CDataSource& oDataSource, CSession& oSes
         hRes = m_oCommand.Open(oSession, strSQL);
     }
 
-    if (FAILED(hRes))
+    if (FAILED(hRes)) {
+        CloseAll(oDataSource, oSession);
         return false;
+    }
 
-    if (m_oCommand.MoveFirst() != S_OK)
+    if (m_oCommand.MoveFirst() != S_OK) {
+        CloseAll(oDataSource, oSession);
         return false;
+    }
 
     return true;
 
