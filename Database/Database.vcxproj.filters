@@ -103,6 +103,9 @@
     <ClInclude Include="DatabaseContext.h">
       <Filter>Header Files\Contexts</Filter>
     </ClInclude>
+    <ClInclude Include="BaseAccessor.h">
+      <Filter>Header Files\Accessors</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Database.rc">

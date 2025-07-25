@@ -218,6 +218,7 @@
     <None Include="res\Database.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BaseAccessor.h" />
     <ClInclude Include="Database.h" />
     <ClInclude Include="DatabaseContext.h" />
     <ClInclude Include="DatabaseTables.h" />
