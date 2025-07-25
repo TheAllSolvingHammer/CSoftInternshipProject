@@ -5,75 +5,53 @@
 
 CJobTitlesTable::CJobTitlesTable()
 {
-
+    if (!OpenConnection(m_oDataSource, m_oSession))
+    {
+        AfxMessageBox(_T("Error connecting to the database"));
+    }
 }
 
 CJobTitlesTable::~CJobTitlesTable()
 {
-
-}
-
-
-void CJobTitlesTable::CloseAll(CDataSource& oDataSource, CSession& oSession)
-{
     m_oCommand.Close();
-    oSession.Close();
-    oDataSource.Close();
+    m_oSession.Close();
+    m_oDataSource.Close();
 }
+
 
 bool CJobTitlesTable::SelectAll(CJobTitlesArray& oJobTitlesArray)
 {
-    CDataSource oDataSource;
-    CSession oSession;
-
-    if (!OpenConnection(oDataSource, oSession))
-    {
-        return false;
-    }
-
-    HRESULT hRes = m_oCommand.Open(oSession, _T("SELECT * FROM JOB_TITLES"));
+ 
+    HRESULT hRes = m_oCommand.Open(m_oSession, _T("SELECT * FROM JOB_TITLES"));
     if (FAILED(hRes))
     {
-        CloseAll(oDataSource, oSession);
         return false;
     }
 
     while (m_oCommand.MoveNext() == S_OK)
         oJobTitlesArray.Add(m_oCommand.m_recJobTitle);
 
-    CloseAll(oDataSource, oSession);
     return true;
 }
 
 bool CJobTitlesTable::SelectWhereID(const long lID, JOB_TITLES& recJobTitle)
 {
-    CDataSource oDataSource;
-    CSession oSession;
-
-    if (!OpenConnection(oDataSource, oSession))
-    {
-        return false;
-    }
-
     CString strSQL;
     strSQL.Format(_T("SELECT * FROM JOB_TITLES WHERE ID = %d"), lID);
 
-    HRESULT hRes = m_oCommand.Open(oSession, strSQL);
+    HRESULT hRes = m_oCommand.Open(m_oSession, strSQL);
     if (FAILED(hRes))
     {
-        CloseAll(oDataSource, oSession);
         return false;
     }
 
     if (m_oCommand.MoveFirst() == S_OK)
     {
         recJobTitle = m_oCommand.m_recJobTitle;
-        CloseAll(oDataSource, oSession);
         return true;
     }
     else
     {
-        CloseAll(oDataSource, oSession);
         return false;
     }
 }
@@ -81,14 +59,6 @@ bool CJobTitlesTable::SelectWhereID(const long lID, JOB_TITLES& recJobTitle)
 
 bool CJobTitlesTable::UpdateWhereID(const long lID, JOB_TITLES& recJobTitle)
 {
-    CDataSource oDataSource;
-    CSession oSession;
-
-    if (!OpenConnection(oDataSource, oSession))
-    {
-        return false;
-    }
-
     CString strSQL;
     strSQL.Format(_T("SELECT * FROM JOB_TITLES WHERE ID = %d"), lID);
 
@@ -98,19 +68,16 @@ bool CJobTitlesTable::UpdateWhereID(const long lID, JOB_TITLES& recJobTitle)
     props.AddProperty(DBPROP_IRowsetChange, true);
     props.AddProperty(DBPROP_UPDATABILITY, DBPROPVAL_UP_CHANGE);
 
-    HRESULT hRes = m_oCommand.Open(oSession, strSQL, &props);
+    HRESULT hRes = m_oCommand.Open(m_oSession, strSQL, &props);
     if (FAILED(hRes)) {
-        CloseAll(oDataSource, oSession);
         return false;
     }
 
     if (m_oCommand.MoveFirst() != S_OK) {
-        CloseAll(oDataSource, oSession);
         return false;
     }
 
     if (m_oCommand.m_recJobTitle.nUpdateCounter != recJobTitle.nUpdateCounter) {
-        CloseAll(oDataSource, oSession);
         return false;
     }
     
@@ -119,23 +86,13 @@ bool CJobTitlesTable::UpdateWhereID(const long lID, JOB_TITLES& recJobTitle)
     recJobTitle = m_oCommand.m_recJobTitle;
 
     hRes = m_oCommand.SetData(JOB_TITLES_DATA_ACCESSOR_INDEX);
-    CloseAll(oDataSource, oSession);
     return SUCCEEDED(hRes);
 
-    CloseAll(oDataSource, oSession);
-    return false;
+
 }
 
 bool CJobTitlesTable::Insert(JOB_TITLES& recJobTitle)
 {
-    CDataSource oDataSource;
-    CSession oSession;
-
-    if (!OpenConnection(oDataSource, oSession))
-    {
-        return false;
-    }
-
     CString strSQL = _T("SELECT * FROM JOB_TITLES");
 
     CDBPropSet props(DBPROPSET_ROWSET);
@@ -145,9 +102,8 @@ bool CJobTitlesTable::Insert(JOB_TITLES& recJobTitle)
     props.AddProperty(DBPROP_CANFETCHBACKWARDS, true);
     props.AddProperty(DBPROP_QUICKRESTART, true);
 
-    HRESULT hRes = m_oCommand.Open(oSession, strSQL, &props);
+    HRESULT hRes = m_oCommand.Open(m_oSession, strSQL, &props);
     if (FAILED(hRes)) {
-        CloseAll(oDataSource, oSession);
         return false;
     }
 
@@ -155,29 +111,20 @@ bool CJobTitlesTable::Insert(JOB_TITLES& recJobTitle)
     hRes = m_oCommand.Insert(JOB_TITLES_DATA_ACCESSOR_INDEX);
     if (FAILED(hRes))
     {
-        CloseAll(oDataSource, oSession);
         return false;
     }
 
     hRes = m_oCommand.MoveLast();
     if (FAILED(hRes))
     {
-        CloseAll(oDataSource, oSession);
         return false;
     }
     recJobTitle = m_oCommand.m_recJobTitle;
-    CloseAll(oDataSource, oSession);
     return SUCCEEDED(hRes);
 }
 
 bool CJobTitlesTable::DeleteWhereID(const long lID)
 {
-    CDataSource oDataSource;
-    CSession oSession;
-
-    if (!OpenConnection(oDataSource, oSession))
-        return false;
-
     CString strSQL;
     strSQL.Format(_T("SELECT * FROM JOB_TITLES WHERE ID = %d"), lID);
 
@@ -185,23 +132,18 @@ bool CJobTitlesTable::DeleteWhereID(const long lID)
     props.AddProperty(DBPROP_IRowsetChange, true);
     props.AddProperty(DBPROP_UPDATABILITY, DBPROPVAL_UP_DELETE);
 
-    HRESULT hRes = m_oCommand.Open(oSession, strSQL, &props);
+    HRESULT hRes = m_oCommand.Open(m_oSession, strSQL, &props);
     if (FAILED(hRes)) {
-        CloseAll(oDataSource, oSession);
         return false;
     }
 
     if (m_oCommand.MoveFirst() != S_OK) {
-        CloseAll(oDataSource, oSession);
         return false;
     }
 
     hRes = m_oCommand.Delete();
     if (FAILED(hRes)) {
-        CloseAll(oDataSource, oSession);
         return false;
     }
-
-    CloseAll(oDataSource, oSession);
     return true;
 }

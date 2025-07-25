@@ -12,10 +12,9 @@ public:
     CJobTitlesTable();
     ~CJobTitlesTable();
 private:
-    void CloseAll(CDataSource& oDataSource, CSession& oSession);
-
-private:
     CCommand<CAccessor<CJobTitlesAccessor>> m_oCommand;
+    CDataSource m_oDataSource;
+    CSession m_oSession;
 public:
     bool SelectAll(CJobTitlesArray& oJobTitlesArray) override;
     bool SelectWhereID(const long lID, JOB_TITLES& recJobTitle) override;
