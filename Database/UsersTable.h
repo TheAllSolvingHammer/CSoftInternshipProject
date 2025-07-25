@@ -7,21 +7,9 @@
 #include "DllExport.h"
 
 
-class DatabaseDLL_EXP CUsersTable: public IDatabaseTable<USERS,CUsersArray>, protected CDatabaseTableConnection
+class DatabaseDLL_EXP CUsersTable: public CBaseTable<USERS,CUsersAccessor>
 {
 public:
     CUsersTable();
-    ~CUsersTable();
-private:
-    /*bool OpenConnection(CDataSource& oDataSource, CSession& oSession);*/
-    void CloseAll(CDataSource& oDataSource, CSession& oSession);
-
-private:
-    CCommand<CAccessor<CUsersAccessor>> m_oCommand;
-public:
-   bool SelectAll(CUsersArray& oUsersArray) override;
-   bool SelectWhereID(const long lID, USERS& recUser) override;
-   bool UpdateWhereID(const long lID, USERS& recUser) override;
-   bool Insert(USERS& recUser) override;
-   bool DeleteWhereID(const long lID) override;
+    ~CUsersTable();  
 };

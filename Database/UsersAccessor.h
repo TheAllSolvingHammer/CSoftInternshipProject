@@ -26,7 +26,6 @@ protected:
         COLUMN_ENTRY(USERS_COLUMN_JOB_TITLE_ID, m_recUser.lJobTitleID)
         END_ACCESSOR()
     END_ACCESSOR_MAP()
-//fix
 
 public:
     USERS m_recUser;

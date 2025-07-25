@@ -9,9 +9,11 @@
 #include "CSoftInternshipProjectView.h"
 #include <iostream>
 #include <afxwin.h> 
+#include <DatabaseTables.h>
 #include <UsersTable.h>
 #include <TestUsersTable.h>
 #include <TestJobTitlesTable.h>
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -66,7 +68,7 @@ BOOL ClientApp::InitInstance()
 
 	pMainFrame->ShowWindow(m_nCmdShow);
 	pMainFrame->UpdateWindow();
-	
+
 
 	CTestUsersTable oTestUsersTable;
 	oTestUsersTable.RunAllTests();

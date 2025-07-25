@@ -22,7 +22,6 @@ protected:
             COLUMN_ENTRY(JOB_TITLES_COLUMN_UPDATE_COUNTER, m_recJobTitle.nUpdateCounter)
         END_ACCESSOR()
     END_ACCESSOR_MAP()
-
 public:
     JOB_TITLES m_recJobTitle;
 };

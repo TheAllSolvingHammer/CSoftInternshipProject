@@ -63,6 +63,7 @@ bool CTestUsersTable::TestSelectAll()
 
     CString oSuccessMessage;
     oSuccessMessage.Format(_T("SelectAll test passed. Found %lld users."),static_cast<LONGLONG>(oUsersArray.GetSize()));
+    //oUsersTable.HandleUsersArray(oUsersArray);
     AfxMessageBox(oSuccessMessage);
     return true;
     

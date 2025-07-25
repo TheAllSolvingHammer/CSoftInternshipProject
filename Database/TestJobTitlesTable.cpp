@@ -67,12 +67,6 @@ bool CTestJobTitlesTable::TestUpdate(long lID, const CString szUpdatedJobTitle)
 {
     CJobTitlesTable oJobTitlesTable;
     JOB_TITLES recJobTitle;
-
-    if (!oJobTitlesTable.SelectWhereID(lID, recJobTitle)) {
-        AfxMessageBox(_T("Update failed. Record not found."));
-        return false;
-    }
-
     wcscpy_s(recJobTitle.szTitleName, szUpdatedJobTitle);
     int oldCounter = recJobTitle.nUpdateCounter;
 
