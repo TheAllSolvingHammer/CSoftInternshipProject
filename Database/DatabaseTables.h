@@ -51,15 +51,20 @@ protected:
     }
 
 };
-template<typename TRecord,typename TArray,typename TAccessor>
+template<typename TRecord,typename TAccessor>
 class CDatabaseTableConnection2
 {
 public:
     CString m_oTableName;
     CDataSource m_oDataSource;
     CSession m_oSession;
+    TRecord& m_recRecord;
     CCommand<CAccessor<TAccessor>> m_oCommand;
-
+    CDatabaseTableConnection2(TRecord& recRecord,const CString oTableName) 
+        : m_recRecord(recRecord)
+    {
+        this->m_oTableName = oTableName;
+    }
     ~CDatabaseTableConnection2()
     {
         m_oCommand.Close();
@@ -98,19 +103,25 @@ protected:
 
 public:
 
-    bool SelectAll(TArray& oArray)
+    bool SelectAll(CTypedPtrArray<CPtrArray, TRecord*>& oArray)
     {
         CString strSQL;
-        strSQL.Format(_T("SELECT * FROM %s"), m_oTableName);
+        strSQL.Format(_T("SELECT * FROM %s"), m_oTableName.GetString());
 
-        HRESULT hRes = m_oCommand.Open(m_oSession, strSQL);
+        CDBPropSet props(DBPROPSET_ROWSET);
+        props.AddProperty(DBPROP_CANFETCHBACKWARDS, true);
+        props.AddProperty(DBPROP_IRowsetScroll, true);
+        props.AddProperty(DBPROP_IRowsetChange, true);
+        props.AddProperty(DBPROP_UPDATABILITY, DBPROPVAL_UP_CHANGE);
+
+        HRESULT hRes = m_oCommand.Open(m_oSession, strSQL, &props);
         if (FAILED(hRes))
             return false;
 
         while (m_oCommand.MoveNext() == S_OK)
         {
             TRecord* pRecord = new TRecord();
-            *pRecord = m_oCommand.m_recRecord;
+            *pRecord = m_recRecord;
             oArray.Add(pRecord);
         }
 
@@ -120,7 +131,7 @@ public:
     bool SelectWhereID(const long lID, TRecord& rec)
     {
         CString strSQL;
-        strSQL.Format(_T("SELECT * FROM %s WHERE ID = %d"), m_oTableName, lID);
+        strSQL.Format(_T("SELECT * FROM %s WHERE ID = %d"), m_oTableName.GetString(), lID);
 
         HRESULT hRes = m_oCommand.Open(m_oSession, strSQL);
         if (FAILED(hRes))
@@ -130,13 +141,48 @@ public:
 
         if (m_oCommand.MoveFirst() == S_OK)
         {
-            rec = m_oCommand.m_recRecord;
+            rec = m_recRecord;
             return true;
         }
         else
         {
             return false;
         }
+    }
+    //fix naming
+    bool UpdateWhereID(const long lID, TRecord& rec)
+    {
+        /*CString strSQL;
+        strSQL.Format(_T("SELECT * FROM %s WHERE ID = %d"), m_oTableName.GetString(), lID);
+
+        CDBPropSet props(DBPROPSET_ROWSET);
+        props.AddProperty(DBPROP_CANFETCHBACKWARDS, true);
+        props.AddProperty(DBPROP_IRowsetScroll, true);
+        props.AddProperty(DBPROP_IRowsetChange, true);
+        props.AddProperty(DBPROP_UPDATABILITY, DBPROPVAL_UP_CHANGE);
+
+        HRESULT hRes = m_oCommand.Open(m_oSession, strSQL, &props);
+        if (FAILED(hRes)) {
+            return false;
+        }
+
+        if (m_oCommand.MoveFirst() != S_OK) {
+            return false;
+        }
+
+        if (m_oCommand.m_recRecord.nUpdateCounter != rec.nUpdateCounter) {
+            return false;
+        }
+
+        m_oCommand.m_recRecord = rec;
+        m_oCommand.m_recRecord.nUpdateCounter++;
+        rec = m_oCommand.m_recRecord;
+
+        hRes = m_oCommand.SetData(JOB_TITLES_DATA_ACCESSOR_INDEX);
+        return SUCCEEDED(hRes);*/
+        return true;
+
+
     }
     
 

@@ -6,7 +6,7 @@
 #include "DllExport.h"
 
 
-class DatabaseDLL_EXP CJobTitlesTable : protected CDatabaseTableConnection2<JOB_TITLES, CJobTitlesArray,CJobTitlesAccessor>
+class DatabaseDLL_EXP CJobTitlesTable : public CDatabaseTableConnection2<JOB_TITLES, CJobTitlesAccessor>
 {
 public:
     CJobTitlesTable();
@@ -18,7 +18,6 @@ public:
 public:
     bool SelectAllUsers(CJobTitlesArray& oArray);
     bool SelectSingle(const long lID, JOB_TITLES& rec);
-    bool UpdateWhereID(const long lID, JOB_TITLES& recJobTitle);
     bool Insert(JOB_TITLES& recJobTitle);
     bool DeleteWhereID(const long lID);
 };

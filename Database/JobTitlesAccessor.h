@@ -1,7 +1,6 @@
 #pragma once
 #include "JobTitles.h"
 #include <atldbcli.h>
-#include "BaseAccessor.h"
 
 #define JOB_TITLES_ACCESSORS_COUNT              2
 #define JOB_TITLES_IDENTITY_ACCESSOR_INDEX      0
@@ -11,7 +10,7 @@
 #define JOB_TITLES_COLUMN_TITLE_NAME            2
 #define JOB_TITLES_COLUMN_UPDATE_COUNTER        3
 
-class CJobTitlesAccessor : CBaseAccessor <JOB_TITLES>{
+class CJobTitlesAccessor {
 protected:
     BEGIN_ACCESSOR_MAP(CJobTitlesAccessor, JOB_TITLES_ACCESSORS_COUNT)
         BEGIN_ACCESSOR(JOB_TITLES_IDENTITY_ACCESSOR_INDEX, true)
