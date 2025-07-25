@@ -1,4 +1,7 @@
 #pragma once
+#include "BaseAccessor.h"
+#include <afxtempl.h>
+
 #define DB_LOCATION     "(LocalDB)\\MSSQLLocalDB"
 #define DB_NAME         "ProjectmanagementSQL"
 
@@ -48,12 +51,25 @@ protected:
     }
 
 };
-
+template<typename TRecord,typename TArray,typename TAccessor>
 class CDatabaseTableConnection2
 {
+public:
+    CString m_oTableName;
+    CDataSource m_oDataSource;
+    CSession m_oSession;
+    CCommand<CAccessor<TAccessor>> m_oCommand;
+
+    ~CDatabaseTableConnection2()
+    {
+        m_oCommand.Close();
+        m_oSession.Close();
+        m_oDataSource.Close();
+    }
 protected:
     bool OpenConnection(CDataSource& oDataSource, CSession& oSession)
     {
+        
         CDBPropSet oDBPropSet(DBPROPSET_DBINIT);
         oDBPropSet.AddProperty(DBPROP_INIT_DATASOURCE, _T(DB_LOCATION));
         oDBPropSet.AddProperty(DBPROP_AUTH_INTEGRATED, _T("SSPI"));
@@ -79,6 +95,50 @@ protected:
 
         return true;
     }
+
+public:
+
+    bool SelectAll(TArray& oArray)
+    {
+        CString strSQL;
+        strSQL.Format(_T("SELECT * FROM %s"), m_oTableName);
+
+        HRESULT hRes = m_oCommand.Open(m_oSession, strSQL);
+        if (FAILED(hRes))
+            return false;
+
+        while (m_oCommand.MoveNext() == S_OK)
+        {
+            TRecord* pRecord = new TRecord();
+            *pRecord = m_oCommand.m_recRecord;
+            oArray.Add(pRecord);
+        }
+
+        return true;
+    }
+
+    bool SelectWhereID(const long lID, TRecord& rec)
+    {
+        CString strSQL;
+        strSQL.Format(_T("SELECT * FROM %s WHERE ID = %d"), m_oTableName, lID);
+
+        HRESULT hRes = m_oCommand.Open(m_oSession, strSQL);
+        if (FAILED(hRes))
+        {
+            return false;
+        }
+
+        if (m_oCommand.MoveFirst() == S_OK)
+        {
+            rec = m_oCommand.m_recRecord;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
 
 };
 

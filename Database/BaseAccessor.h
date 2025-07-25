@@ -2,7 +2,7 @@
 
 template<typename TRecordType>
 class CBaseAccessor {
-protected:
+public:
 	TRecordType m_recRecord;
 public:
 	TRecordType& GetRecord()

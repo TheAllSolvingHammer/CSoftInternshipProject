@@ -6,19 +6,19 @@
 #include "DllExport.h"
 
 
-class DatabaseDLL_EXP CJobTitlesTable : public IDatabaseTable<JOB_TITLES, CJobTitlesArray>,protected CDatabaseTableConnection
+class DatabaseDLL_EXP CJobTitlesTable : protected CDatabaseTableConnection2<JOB_TITLES, CJobTitlesArray,CJobTitlesAccessor>
 {
 public:
     CJobTitlesTable();
     ~CJobTitlesTable();
-private:
-    CCommand<CAccessor<CJobTitlesAccessor>> m_oCommand;
-    CDataSource m_oDataSource;
-    CSession m_oSession;
+//private:
+//    /*CCommand<CAccessor<CJobTitlesAccessor>> m_oCommand;*/
+//    CDataSource m_oDataSource;
+//    CSession m_oSession;
 public:
-    bool SelectAll(CJobTitlesArray& oJobTitlesArray) override;
-    bool SelectWhereID(const long lID, JOB_TITLES& recJobTitle) override;
-    bool UpdateWhereID(const long lID, JOB_TITLES& recJobTitle) override;
-    bool Insert(JOB_TITLES& recJobTitle) override;
-    bool DeleteWhereID(const long lID) override;
+    bool SelectAllUsers(CJobTitlesArray& oArray);
+    bool SelectSingle(const long lID, JOB_TITLES& rec);
+    bool UpdateWhereID(const long lID, JOB_TITLES& recJobTitle);
+    bool Insert(JOB_TITLES& recJobTitle);
+    bool DeleteWhereID(const long lID);
 };

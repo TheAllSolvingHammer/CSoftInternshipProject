@@ -18,45 +18,14 @@ CJobTitlesTable::~CJobTitlesTable()
     m_oDataSource.Close();
 }
 
-
-bool CJobTitlesTable::SelectAll(CJobTitlesArray& oJobTitlesArray)
+bool CJobTitlesTable::SelectAllUsers(CJobTitlesArray& oArray)
 {
- 
-    HRESULT hRes = m_oCommand.Open(m_oSession, _T("SELECT * FROM JOB_TITLES"));
-    if (FAILED(hRes))
-    {
-        return false;
-    }
-
-    while (m_oCommand.MoveNext() == S_OK)
-        oJobTitlesArray.Add(m_oCommand.m_recJobTitle);
-
-    return true;
+    this->SelectAll(oArray);
 }
-
-bool CJobTitlesTable::SelectWhereID(const long lID, JOB_TITLES& recJobTitle)
+bool CJobTitlesTable::SelectSingle(const long lID, JOB_TITLES& rec)
 {
-    CString strSQL;
-    strSQL.Format(_T("SELECT * FROM JOB_TITLES WHERE ID = %d"), lID);
-
-    HRESULT hRes = m_oCommand.Open(m_oSession, strSQL);
-    if (FAILED(hRes))
-    {
-        return false;
-    }
-
-    if (m_oCommand.MoveFirst() == S_OK)
-    {
-        recJobTitle = m_oCommand.m_recJobTitle;
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    this->SelectWhereID(lID, rec);
 }
-
-
 bool CJobTitlesTable::UpdateWhereID(const long lID, JOB_TITLES& recJobTitle)
 {
     CString strSQL;
