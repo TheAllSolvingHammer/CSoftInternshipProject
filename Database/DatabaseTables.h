@@ -1,5 +1,4 @@
 #pragma once
-#include "BaseAccessor.h"
 #include <afxtempl.h>
 
 #define DB_LOCATION     "(LocalDB)\\MSSQLLocalDB"
@@ -55,15 +54,15 @@ template<typename TRecord,typename TAccessor>
 class CDatabaseTableConnection2
 {
 public:
-    CString m_oTableName;
+    CString m_strTableName;
     CDataSource m_oDataSource;
     CSession m_oSession;
     TRecord& m_recRecord;
     CCommand<CAccessor<TAccessor>> m_oCommand;
-    CDatabaseTableConnection2(TRecord& recRecord,const CString oTableName) 
+    CDatabaseTableConnection2(TRecord& recRecord,const CString strTableName) 
         : m_recRecord(recRecord)
     {
-        this->m_oTableName = oTableName;
+        this->m_strTableName = strTableName;
     }
     ~CDatabaseTableConnection2()
     {
@@ -100,13 +99,14 @@ protected:
 
         return true;
     }
+private:
 
 public:
 
     bool SelectAll(CTypedPtrArray<CPtrArray, TRecord*>& oArray)
     {
         CString strSQL;
-        strSQL.Format(_T("SELECT * FROM %s"), m_oTableName.GetString());
+        strSQL.Format(_T("SELECT * FROM %s"), m_strTableName.GetString());
 
         CDBPropSet props(DBPROPSET_ROWSET);
         props.AddProperty(DBPROP_CANFETCHBACKWARDS, true);
@@ -131,7 +131,7 @@ public:
     bool SelectWhereID(const long lID, TRecord& rec)
     {
         CString strSQL;
-        strSQL.Format(_T("SELECT * FROM %s WHERE ID = %d"), m_oTableName.GetString(), lID);
+        strSQL.Format(_T("SELECT * FROM %s WHERE ID = %d"), m_strTableName.GetString(), lID);
 
         HRESULT hRes = m_oCommand.Open(m_oSession, strSQL);
         if (FAILED(hRes))
@@ -152,8 +152,8 @@ public:
     //fix naming
     bool UpdateWhereID(const long lID, TRecord& rec)
     {
-        /*CString strSQL;
-        strSQL.Format(_T("SELECT * FROM %s WHERE ID = %d"), m_oTableName.GetString(), lID);
+        CString strSQL;
+        strSQL.Format(_T("SELECT * FROM %s WHERE ID = %d"), m_strTableName.GetString(), lID);
 
         CDBPropSet props(DBPROPSET_ROWSET);
         props.AddProperty(DBPROP_CANFETCHBACKWARDS, true);
@@ -170,21 +170,77 @@ public:
             return false;
         }
 
-        if (m_oCommand.m_recRecord.nUpdateCounter != rec.nUpdateCounter) {
+        if (m_recRecord.nUpdateCounter != rec.nUpdateCounter) {
             return false;
         }
 
-        m_oCommand.m_recRecord = rec;
-        m_oCommand.m_recRecord.nUpdateCounter++;
-        rec = m_oCommand.m_recRecord;
+        m_recRecord = rec;
+        m_recRecord.nUpdateCounter++;
+        rec = m_recRecord;
 
         hRes = m_oCommand.SetData(JOB_TITLES_DATA_ACCESSOR_INDEX);
-        return SUCCEEDED(hRes);*/
+        return SUCCEEDED(hRes);
         return true;
 
 
     }
-    
 
+    bool Insert(TRecord& rec)
+    {
+        CString strSQL;
+        strSQL.Format(_T("SELECT * FROM %s"), m_strTableName.GetString());
+
+        CDBPropSet props(DBPROPSET_ROWSET);
+        props.AddProperty(DBPROP_IRowsetChange, true);
+
+        props.AddProperty(DBPROP_UPDATABILITY, DBPROPVAL_UP_INSERT | DBPROPVAL_UP_DELETE);
+        props.AddProperty(DBPROP_CANFETCHBACKWARDS, true);
+        props.AddProperty(DBPROP_QUICKRESTART, true);
+
+        HRESULT hRes = m_oCommand.Open(m_oSession, strSQL, &props);
+        if (FAILED(hRes)) {
+            return false;
+        }
+
+        m_recRecord = rec;
+        hRes = m_oCommand.Insert(JOB_TITLES_DATA_ACCESSOR_INDEX);
+        if (FAILED(hRes))
+        {
+            return false;
+        }
+
+        hRes = m_oCommand.MoveLast();
+        if (FAILED(hRes))
+        {
+            return false;
+        }
+        rec = m_recRecord;
+        return SUCCEEDED(hRes);
+    }
+    
+    bool DeleteWhereID(const long lID)
+    {
+        CString strSQL;
+        strSQL.Format(_T("SELECT * FROM %s WHERE ID = %d"), m_strTableName.GetString(), lID);
+
+        CDBPropSet props(DBPROPSET_ROWSET);
+        props.AddProperty(DBPROP_IRowsetChange, true);
+        props.AddProperty(DBPROP_UPDATABILITY, DBPROPVAL_UP_DELETE);
+
+        HRESULT hRes = m_oCommand.Open(m_oSession, strSQL, &props);
+        if (FAILED(hRes)) {
+            return false;
+        }
+
+        if (m_oCommand.MoveFirst() != S_OK) {
+            return false;
+        }
+
+        hRes = m_oCommand.Delete();
+        if (FAILED(hRes)) {
+            return false;
+        }
+        return true;
+    }
 };
 

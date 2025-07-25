@@ -36,7 +36,7 @@ bool CTestJobTitlesTable::TestSelectAll()
     CJobTitlesTable oJobTitlesTable;
     CJobTitlesArray oJobTitlesArray;
 
-    if (!oJobTitlesTable.SelectAllUsers(oJobTitlesArray)) {
+    if (!oJobTitlesTable.SelectAll(oJobTitlesArray)) {
         AfxMessageBox(_T("SelectAll test failed."));
         return false;
     }
@@ -52,7 +52,7 @@ bool CTestJobTitlesTable::TestSelectByID(long lID)
     CJobTitlesTable oJobTitlesTable;
     JOB_TITLES recJobTitle;
 
-    if (!oJobTitlesTable.SelectSingle(lID, recJobTitle)) {
+    if (!oJobTitlesTable.SelectWhereID(lID, recJobTitle)) {
         AfxMessageBox(_T("SelectByID failed. ID not found."));
         return false;
     }
@@ -67,12 +67,6 @@ bool CTestJobTitlesTable::TestUpdate(long lID, const CString szUpdatedJobTitle)
 {
     CJobTitlesTable oJobTitlesTable;
     JOB_TITLES recJobTitle;
-
-    if (!oJobTitlesTable.SelectSingle(lID, recJobTitle)) {
-        AfxMessageBox(_T("Update failed. Record not found."));
-        return false;
-    }
-
     wcscpy_s(recJobTitle.szTitleName, szUpdatedJobTitle);
     int oldCounter = recJobTitle.nUpdateCounter;
 
