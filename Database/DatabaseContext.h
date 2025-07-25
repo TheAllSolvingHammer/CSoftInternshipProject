@@ -1,17 +1,21 @@
 #pragma once
-#include "UsersTable.h"
-#include "DatabaseTables.h"
+#include <atldbcli.h>
+#define DB_LOCATION                    "(LocalDB)\\MSSQLLocalDB"
+#define DB_NAME                        "ProjectmanagementSQL"
+
 
 class CDatabaseContext {
 public:
-    CDataSource oDataSource;
-    CSession oSession;
-
-    bool Connect() {
-      //  return OpenConnection(oDataSource, oSession); 
-    }
-
-    void Disconnect() {
-       // CloseAll(oDataSource, oSession); 
-    }
+    CDataSource m_oDataSource;
+    CSession m_oSession;
+    bool m_bConnected = false;
+private:
+    static CDatabaseContext* instance;
+private:
+    CDatabaseContext();
+    ~CDatabaseContext();
+public:
+    static CDatabaseContext& getInstance();
+    bool Connect();
+    void Disconnect();
 };

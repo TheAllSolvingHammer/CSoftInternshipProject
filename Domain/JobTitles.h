@@ -13,4 +13,4 @@ struct JOB_TITLES {
     }
 };
 
-typedef CTypedPtrArray<CPtrArray, JOB_TITLES*> CJobTitlesArray;
+typedef CTypedPtrArray<CPtrArray, JOB_TITLES*>CJobTitlesArray;

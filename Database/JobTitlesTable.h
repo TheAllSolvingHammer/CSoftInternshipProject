@@ -6,7 +6,7 @@
 #include "DllExport.h"
 
 
-class DatabaseDLL_EXP CJobTitlesTable : public CDatabaseTableConnection2<JOB_TITLES, CJobTitlesAccessor>
+class DatabaseDLL_EXP CJobTitlesTable : public CBaseTable<JOB_TITLES, CJobTitlesAccessor>
 {
 public:
     CJobTitlesTable();
