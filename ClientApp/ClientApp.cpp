@@ -13,6 +13,7 @@
 #include <UsersTable.h>
 #include <TestUsersTable.h>
 #include <TestJobTitlesTable.h>
+#include <CUsersTableDialog.h>
 
 
 #ifdef _DEBUG
@@ -113,6 +114,8 @@ END_MESSAGE_MAP()
 
 void ClientApp::OnAppAbout()
 {
-	CAboutDlg aboutDlg;
-	aboutDlg.DoModal();
+	/*CAboutDlg aboutDlg;
+	aboutDlg.DoModal();*/
+	CUsersTableDialog oUsersTableDialog;
+	oUsersTableDialog.DoModal();
 }

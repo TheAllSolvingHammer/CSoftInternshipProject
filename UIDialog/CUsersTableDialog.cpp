@@ -19,6 +19,7 @@ CUsersTableDialog::CUsersTableDialog(CWnd* pParent /*=nullptr*/)
 
 CUsersTableDialog::~CUsersTableDialog()
 {
+	FreeUsersArray();
 }
 
 void CUsersTableDialog::DoDataExchange(CDataExchange* pDX)
@@ -62,15 +63,29 @@ BOOL CUsersTableDialog::FetchTableData() {
 	FreeUsersArray();
 	m_lscUsers.DeleteAllItems();
 
-	//
-	
+	/*if (!m_oAppService.GetAllUsers(m_oUsersArray)) 
+	{
+		AfxMessageBox(_T("Failed to load"));
+		return FALSE;
+	}
+
+	for (INT_PTR i = 0; i < m_oUsersArray.GetCount();i++) 
+	{
+		USERS* pUser = new USERS();
+		CString strID;
+		strID.Format(_T("$ld"), pUser->lID);
+		int index = m_lscUsers.InsertItem(i, strID);
+		m_lscUsers.SetItemText(index, 1, pUser->szName);
+		m_lscUsers.SetItemText(index, 2, pUser->szEmail);
+	}*/
+
 
 	return TRUE;
 }
 
 void CUsersTableDialog::FreeUsersArray()
 {
-	for (INT_PTR i = 0; i < m_oUsersArray.GetSize();i++) 
+	for (INT_PTR i = 0; i < m_oUsersArray.GetCount();i++) 
 	{
 		delete m_oUsersArray[i];
 	}

@@ -1,11 +1,13 @@
 #pragma once
 #include "afxdialogex.h"
 #include "Users.h"
-#include "UsersAppService.h"
+#include "DllExport.h"
+
+
 
 // CUsersTableDialog dialog
 
-class CUsersTableDialog : public CDialogEx
+class UIDialogDLL_EXP CUsersTableDialog : public CDialogEx
 {
 	DECLARE_DYNAMIC(CUsersTableDialog)
 
@@ -32,6 +34,5 @@ public:
 	CEdit m_edbName;
 	CEdit m_edbEmail;
 	CUsersArray m_oUsersArray;
-	/*CUsersAppService m_oAppService;*/
 	virtual BOOL OnInitDialog();
 };

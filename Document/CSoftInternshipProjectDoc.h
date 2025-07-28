@@ -1,5 +1,6 @@
 #pragma once
 #include "DLLExport.h"
+#include "UsersAppService.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CCSoftInternshipProjectDocument
@@ -26,4 +27,7 @@ public:
 
 	// Members
 	// ----------------
+	CUsersAppService& GetService();
+public:
+	CUsersAppService m_oAppService;
 };

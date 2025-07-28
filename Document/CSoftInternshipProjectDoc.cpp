@@ -24,6 +24,9 @@ CCSoftInternshipProjectDocument::~CCSoftInternshipProjectDocument()
 
 // Overrides
 // ----------------
+CUsersAppService& CCSoftInternshipProjectDocument::GetService() {
+	return this->m_oAppService;
+}
 
 BOOL CCSoftInternshipProjectDocument::OnNewDocument()
 {
