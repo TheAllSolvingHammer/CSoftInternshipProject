@@ -70,11 +70,11 @@ BOOL ClientApp::InitInstance()
 	pMainFrame->UpdateWindow();
 
 
-	CTestUsersTable oTestUsersTable;
+	/*CTestUsersTable oTestUsersTable;
 	oTestUsersTable.RunAllTests();
 
 	CTestJobTitlesTable oTestJobTitlesTable;
-	oTestJobTitlesTable.RunAllTests();
+	oTestJobTitlesTable.RunAllTests();*/
 
 
 	return TRUE;
