@@ -17,7 +17,7 @@ public:
     {
         this->m_strTableName = strTableName;
         CDatabaseContext::getInstance().Connect();
-        CSession& session = CDatabaseContext::getInstance().m_oSession;
+        m_oSession = CDatabaseContext::getInstance().m_oSession;
     }
     ~CBaseTable()
     {
@@ -27,6 +27,10 @@ public:
 private:
     bool OpenRowByID(long lID, CSession& oSession, bool bUpdatable)
     {
+        if (!m_oSession.m_spOpenRowset) {
+            AfxMessageBox(_T("Session init error!"));
+            return false;
+        }
         CString strSQL;
         strSQL.Format(_T("SELECT * FROM %s WHERE ID = %d"), m_strTableName.GetString(), lID);
 
@@ -59,7 +63,11 @@ public:
 
     bool SelectAll(CTypedPtrArray<CPtrArray, TRecord*>& oArray)
     {
-       
+        if (!m_oSession.m_spOpenRowset) {
+            AfxMessageBox(_T("Session init error!"));
+            return false;
+        }
+
         CString strSQL;
         strSQL.Format(_T("SELECT * FROM %s"), m_strTableName.GetString());
 
@@ -116,6 +124,11 @@ public:
 
     bool Insert(TRecord& rec)
     {
+        if (!m_oSession.m_spOpenRowset) {
+            AfxMessageBox(_T("Session init error!"));
+            return false;
+        }
+
         CString strSQL;
         strSQL.Format(_T("SELECT * FROM %s"), m_strTableName.GetString());
 
@@ -149,6 +162,11 @@ public:
     
     bool DeleteWhereID(const long lID)
     {
+        if (!m_oSession.m_spOpenRowset) {
+            AfxMessageBox(_T("Session init error!"));
+            return false;
+        }
+
         CString strSQL;
         strSQL.Format(_T("SELECT * FROM %s WHERE ID = %d"), m_strTableName.GetString(), lID);
 

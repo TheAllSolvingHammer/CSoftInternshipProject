@@ -43,6 +43,7 @@ bool CDatabaseContext::Connect() {
         m_oDataSource.Close();
         return false;
     }
+    m_bConnected = true;
     return true;
 }
 
