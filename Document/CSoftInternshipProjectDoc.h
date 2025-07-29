@@ -20,19 +20,20 @@ public:
 
 	// Methods
 	// ----------------
-
-
+	const CUsersArray& GetUsers() const { return m_oUsersArray; }
+	void FreeUsersMemory();
+	CUsersAppService& GetService();
+	void LoadUsers();
+	bool AddUser(USERS& newUser);
+	bool EditUser(USERS& updatedUser);
+	bool DeleteUser(long lID);
 	// Overrides
 	// ----------------
 public:
 	BOOL OnNewDocument() override;
 	virtual void OnCloseDocument();
-	void LoadUsers();
-	const CUsersArray& GetUsers() const { return m_oUsersArray; }
-	void FreeUsersMemory();
 	// Members
 	// ----------------
-	CUsersAppService& GetService();
 public:
 	CUsersAppService m_oAppService;
 	CUsersArray m_oUsersArray;
