@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <objbase.h>
 #include "framework.h"
 #include "afxwinappex.h"
 #include "afxdialogex.h"
@@ -35,6 +36,13 @@ ClientApp theApp;
 
 BOOL ClientApp::InitInstance()
 {
+	//problem s coinita
+	HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+	if (FAILED(hr))
+	{
+		AfxMessageBox(_T("Failed to initialize COM library. Application cannot start."));
+		return FALSE;
+	}
 	CWinApp::InitInstance();
 
 	EnableTaskbarInteraction(FALSE);
@@ -72,9 +80,9 @@ BOOL ClientApp::InitInstance()
 
 
 	/*CTestUsersTable oTestUsersTable;
-	oTestUsersTable.RunAllTests();
+	oTestUsersTable.RunAllTests();*/
 
-	CTestJobTitlesTable oTestJobTitlesTable;
+	/*CTestJobTitlesTable oTestJobTitlesTable;
 	oTestJobTitlesTable.RunAllTests();*/
 
 

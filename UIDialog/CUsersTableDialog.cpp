@@ -82,7 +82,7 @@ BOOL CUsersTableDialog::FetchTableData() {
 
 	return TRUE;
 }
-
+//не е само тук
 void CUsersTableDialog::FreeUsersArray()
 {
 	for (INT_PTR i = 0; i < m_oUsersArray.GetCount();i++) 

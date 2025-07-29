@@ -24,13 +24,13 @@ public:
 	// ----------------
 public:
 	CCSoftInternshipProjectDocument* GetDocument() const;
-
+	void PopulateUsersList();
 	// Overrides
 	// ----------------
 protected:
 	virtual void OnInitialUpdate();
 	virtual void OnUpdate(CView* /* pSender */, LPARAM /* lHint */, CObject* /* pHint */);
-
+	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 #ifdef _DEBUG
 	virtual void AssertValid() const;
 	virtual void Dump(CDumpContext& dc) const;

@@ -14,6 +14,7 @@ CUsersAppService::~CUsersAppService()
 
 bool CUsersAppService::GetAllUsers(CUsersArray& oUsersArray) 
 {
+
 	CUsersTable oUsersTable;
 	return oUsersTable.SelectAll(oUsersArray);
 
