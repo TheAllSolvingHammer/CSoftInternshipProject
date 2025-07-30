@@ -1,7 +1,9 @@
 #pragma once
 #include "afxdialogex.h"
 #include "Users.h"
+#include "JobTitles.h"
 #include "DllExport.h"
+#include "../Application/JobTitleAppService.h"
 
 
 
@@ -19,20 +21,25 @@ public:
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_DLG_USERS };
 #endif
-
+public:
+	virtual void OnOK();
+	virtual BOOL OnInitDialog();
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-
 	DECLARE_MESSAGE_MAP()
 private:
 	BOOL FetchTableData();
-	void FreeUsersArray();
+	void FreeJobTitlesArray();
+	int FindJobTitleIndex(long lJobTitleID);
 public:
-	CListCtrl m_lscUsers;
 	CStatic m_sttEmail;
 	CStatic m_sttName;
+	CStatic m_sttJobTitle;
 	CEdit m_edbName;
 	CEdit m_edbEmail;
-	CUsersArray m_oUsersArray;
-	virtual BOOL OnInitDialog();
+	USERS m_recUser;
+	JOB_TITLES m_recJobTitle;
+	CComboBox m_cmbJobTitle;
+	CJobTitlesArray m_oJobTitlesArray;
+	CJobTitlesAppService m_oJobTitlesAppService;
 };

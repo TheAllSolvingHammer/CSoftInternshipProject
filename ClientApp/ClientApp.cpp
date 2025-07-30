@@ -122,8 +122,6 @@ END_MESSAGE_MAP()
 
 void ClientApp::OnAppAbout()
 {
-	/*CAboutDlg aboutDlg;
-	aboutDlg.DoModal();*/
-	CUsersTableDialog oUsersTableDialog;
-	oUsersTableDialog.DoModal();
+	CAboutDlg aboutDlg;
+	aboutDlg.DoModal();
 }

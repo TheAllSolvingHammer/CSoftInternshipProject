@@ -1,6 +1,7 @@
 #pragma once
 #include "DLLExport.h"
 #include "..\Application\UsersAppService.h"
+#include <..\Application\JobTitleAppService.h>
 
 
 
@@ -24,9 +25,10 @@ public:
 	void FreeUsersMemory();
 	CUsersAppService& GetService();
 	void LoadUsers();
-	bool AddUser(USERS& newUser);
-	bool EditUser(USERS& updatedUser);
+	bool AddNewUser(USERS& recNewUser);
+	bool EditUser(long lID,USERS& recUpdatedUser);
 	bool DeleteUser(long lID);
+	void GetJobTitle(long lID, JOB_TITLES& recJobTitle);
 	// Overrides
 	// ----------------
 public:
@@ -35,6 +37,7 @@ public:
 	// Members
 	// ----------------
 public:
-	CUsersAppService m_oAppService;
+	CUsersAppService m_oUserAppService;
+	CJobTitlesAppService m_oJobTitlesAppService;
 	CUsersArray m_oUsersArray;
 };

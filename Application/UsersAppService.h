@@ -1,6 +1,7 @@
 #pragma once
 #include "Users.h"
 #include "DllExport.h"
+#include "..\Database\UsersTable.h"
 
 class ApplicationDLL_EXP CUsersAppService {
 public:

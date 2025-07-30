@@ -30,6 +30,9 @@
     <ClCompile Include="UsersAppService.cpp">
       <Filter>Source Files\Services</Filter>
     </ClCompile>
+    <ClCompile Include="JobTitlesAppService.cpp">
+      <Filter>Source Files\Services</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Application.def">
@@ -56,6 +59,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UsersAppService.h">
+      <Filter>Header Files\Services</Filter>
+    </ClInclude>
+    <ClInclude Include="JobTitleAppService.h">
       <Filter>Header Files\Services</Filter>
     </ClInclude>
   </ItemGroup>

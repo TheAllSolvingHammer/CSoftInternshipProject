@@ -14,22 +14,26 @@ IMPLEMENT_DYNAMIC(CUsersTableDialog, CDialogEx)
 CUsersTableDialog::CUsersTableDialog(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DLG_USERS, pParent)
 {
-
+	if (!m_oJobTitlesAppService.GetAllJobs(m_oJobTitlesArray))
+	{
+		AfxMessageBox(_T("Failed to load job titles array."));
+	}
 }
 
 CUsersTableDialog::~CUsersTableDialog()
 {
-	FreeUsersArray();
+	FreeJobTitlesArray();
 }
 
 void CUsersTableDialog::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_LSC_USERS, m_lscUsers);
 	DDX_Control(pDX, IDC_STT_USERS_EMAIL, m_sttEmail);
 	DDX_Control(pDX, IDC_STT_USERS_NAME, m_sttName);
 	DDX_Control(pDX, IDC_EDB_USERS_NAME, m_edbName);
 	DDX_Control(pDX, IDC_EDB_USERS_EMAIL, m_edbEmail);
+	DDX_Control(pDX, IDC_CMB_USERS_JOB_TITLE, m_cmbJobTitle);
+	DDX_Control(pDX, IDC_STT_USERS_JOB_TITLE, m_sttJobTitle);
 }
 
 
@@ -42,52 +46,102 @@ END_MESSAGE_MAP()
 BOOL CUsersTableDialog::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+	if (m_recUser.lID == 0) {
+		SetWindowText(_T("Add New User"));
+	}
+	else {
+		SetWindowText(_T("Edit User"));
+	}
 
 	m_sttName.SetWindowText(_T("Name: "));
 	m_sttEmail.SetWindowText(_T("Email: "));
-	m_lscUsers.InsertColumn(0, _T("ID"), LVCFMT_LEFT, 50);
-	m_lscUsers.InsertColumn(1, _T("Name"), LVCFMT_LEFT, 150);
-	m_lscUsers.InsertColumn(2, _T("Email"), LVCFMT_LEFT, 200);
-	m_lscUsers.InsertColumn(2, _T("Job Title"), LVCFMT_LEFT, 150);
-	m_lscUsers.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
+	m_sttJobTitle.SetWindowText(_T("Job Title: "));
+	m_cmbJobTitle.ModifyStyle(CBS_SORT, 0);
 
-	FetchTableData();
+	if (!FetchTableData()) {
+		AfxMessageBox(_T("Failed to load job titles."), MB_ICONERROR);
+	}
+	m_oJobTitlesAppService.GetJobByID(m_recUser.lJobTitleID, m_recJobTitle);
 
-	// TODO:  Add extra initialization here
+	int nIndex = FindJobTitleIndex(m_recUser.lJobTitleID);
+	if (nIndex != CB_ERR) {
+		m_cmbJobTitle.SetCurSel(nIndex);
+	}
+	else {
+		m_cmbJobTitle.SetCurSel(-1);
+	}
 
-	return TRUE;  // return TRUE unless you set the focus to a control
-	// EXCEPTION: OCX Property Pages should return FALSE
+	m_edbEmail.SetWindowText(m_recUser.szEmail);
+	m_edbName.SetWindowText(m_recUser.szName);
+	UpdateData(FALSE);
+	return TRUE;
+}
+
+int CUsersTableDialog::FindJobTitleIndex(long lJobTitleID)
+{
+	for (int i = 0; i < m_cmbJobTitle.GetCount(); ++i) {
+		if (m_cmbJobTitle.GetItemData(i) == (DWORD_PTR)lJobTitleID) {
+			return i;
+		}
+	}
+	return CB_ERR;
 }
 
 BOOL CUsersTableDialog::FetchTableData() {
-	FreeUsersArray();
-	m_lscUsers.DeleteAllItems();
+	FreeJobTitlesArray();
 
-	/*if (!m_oAppService.GetAllUsers(m_oUsersArray)) 
+	if (!m_oJobTitlesAppService.GetAllJobs(m_oJobTitlesArray))
 	{
-		AfxMessageBox(_T("Failed to load"));
+		AfxMessageBox(_T("Failed to load job titles."));
 		return FALSE;
 	}
 
-	for (INT_PTR i = 0; i < m_oUsersArray.GetCount();i++) 
+	for (INT_PTR i = 0; i < m_oJobTitlesArray.GetSize();i++)
 	{
-		USERS* pUser = new USERS();
-		CString strID;
-		strID.Format(_T("$ld"), pUser->lID);
-		int index = m_lscUsers.InsertItem(i, strID);
-		m_lscUsers.SetItemText(index, 1, pUser->szName);
-		m_lscUsers.SetItemText(index, 2, pUser->szEmail);
-	}*/
-
-
+		JOB_TITLES* pJobTitle = m_oJobTitlesArray.GetAt(i);
+		if (pJobTitle) {
+			int nIndex = m_cmbJobTitle.AddString(pJobTitle->szTitleName);
+			if (nIndex != CB_ERR) {
+				m_cmbJobTitle.SetItemData(nIndex, pJobTitle->lID);
+			}
+		}
+	}
 	return TRUE;
 }
 //не е само тук
-void CUsersTableDialog::FreeUsersArray()
+void CUsersTableDialog::FreeJobTitlesArray()
 {
-	for (INT_PTR i = 0; i < m_oUsersArray.GetCount();i++) 
+	for (INT_PTR i = 0; i < m_oJobTitlesArray.GetCount();i++)
 	{
-		delete m_oUsersArray[i];
+		delete m_oJobTitlesArray[i];
 	}
-	m_oUsersArray.RemoveAll();
+	m_oJobTitlesArray.RemoveAll();
+}
+
+void CUsersTableDialog::OnOK()
+{
+	// TODO: Add your specialized code here and/or call the base class
+	if (!UpdateData(TRUE))
+	{
+		return;
+	}
+
+	int nCurSel = m_cmbJobTitle.GetCurSel();
+	if (nCurSel != CB_ERR) {
+		m_recUser.lJobTitleID = (long)m_cmbJobTitle.GetItemData(nCurSel);
+	}
+	else {
+		m_recUser.lJobTitleID = 0;
+		AfxMessageBox(_T("Please select a Job Title."), MB_ICONWARNING);
+		m_cmbJobTitle.SetFocus();
+		return;
+	}
+	CString strName;
+	m_edbName.GetWindowText(strName);
+	wcscpy_s(m_recUser.szName, strName.GetString());
+	CString strEmail;
+	m_edbEmail.GetWindowText(strEmail);
+	wcscpy_s(m_recUser.szEmail, strEmail.GetString());
+
+	CDialogEx::OnOK();
 }

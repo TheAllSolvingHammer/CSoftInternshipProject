@@ -26,23 +26,55 @@ void CCSoftInternshipProjectDocument::FreeUsersMemory() {
 	}
 	m_oUsersArray.RemoveAll();
 }
+bool CCSoftInternshipProjectDocument::AddNewUser(USERS& newUser)
+{
 
-// Overrides
-// ----------------
+    if (m_oUserAppService.AddUser(newUser)) {
+        LoadUsers();
+        return true;
+    }
+    return false;
+
+}
+bool CCSoftInternshipProjectDocument::EditUser(long lID,USERS& updatedUser)
+{
+    if (m_oUserAppService.UpdateUser(lID,updatedUser)) {
+        LoadUsers();
+        return true;
+    }
+    return false;
+}
+bool CCSoftInternshipProjectDocument::DeleteUser(long lID)
+{
+    if (m_oUserAppService.DeleteUser(lID)) {
+        LoadUsers();
+        return true;
+    }
+    return false;
+}
+
+void CCSoftInternshipProjectDocument::GetJobTitle(long lID, JOB_TITLES& recJobTitle)
+{
+    m_oJobTitlesAppService.GetJobByID(lID, recJobTitle);
+}
+
 CUsersAppService& CCSoftInternshipProjectDocument::GetService() {
-	return this->m_oAppService;
+    return this->m_oUserAppService;
 }
 
 void CCSoftInternshipProjectDocument::LoadUsers()
 {
     FreeUsersMemory();
-    if (m_oAppService.GetAllUsers(m_oUsersArray)) {
+    if (m_oUserAppService.GetAllUsers(m_oUsersArray)) {
         UpdateAllViews(NULL);
     }
     else {
         AfxMessageBox(_T("Failed to load users."));
     }
 }
+// Overrides
+// ----------------
+
 
 BOOL CCSoftInternshipProjectDocument::OnNewDocument()
 {
@@ -54,5 +86,6 @@ BOOL CCSoftInternshipProjectDocument::OnNewDocument()
 
 void CCSoftInternshipProjectDocument::OnCloseDocument() 
 {
+	FreeUsersMemory();
 	CDocument::OnCloseDocument();
 }

@@ -88,6 +88,7 @@ public:
             oArray.Add(pRecord);
         }
 
+        m_oCommand.Close();
         return true;
     }
 
@@ -118,8 +119,9 @@ public:
         rec = m_recRecord;
 
         HRESULT hRes = m_oCommand.SetData(TABLE_DATA_ACCESSOR_INDEX);
+        m_oCommand.Close();
         return SUCCEEDED(hRes);
-        return true;
+
     }
 
     bool Insert(TRecord& rec)
@@ -187,6 +189,7 @@ public:
         if (FAILED(hRes)) {
             return false;
         }
+        m_oCommand.Close();
         return true;
     }
 };

@@ -1,6 +1,10 @@
 #include "pch.h"
 #include "framework.h"
 #include "CSoftInternshipProjectView.h"
+#include "resource.h"
+#include <CUsersTableDialog.h>
+
+
 
 /////////////////////////////////////////////////////////////////////////////
 //CCSoftInternshipProjectView
@@ -10,6 +14,11 @@
 IMPLEMENT_DYNCREATE(CCSoftInternshipProjectView, CListView)
 
 BEGIN_MESSAGE_MAP(CCSoftInternshipProjectView, CListView)
+    ON_COMMAND(ID_MENU_INSERT_USER, &CCSoftInternshipProjectView::OnUserAdd)
+
+    ON_COMMAND(ID_MENU_DELETE_USER, &CCSoftInternshipProjectView::OnUserDelete)
+    ON_WM_CONTEXTMENU()
+    ON_WM_LBUTTONDBLCLK()
 END_MESSAGE_MAP()
 
 // Constructor / Destructor
@@ -67,7 +76,7 @@ void CCSoftInternshipProjectView::PopulateUsersList()
 
     const CUsersArray& users = pDoc->GetUsers();
 
-    for (INT_PTR i = 0; i < users.GetSize(); ++i) {
+    for (int i = 0; i < users.GetSize(); ++i) {
         USERS* pUser = users.GetAt(i);
         if (pUser) {
             CString strID;
@@ -75,10 +84,113 @@ void CCSoftInternshipProjectView::PopulateUsersList()
             int index = pLstCtrl.InsertItem(i, strID);
             pLstCtrl.SetItemText(index, 1, pUser->szName);
             pLstCtrl.SetItemText(index, 2, pUser->szEmail);
-            CString strJobID;
-            strJobID.Format(_T("%ld"), pUser->lJobTitleID);
-            pLstCtrl.SetItemText(index, 3, strJobID);
+            
+            JOB_TITLES* pJobTitle = new JOB_TITLES();
+            pDoc->GetJobTitle(pUser->lJobTitleID, *pJobTitle);
+            pLstCtrl.SetItemText(index, 3, pJobTitle->szTitleName);
+            delete pJobTitle;
         }
+    }
+}
+
+void CCSoftInternshipProjectView::OnUserEdit()
+{
+    CListCtrl& refListCtrl = GetListCtrl();
+    int nSel = refListCtrl.GetNextItem(-1, LVNI_SELECTED); 
+
+    if (nSel == -1) 
+    {
+        AfxMessageBox(_T("Please select a user to edit."), MB_ICONINFORMATION);
+        return;
+    }
+
+    CCSoftInternshipProjectDocument* pDoc = GetDocument();
+    if (pDoc == NULL) 
+    {
+        return;
+    }
+
+    
+    CString strID = refListCtrl.GetItemText(nSel, 0);
+    long lID = _ttol(strID); 
+
+   
+    USERS* pUserToEdit = nullptr;
+    const CUsersArray& users = pDoc->GetUsers();
+    for (INT_PTR i = 0; i < users.GetSize(); ++i) {
+        USERS* pUser = users.GetAt(i);
+        if (pUser && pUser->lID == lID) {
+            pUserToEdit = pUser;
+            break;
+        }
+    }
+
+    if (pUserToEdit) {
+        CUsersTableDialog dlg;
+        dlg.m_recUser = *pUserToEdit; 
+        if (dlg.DoModal() == IDOK) {
+           
+            if (pDoc->EditUser(lID,dlg.m_recUser)) {
+                AfxMessageBox(_T("User updated successfully!"));
+            }
+            else {
+                AfxMessageBox(_T("Failed to update user."), MB_ICONERROR);
+            }
+        }
+    }
+    else {
+        AfxMessageBox(_T("Selected user not found in document data."), MB_ICONERROR);
+    }
+}
+
+void CCSoftInternshipProjectView::OnUserAdd() 
+{
+    CUsersTableDialog dlg; 
+    if (dlg.DoModal() == IDOK) {
+        CCSoftInternshipProjectDocument* pDoc = GetDocument();
+        if (pDoc == NULL)
+        {
+            return;
+        }
+        if (pDoc) {
+            if (pDoc->AddNewUser(dlg.m_recUser)) {
+                AfxMessageBox(_T("User added successfully!"));
+            }
+            else {
+                AfxMessageBox(_T("Failed to add user."), MB_ICONERROR);
+            }
+        }
+    }
+}
+
+void CCSoftInternshipProjectView::OnUserDelete()
+{
+    CListCtrl& refListCtrl = GetListCtrl();
+    int nSel = refListCtrl.GetNextItem(-1, LVNI_SELECTED);
+
+    if (nSel == -1) {
+        AfxMessageBox(_T("Please select a user to delete."), MB_ICONINFORMATION);
+        return;
+    }
+
+    if (AfxMessageBox(_T("Are you sure you want to delete the selected user?"), MB_YESNO | MB_ICONQUESTION) == IDNO) {
+        return;
+    }
+
+    CCSoftInternshipProjectDocument* pDoc = GetDocument();
+    if (pDoc == NULL)
+    {
+        return;
+    }
+
+    CString strID = refListCtrl.GetItemText(nSel, 0);
+    long lID = _ttol(strID);
+
+    if (pDoc->DeleteUser(lID)) {
+        AfxMessageBox(_T("User deleted successfully!"));
+    }
+    else {
+        AfxMessageBox(_T("Failed to delete user."), MB_ICONERROR);
     }
 }
 
@@ -113,4 +225,31 @@ void CCSoftInternshipProjectView::Dump(CDumpContext& dc) const
 {
 	CListView::Dump(dc);
 }
+
+void CCSoftInternshipProjectView::OnContextMenu(CWnd* pWnd, CPoint point)
+{
+    CMenu menu;
+    if (!menu.LoadMenu(IDR_USERS_CONTEXT)) 
+        return;
+
+    CMenu* pContextMenu = menu.GetSubMenu(0);
+    if (!pContextMenu)
+        return;
+
+    pContextMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, point.x, point.y, this);
+}
+
+void CCSoftInternshipProjectView::OnLButtonDblClk(UINT nFlags, CPoint point) {
+    CListCtrl& listCtrl = GetListCtrl();
+
+    int nItem = listCtrl.HitTest(point);
+    if (nItem != -1)
+    {
+        listCtrl.SetItemState(nItem, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
+        OnUserEdit();
+    }
+
+    CListView::OnLButtonDblClk(nFlags, point);
+}
+
 #endif 
