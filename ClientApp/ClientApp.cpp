@@ -1,18 +1,20 @@
 #include "pch.h"
+#include <objbase.h>
 #include "framework.h"
 #include "afxwinappex.h"
 #include "afxdialogex.h"
 #include "ClientApp.h"
 #include "MainFrm.h"
 #include "ChildFrm.h"
-#include "CSoftInternshipProjectDoc.h"
-#include "CSoftInternshipProjectView.h"
+#include "CUsersView.h"
+#include "CUsersDocument.h"
 #include <iostream>
 #include <afxwin.h> 
 #include <DatabaseTables.h>
 #include <UsersTable.h>
 #include <TestUsersTable.h>
 #include <TestJobTitlesTable.h>
+#include <CUsersTableDialog.h>
 
 
 #ifdef _DEBUG
@@ -34,6 +36,13 @@ ClientApp theApp;
 
 BOOL ClientApp::InitInstance()
 {
+	//problem s coinita
+	HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+	if (FAILED(hr))
+	{
+		AfxMessageBox(_T("Failed to initialize COM library. Application cannot start."));
+		return FALSE;
+	}
 	CWinApp::InitInstance();
 
 	EnableTaskbarInteraction(FALSE);
@@ -43,9 +52,9 @@ BOOL ClientApp::InitInstance()
 
 	CMultiDocTemplate* pDocTemplate;
 	pDocTemplate = new CMultiDocTemplate(IDR_CSoftInternshipProjectTYPE,
-		RUNTIME_CLASS(CCSoftInternshipProjectDocument),
+		RUNTIME_CLASS(CUsersDocument),
 		RUNTIME_CLASS(CChildFrame),
-		RUNTIME_CLASS(CCSoftInternshipProjectView));
+		RUNTIME_CLASS(CUsersView));
 
 	if (!pDocTemplate)
 		return FALSE;
@@ -70,11 +79,11 @@ BOOL ClientApp::InitInstance()
 	pMainFrame->UpdateWindow();
 
 
-	CTestUsersTable oTestUsersTable;
-	oTestUsersTable.RunAllTests();
+	/*CTestUsersTable oTestUsersTable;
+	oTestUsersTable.RunAllTests();*/
 
-	CTestJobTitlesTable oTestJobTitlesTable;
-	oTestJobTitlesTable.RunAllTests();
+	/*CTestJobTitlesTable oTestJobTitlesTable;
+	oTestJobTitlesTable.RunAllTests();*/
 
 
 	return TRUE;

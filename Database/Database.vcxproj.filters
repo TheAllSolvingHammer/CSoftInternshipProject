@@ -28,6 +28,18 @@
     <Filter Include="Header Files\Contexts">
       <UniqueIdentifier>{d5abecde-a184-4c83-93a4-5130056f10c7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Tests">
+      <UniqueIdentifier>{d797f2a2-846c-456e-9afa-de0fc7474c7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Contexts">
+      <UniqueIdentifier>{b25de0d2-070c-4148-8c43-433fbbb79998}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Tables">
+      <UniqueIdentifier>{9fc5975e-3166-4704-bbb9-2678a27e3e80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Contracts">
+      <UniqueIdentifier>{d4ead012-d0b9-4578-a70c-8db20efb0263}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Database.cpp">
@@ -36,20 +48,23 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UsersTable.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="TestJobTitlesTable.cpp">
+      <Filter>Source Files\Tests</Filter>
     </ClCompile>
     <ClCompile Include="TestUsersTable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="JobTitlesTable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TestJobTitlesTable.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Tests</Filter>
     </ClCompile>
     <ClCompile Include="DatabaseContext.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Contexts</Filter>
+    </ClCompile>
+    <ClCompile Include="JobTitlesTable.cpp">
+      <Filter>Source Files\Tables</Filter>
+    </ClCompile>
+    <ClCompile Include="UsersTable.cpp">
+      <Filter>Source Files\Tables</Filter>
+    </ClCompile>
+    <ClCompile Include="DatabaseTables.cpp">
+      <Filter>Source Files\Contracts</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

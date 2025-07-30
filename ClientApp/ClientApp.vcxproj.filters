@@ -71,5 +71,8 @@
     <Image Include="res\ClientApp.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\CSoftInternshipProject.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
