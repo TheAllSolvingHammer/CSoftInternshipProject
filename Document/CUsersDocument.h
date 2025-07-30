@@ -7,17 +7,17 @@
 
 /////////////////////////////////////////////////////////////////////////////
 // CCSoftInternshipProjectDocument
-class DocumentDLL_EXP CCSoftInternshipProjectDocument : public CDocument
+class DocumentDLL_EXP CUsersDocument : public CDocument
 {
 	// Macros
 	// ----------------
-	DECLARE_DYNCREATE(CCSoftInternshipProjectDocument)
+	DECLARE_DYNCREATE(CUsersDocument)
 
 	// Constructor / Destructor
 	// ----------------
 public:
-	CCSoftInternshipProjectDocument() noexcept;
-	virtual ~CCSoftInternshipProjectDocument();
+	CUsersDocument() noexcept;
+	virtual ~CUsersDocument();
 
 	// Methods
 	// ----------------

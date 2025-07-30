@@ -2,29 +2,29 @@
 #include <afxcview.h>
 #include "DLLExport.h"
 #include <afx.h>
-#include "CSoftInternshipProjectDoc.h"
+#include "CUsersDocument.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
 //CCSoftInternshipProjectView
 
-class UIViewDLL_EXP CCSoftInternshipProjectView : public CListView
+class UIViewDLL_EXP CUsersView : public CListView
 {
 	// Macros
 	// ----------------
-	DECLARE_DYNCREATE(CCSoftInternshipProjectView)
+	DECLARE_DYNCREATE(CUsersView)
 	DECLARE_MESSAGE_MAP()
 
 	// Constructor / Destructor
 	// ----------------
 public:
-	CCSoftInternshipProjectView() noexcept;
-	virtual ~CCSoftInternshipProjectView();
+	CUsersView() noexcept;
+	virtual ~CUsersView();
 
 	// Methods
 	// ----------------
 public:
-	CCSoftInternshipProjectDocument* GetDocument() const;
+	CUsersDocument* GetDocument() const;
 	void PopulateUsersList();
 	void OnUserAdd();
 	void OnUserEdit();

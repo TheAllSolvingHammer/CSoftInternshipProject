@@ -1,32 +1,32 @@
 #include "pch.h"
-#include "CSoftInternshipProjectDoc.h"
+#include "CUsersDocument.h"
 
 /////////////////////////////////////////////////////////////////////////////
 //CCSoftInternshipProjectDocument
 
 // Macros
 // ----------------
-IMPLEMENT_DYNCREATE(CCSoftInternshipProjectDocument, CDocument)
+IMPLEMENT_DYNCREATE(CUsersDocument, CDocument)
 
 // Constructor / Destructor
 // ----------------
-CCSoftInternshipProjectDocument::CCSoftInternshipProjectDocument() noexcept
+CUsersDocument::CUsersDocument() noexcept
 {
 }
 
-CCSoftInternshipProjectDocument::~CCSoftInternshipProjectDocument()
+CUsersDocument::~CUsersDocument()
 {
 }
 
 // Methods
 // ----------------
-void CCSoftInternshipProjectDocument::FreeUsersMemory() {
+void CUsersDocument::FreeUsersMemory() {
 	for (INT_PTR i = 0; i < m_oUsersArray.GetCount(); ++i) {
 		delete m_oUsersArray.GetAt(i);
 	}
 	m_oUsersArray.RemoveAll();
 }
-bool CCSoftInternshipProjectDocument::AddNewUser(USERS& newUser)
+bool CUsersDocument::AddNewUser(USERS& newUser)
 {
 
     if (m_oUserAppService.AddUser(newUser)) {
@@ -36,7 +36,7 @@ bool CCSoftInternshipProjectDocument::AddNewUser(USERS& newUser)
     return false;
 
 }
-bool CCSoftInternshipProjectDocument::EditUser(long lID,USERS& updatedUser)
+bool CUsersDocument::EditUser(long lID,USERS& updatedUser)
 {
     if (m_oUserAppService.UpdateUser(lID,updatedUser)) {
         LoadUsers();
@@ -44,7 +44,7 @@ bool CCSoftInternshipProjectDocument::EditUser(long lID,USERS& updatedUser)
     }
     return false;
 }
-bool CCSoftInternshipProjectDocument::DeleteUser(long lID)
+bool CUsersDocument::DeleteUser(long lID)
 {
     if (m_oUserAppService.DeleteUser(lID)) {
         LoadUsers();
@@ -53,16 +53,16 @@ bool CCSoftInternshipProjectDocument::DeleteUser(long lID)
     return false;
 }
 
-void CCSoftInternshipProjectDocument::GetJobTitle(long lID, JOB_TITLES& recJobTitle)
+void CUsersDocument::GetJobTitle(long lID, JOB_TITLES& recJobTitle)
 {
     m_oJobTitlesAppService.GetJobByID(lID, recJobTitle);
 }
 
-CUsersAppService& CCSoftInternshipProjectDocument::GetService() {
+CUsersAppService& CUsersDocument::GetService() {
     return this->m_oUserAppService;
 }
 
-void CCSoftInternshipProjectDocument::LoadUsers()
+void CUsersDocument::LoadUsers()
 {
     FreeUsersMemory();
     if (m_oUserAppService.GetAllUsers(m_oUsersArray)) {
@@ -76,7 +76,7 @@ void CCSoftInternshipProjectDocument::LoadUsers()
 // ----------------
 
 
-BOOL CCSoftInternshipProjectDocument::OnNewDocument()
+BOOL CUsersDocument::OnNewDocument()
 {
 	if (!CDocument::OnNewDocument())
 		return FALSE;
@@ -84,7 +84,7 @@ BOOL CCSoftInternshipProjectDocument::OnNewDocument()
 	return TRUE;
 }
 
-void CCSoftInternshipProjectDocument::OnCloseDocument() 
+void CUsersDocument::OnCloseDocument() 
 {
 	FreeUsersMemory();
 	CDocument::OnCloseDocument();

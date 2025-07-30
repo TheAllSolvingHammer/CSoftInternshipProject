@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "framework.h"
-#include "CSoftInternshipProjectView.h"
+#include "CUsersView.h"
 #include "resource.h"
 #include <CUsersTableDialog.h>
 
@@ -11,32 +11,32 @@
 
 // Macros
 // ----------------
-IMPLEMENT_DYNCREATE(CCSoftInternshipProjectView, CListView)
+IMPLEMENT_DYNCREATE(CUsersView, CListView)
 
-BEGIN_MESSAGE_MAP(CCSoftInternshipProjectView, CListView)
-    ON_COMMAND(ID_MENU_INSERT_USER, &CCSoftInternshipProjectView::OnUserAdd)
+BEGIN_MESSAGE_MAP(CUsersView, CListView)
+    ON_COMMAND(ID_MENU_INSERT_USER, &CUsersView::OnUserAdd)
 
-    ON_COMMAND(ID_MENU_DELETE_USER, &CCSoftInternshipProjectView::OnUserDelete)
+    ON_COMMAND(ID_MENU_DELETE_USER, &CUsersView::OnUserDelete)
     ON_WM_CONTEXTMENU()
     ON_WM_LBUTTONDBLCLK()
 END_MESSAGE_MAP()
 
 // Constructor / Destructor
 // ----------------
-CCSoftInternshipProjectView::CCSoftInternshipProjectView() noexcept
+CUsersView::CUsersView() noexcept
 {
 }
 
-CCSoftInternshipProjectView::~CCSoftInternshipProjectView()
+CUsersView::~CUsersView()
 {
 }
 
 // Methods
 // ----------------
-CCSoftInternshipProjectDocument* CCSoftInternshipProjectView::GetDocument() const
+CUsersDocument* CUsersView::GetDocument() const
 {
-	ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CCSoftInternshipProjectDocument)));
-	return (CCSoftInternshipProjectDocument*)m_pDocument;
+	ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CUsersDocument)));
+	return (CUsersDocument*)m_pDocument;
 }
 
 
@@ -46,7 +46,7 @@ CCSoftInternshipProjectDocument* CCSoftInternshipProjectView::GetDocument() cons
 
 //Methods
 // ----------------
-void CCSoftInternshipProjectView::PopulateUsersList()
+void CUsersView::PopulateUsersList()
 {
     CListCtrl& pLstCtrl = GetListCtrl(); 
     if (!pLstCtrl.GetSafeHwnd())
@@ -69,7 +69,7 @@ void CCSoftInternshipProjectView::PopulateUsersList()
         pLstCtrl.InsertColumn(3, _T("Job Title"), LVCFMT_LEFT, 150);
     }
 
-    CCSoftInternshipProjectDocument* pDoc = GetDocument();
+    CUsersDocument* pDoc = GetDocument();
     if (pDoc == NULL) {
         return;
     }
@@ -93,7 +93,7 @@ void CCSoftInternshipProjectView::PopulateUsersList()
     }
 }
 
-void CCSoftInternshipProjectView::OnUserEdit()
+void CUsersView::OnUserEdit()
 {
     CListCtrl& refListCtrl = GetListCtrl();
     int nSel = refListCtrl.GetNextItem(-1, LVNI_SELECTED); 
@@ -104,7 +104,7 @@ void CCSoftInternshipProjectView::OnUserEdit()
         return;
     }
 
-    CCSoftInternshipProjectDocument* pDoc = GetDocument();
+    CUsersDocument* pDoc = GetDocument();
     if (pDoc == NULL) 
     {
         return;
@@ -143,11 +143,11 @@ void CCSoftInternshipProjectView::OnUserEdit()
     }
 }
 
-void CCSoftInternshipProjectView::OnUserAdd() 
+void CUsersView::OnUserAdd() 
 {
     CUsersTableDialog dlg; 
     if (dlg.DoModal() == IDOK) {
-        CCSoftInternshipProjectDocument* pDoc = GetDocument();
+        CUsersDocument* pDoc = GetDocument();
         if (pDoc == NULL)
         {
             return;
@@ -163,7 +163,7 @@ void CCSoftInternshipProjectView::OnUserAdd()
     }
 }
 
-void CCSoftInternshipProjectView::OnUserDelete()
+void CUsersView::OnUserDelete()
 {
     CListCtrl& refListCtrl = GetListCtrl();
     int nSel = refListCtrl.GetNextItem(-1, LVNI_SELECTED);
@@ -177,7 +177,7 @@ void CCSoftInternshipProjectView::OnUserDelete()
         return;
     }
 
-    CCSoftInternshipProjectDocument* pDoc = GetDocument();
+    CUsersDocument* pDoc = GetDocument();
     if (pDoc == NULL)
     {
         return;
@@ -196,37 +196,37 @@ void CCSoftInternshipProjectView::OnUserDelete()
 
 // Overrides
 // ----------------
-BOOL CCSoftInternshipProjectView::PreCreateWindow(CREATESTRUCT& cs)
+BOOL CUsersView::PreCreateWindow(CREATESTRUCT& cs)
 {
     cs.style |= LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL;
     return CListView::PreCreateWindow(cs);
 }
 
-void CCSoftInternshipProjectView::OnInitialUpdate()
+void CUsersView::OnInitialUpdate()
 {
 	CListView::OnInitialUpdate();
     GetListCtrl().SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES | LVS_EX_DOUBLEBUFFER);
     PopulateUsersList();
 }
 
-void CCSoftInternshipProjectView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
+void CUsersView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 {
     CListView::OnUpdate(pSender, lHint, pHint);
     PopulateUsersList();
 }
 
 #ifdef _DEBUG
-void CCSoftInternshipProjectView::AssertValid() const
+void CUsersView::AssertValid() const
 {
 	CListView::AssertValid();
 }
 
-void CCSoftInternshipProjectView::Dump(CDumpContext& dc) const
+void CUsersView::Dump(CDumpContext& dc) const
 {
 	CListView::Dump(dc);
 }
 
-void CCSoftInternshipProjectView::OnContextMenu(CWnd* pWnd, CPoint point)
+void CUsersView::OnContextMenu(CWnd* pWnd, CPoint point)
 {
     CMenu menu;
     if (!menu.LoadMenu(IDR_USERS_CONTEXT)) 
@@ -239,7 +239,7 @@ void CCSoftInternshipProjectView::OnContextMenu(CWnd* pWnd, CPoint point)
     pContextMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, point.x, point.y, this);
 }
 
-void CCSoftInternshipProjectView::OnLButtonDblClk(UINT nFlags, CPoint point) {
+void CUsersView::OnLButtonDblClk(UINT nFlags, CPoint point) {
     CListCtrl& listCtrl = GetListCtrl();
 
     int nItem = listCtrl.HitTest(point);

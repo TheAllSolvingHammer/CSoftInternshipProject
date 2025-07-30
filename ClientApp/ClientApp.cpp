@@ -6,8 +6,8 @@
 #include "ClientApp.h"
 #include "MainFrm.h"
 #include "ChildFrm.h"
-#include "CSoftInternshipProjectDoc.h"
-#include "CSoftInternshipProjectView.h"
+#include "CUsersView.h"
+#include "CUsersDocument.h"
 #include <iostream>
 #include <afxwin.h> 
 #include <DatabaseTables.h>
@@ -52,9 +52,9 @@ BOOL ClientApp::InitInstance()
 
 	CMultiDocTemplate* pDocTemplate;
 	pDocTemplate = new CMultiDocTemplate(IDR_CSoftInternshipProjectTYPE,
-		RUNTIME_CLASS(CCSoftInternshipProjectDocument),
+		RUNTIME_CLASS(CUsersDocument),
 		RUNTIME_CLASS(CChildFrame),
-		RUNTIME_CLASS(CCSoftInternshipProjectView));
+		RUNTIME_CLASS(CUsersView));
 
 	if (!pDocTemplate)
 		return FALSE;
