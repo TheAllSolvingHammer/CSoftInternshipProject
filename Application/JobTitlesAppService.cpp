@@ -12,9 +12,15 @@ CJobTitlesAppService::~CJobTitlesAppService()
 }
 bool CJobTitlesAppService::GetAllJobs(CJobTitlesArray& oJobTitlesArray)
 {
-	return m_oJobTitlesTable.SelectAll(oJobTitlesArray);
+	if (!m_oJobTitlesTable.SelectAll(oJobTitlesArray)) {
+		return false;
+	}
+	return true;
 }
 bool CJobTitlesAppService::GetJobByID(const long lID, JOB_TITLES& recJobTitle)
 {
-	return m_oJobTitlesTable.SelectWhereID(lID, recJobTitle);
+	if (!m_oJobTitlesTable.SelectWhereID(lID, recJobTitle)) {
+		return false;
+	}
+	return true;
 }

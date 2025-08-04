@@ -37,9 +37,6 @@
     <Filter Include="Source Files\Tables">
       <UniqueIdentifier>{9fc5975e-3166-4704-bbb9-2678a27e3e80}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Contracts">
-      <UniqueIdentifier>{d4ead012-d0b9-4578-a70c-8db20efb0263}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Database.cpp">
@@ -62,9 +59,6 @@
     </ClCompile>
     <ClCompile Include="UsersTable.cpp">
       <Filter>Source Files\Tables</Filter>
-    </ClCompile>
-    <ClCompile Include="DatabaseTables.cpp">
-      <Filter>Source Files\Contracts</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

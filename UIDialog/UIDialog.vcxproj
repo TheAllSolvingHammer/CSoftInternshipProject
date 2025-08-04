@@ -199,7 +199,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CUsersTableDialog.cpp" />
+    <ClCompile Include="CUsersDlg.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
@@ -227,7 +227,7 @@
     <None Include="UIDialog.def" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CUsersTableDialog.h" />
+    <ClInclude Include="CUsersDlg.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />

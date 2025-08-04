@@ -2,12 +2,28 @@
 #include "framework.h"
 #include "CUsersView.h"
 #include "resource.h"
-#include <CUsersTableDialog.h>
+#include <CUsersDlg.h>
+
+#define ERR_MESSAGE_SAFE_HWND "Error in getting the safe HWND"
+#define ERR_MESSAGE_LST_CTRL "Error in getting the header of the list control"
+#define ERR_UNKNOWN "Unknown"
+#define ERR_NOT_SELECTED_USER_EDIT "Please select a user to edit."
+#define SCS_USER_UPDATE "User updated successfully!"
+#define ERR_USER_UPDATE "Failed to update user."
+#define ERR_USER_NOT_FOUND "Selected user not found in document data."
 
 
+#define SCS_USER_ADD "User added successfully!"
+#define ERR_USER_ADD "Failed to add user."
+
+#define ERR_NOT_SELECTED_USER_DELETE "Please select a user to delete."
+#define CONF_DELETE_USER "Are you sure to delete the selected user?"
+
+#define SCS_USER_DELETE "User deleted successfully!"
+#define ERR_USER_DELETE "Failed to delete user."
 
 /////////////////////////////////////////////////////////////////////////////
-//CCSoftInternshipProjectView
+//CUsersView
 
 // Macros
 // ----------------
@@ -48,77 +64,81 @@ CUsersDocument* CUsersView::GetDocument() const
 // ----------------
 void CUsersView::PopulateUsersList()
 {
-    CListCtrl& pLstCtrl = GetListCtrl(); 
-    if (!pLstCtrl.GetSafeHwnd())
+    CListCtrl& oListCtrl = GetListCtrl();
+    if (!oListCtrl.GetSafeHwnd())
     {
-        AfxMessageBox(_T("Error in getting the safe HWND"));
+        AfxMessageBox(_T(ERR_MESSAGE_SAFE_HWND));
         return;
     }
-    pLstCtrl.DeleteAllItems();
+    oListCtrl.DeleteAllItems();
 
-    CHeaderCtrl* pHeaderCtrl = pLstCtrl.GetHeaderCtrl();
+    CHeaderCtrl* pHeaderCtrl = oListCtrl.GetHeaderCtrl();
     if (pHeaderCtrl == NULL)
     {
-        AfxMessageBox(_T("Error in getting the header of the list control"));
-        return;
-    }
-    if (pLstCtrl.GetHeaderCtrl()->GetItemCount() == 0) {
-        pLstCtrl.InsertColumn(0, _T("ID"), LVCFMT_LEFT, 50);
-        pLstCtrl.InsertColumn(1, _T("Name"), LVCFMT_LEFT, 150);
-        pLstCtrl.InsertColumn(2, _T("Email"), LVCFMT_LEFT, 200);
-        pLstCtrl.InsertColumn(3, _T("Job Title"), LVCFMT_LEFT, 150);
-    }
-
-    CUsersDocument* pDoc = GetDocument();
-    if (pDoc == NULL) {
+        AfxMessageBox(_T(ERR_MESSAGE_LST_CTRL));
         return;
     }
 
-    const CUsersArray& users = pDoc->GetUsers();
+    if (oListCtrl.GetHeaderCtrl()->GetItemCount() == 0) {
+        for (int i = 0; i < EUSER_COLUMN_COUNT; ++i) {
+            oListCtrl.InsertColumn(i, gl_szColumnHeaders[i], LVCFMT_LEFT, gl_nColumnWidths[i]);
+        }
+    }
 
-    for (int i = 0; i < users.GetSize(); ++i) {
-        USERS* pUser = users.GetAt(i);
-        if (pUser) {
+    CUsersDocument* pUsersDocument = GetDocument();
+    if (pUsersDocument == NULL) {
+        return;
+    }
+
+    CUsersArray& oUsersArray = pUsersDocument->GetUsersArray();
+
+    for (int i = 0; i < oUsersArray.GetSize(); ++i) {
+        USERS* pRecUser = oUsersArray.GetAt(i);
+        if (pRecUser) {
             CString strID;
-            strID.Format(_T("%ld"), pUser->lID);
-            int index = pLstCtrl.InsertItem(i, strID);
-            pLstCtrl.SetItemText(index, 1, pUser->szName);
-            pLstCtrl.SetItemText(index, 2, pUser->szEmail);
-            
-            JOB_TITLES* pJobTitle = new JOB_TITLES();
-            pDoc->GetJobTitle(pUser->lJobTitleID, *pJobTitle);
-            pLstCtrl.SetItemText(index, 3, pJobTitle->szTitleName);
-            delete pJobTitle;
+            strID.Format(_T("%ld"), pRecUser->lID);
+            int index = oListCtrl.InsertItem(i, strID);
+            oListCtrl.SetItemText(index, EUSER_COLUMN_NAME, pRecUser->szName);
+            oListCtrl.SetItemText(index, EUSER_COLUMN_EMAIL, pRecUser->szEmail);
+
+            JOB_TITLES recJobTitle;
+            if (pUsersDocument->GetJobTitle(pRecUser->lJobTitleID, recJobTitle)) {
+                oListCtrl.SetItemText(index, EUSER_COLUMN_JOB_TITLE, recJobTitle.szTitleName);
+            }
+            else {
+               
+                oListCtrl.SetItemText(index, EUSER_COLUMN_JOB_TITLE, _T(ERR_UNKNOWN));
+            }
         }
     }
 }
 
 void CUsersView::OnUserEdit()
 {
-    CListCtrl& refListCtrl = GetListCtrl();
-    int nSel = refListCtrl.GetNextItem(-1, LVNI_SELECTED); 
+    CListCtrl& oListCtrl = GetListCtrl();
+    int nSelectedItem = oListCtrl.GetNextItem(-1, LVNI_SELECTED);
 
-    if (nSel == -1) 
+    if (nSelectedItem == -1)
     {
-        AfxMessageBox(_T("Please select a user to edit."), MB_ICONINFORMATION);
+        AfxMessageBox(_T(ERR_NOT_SELECTED_USER_EDIT), MB_ICONINFORMATION);
         return;
     }
 
-    CUsersDocument* pDoc = GetDocument();
-    if (pDoc == NULL) 
+    CUsersDocument* pUsersDocument = GetDocument();
+    if (pUsersDocument == NULL)
     {
         return;
     }
 
-    
-    CString strID = refListCtrl.GetItemText(nSel, 0);
-    long lID = _ttol(strID); 
+    CString strID = oListCtrl.GetItemText(nSelectedItem, EUSER_COLUMN_ID); 
+    //!!!
+    long lID = _ttol(strID);
 
-   
+
     USERS* pUserToEdit = nullptr;
-    const CUsersArray& users = pDoc->GetUsers();
-    for (INT_PTR i = 0; i < users.GetSize(); ++i) {
-        USERS* pUser = users.GetAt(i);
+    CUsersArray& oUsersArray = pUsersDocument->GetUsersArray();
+    for (INT_PTR i = 0; i < oUsersArray.GetSize(); ++i) {
+        USERS* pUser = oUsersArray.GetAt(i);
         if (pUser && pUser->lID == lID) {
             pUserToEdit = pUser;
             break;
@@ -126,38 +146,38 @@ void CUsersView::OnUserEdit()
     }
 
     if (pUserToEdit) {
-        CUsersTableDialog dlg;
-        dlg.m_recUser = *pUserToEdit; 
-        if (dlg.DoModal() == IDOK) {
-           
-            if (pDoc->EditUser(lID,dlg.m_recUser)) {
-                AfxMessageBox(_T("User updated successfully!"));
+        CUsersDlg oUsersDlg;
+        oUsersDlg.m_recUser = *pUserToEdit;
+        if (oUsersDlg.DoModal() == IDOK) {
+
+            if (pUsersDocument->EditUser(lID, oUsersDlg.m_recUser)) {
+                AfxMessageBox(_T(SCS_USER_UPDATE));
             }
             else {
-                AfxMessageBox(_T("Failed to update user."), MB_ICONERROR);
+                AfxMessageBox(_T(ERR_USER_UPDATE), MB_ICONERROR);
             }
         }
     }
     else {
-        AfxMessageBox(_T("Selected user not found in document data."), MB_ICONERROR);
+        AfxMessageBox(_T(ERR_USER_NOT_FOUND), MB_ICONERROR);
     }
 }
 
 void CUsersView::OnUserAdd() 
 {
-    CUsersTableDialog dlg; 
-    if (dlg.DoModal() == IDOK) {
+    CUsersDlg oUsersDlg; 
+    if (oUsersDlg.DoModal() == IDOK) {
         CUsersDocument* pDoc = GetDocument();
         if (pDoc == NULL)
         {
             return;
         }
         if (pDoc) {
-            if (pDoc->AddNewUser(dlg.m_recUser)) {
-                AfxMessageBox(_T("User added successfully!"));
+            if (pDoc->AddNewUser(oUsersDlg.m_recUser)) {
+                AfxMessageBox(_T(SCS_USER_ADD));
             }
             else {
-                AfxMessageBox(_T("Failed to add user."), MB_ICONERROR);
+                AfxMessageBox(_T(ERR_USER_ADD), MB_ICONERROR);
             }
         }
     }
@@ -165,32 +185,32 @@ void CUsersView::OnUserAdd()
 
 void CUsersView::OnUserDelete()
 {
-    CListCtrl& refListCtrl = GetListCtrl();
-    int nSel = refListCtrl.GetNextItem(-1, LVNI_SELECTED);
+    CListCtrl& oListCtrl = GetListCtrl();
+    int nSelectedItem = oListCtrl.GetNextItem(-1, LVNI_SELECTED);
 
-    if (nSel == -1) {
-        AfxMessageBox(_T("Please select a user to delete."), MB_ICONINFORMATION);
+    if (nSelectedItem == -1) {
+        AfxMessageBox(_T(ERR_NOT_SELECTED_USER_DELETE), MB_ICONINFORMATION);
         return;
     }
 
-    if (AfxMessageBox(_T("Are you sure you want to delete the selected user?"), MB_YESNO | MB_ICONQUESTION) == IDNO) {
+    if (AfxMessageBox(_T(CONF_DELETE_USER), MB_YESNO | MB_ICONQUESTION) == IDNO) {
         return;
     }
 
-    CUsersDocument* pDoc = GetDocument();
-    if (pDoc == NULL)
+    CUsersDocument* pUsersDocument = GetDocument();
+    if (pUsersDocument == NULL)
     {
         return;
     }
 
-    CString strID = refListCtrl.GetItemText(nSel, 0);
+    CString strID = oListCtrl.GetItemText(nSelectedItem, EUSER_COLUMN_ID);
     long lID = _ttol(strID);
 
-    if (pDoc->DeleteUser(lID)) {
-        AfxMessageBox(_T("User deleted successfully!"));
+    if (pUsersDocument->DeleteUser(lID)) {
+        AfxMessageBox(_T(SCS_USER_DELETE));
     }
     else {
-        AfxMessageBox(_T("Failed to delete user."), MB_ICONERROR);
+        AfxMessageBox(_T(ERR_USER_DELETE), MB_ICONERROR);
     }
 }
 
