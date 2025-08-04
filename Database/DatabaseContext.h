@@ -7,7 +7,6 @@
 class CDatabaseContext {
 public:
     CDataSource m_oDataSource;
-    CSession m_oSession;
     bool m_bConnected = false;
 private:
     static CDatabaseContext* instance;
@@ -18,4 +17,5 @@ public:
     static CDatabaseContext& getInstance();
     bool Connect();
     void Disconnect();
+    HRESULT CreateSession(CSession& oSession);
 };

@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "CUsersDocument.h"
+#include <UsersAppService.h>
+#include <JobTitleAppService.h>
 
 /////////////////////////////////////////////////////////////////////////////
 //CCSoftInternshipProjectDocument
@@ -26,46 +28,48 @@ void CUsersDocument::FreeUsersMemory() {
 	}
 	m_oUsersArray.RemoveAll();
 }
+
+//обърни логика
 bool CUsersDocument::AddNewUser(USERS& newUser)
 {
 
-    if (m_oUserAppService.AddUser(newUser)) {
-        LoadUsers();
-        return true;
+    if (!CUsersAppService().AddUser(newUser)) {
+        return false;
     }
-    return false;
-
-}
-bool CUsersDocument::EditUser(long lID,USERS& updatedUser)
-{
-    if (m_oUserAppService.UpdateUser(lID,updatedUser)) {
-        LoadUsers();
-        return true;
-    }
-    return false;
-}
-bool CUsersDocument::DeleteUser(long lID)
-{
-    if (m_oUserAppService.DeleteUser(lID)) {
-        LoadUsers();
-        return true;
-    }
-    return false;
+    LoadUsers();
+    return true;
 }
 
-void CUsersDocument::GetJobTitle(long lID, JOB_TITLES& recJobTitle)
+bool CUsersDocument::EditUser(const long lID,USERS& updatedUser)
 {
-    m_oJobTitlesAppService.GetJobByID(lID, recJobTitle);
+    if (!CUsersAppService().UpdateUser(lID,updatedUser)) {
+        return false;
+    }
+    LoadUsers();
+    return true;
 }
 
-CUsersAppService& CUsersDocument::GetService() {
-    return this->m_oUserAppService;
+bool CUsersDocument::DeleteUser(const long lID)
+{
+    if (!CUsersAppService().DeleteUser(lID)) {
+        return false;
+    }
+    LoadUsers();
+    return true;
+}
+
+bool CUsersDocument::GetJobTitle(const long lID, JOB_TITLES& recJobTitle)
+{
+    if (!CJobTitlesAppService().GetJobByID(lID, recJobTitle)) {
+        return false;
+    }
+    return true;
 }
 
 void CUsersDocument::LoadUsers()
 {
     FreeUsersMemory();
-    if (m_oUserAppService.GetAllUsers(m_oUsersArray)) {
+    if (CUsersAppService().GetAllUsers(m_oUsersArray)) {
         UpdateAllViews(NULL);
     }
     else {

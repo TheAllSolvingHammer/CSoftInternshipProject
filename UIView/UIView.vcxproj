@@ -199,6 +199,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CSoftInternshipProjectView.cpp" />
     <ClCompile Include="CUsersView.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
@@ -227,6 +228,7 @@
     <None Include="UIView.def" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CSoftInternshipProjectView.h" />
     <ClInclude Include="CUsersView.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />

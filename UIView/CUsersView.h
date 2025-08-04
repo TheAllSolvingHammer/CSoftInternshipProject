@@ -8,6 +8,32 @@
 /////////////////////////////////////////////////////////////////////////////
 //CCSoftInternshipProjectView
 
+//Enums
+//-----------
+enum EUserColumns
+{
+	EUSER_COLUMN_ID = 0,
+	EUSER_COLUMN_NAME,
+	EUSER_COLUMN_EMAIL,
+	EUSER_COLUMN_JOB_TITLE,
+	EUSER_COLUMN_COUNT
+};
+
+const TCHAR* gl_szColumnHeaders[] = {
+	_T("ID"),
+	_T("Name"),
+	_T("Email"),
+	_T("Job Title")
+};
+
+const int gl_nColumnWidths[] = {
+	50,
+	150,
+	200,
+	150
+};
+
+
 class UIViewDLL_EXP CUsersView : public CListView
 {
 	// Macros
@@ -25,10 +51,11 @@ public:
 	// ----------------
 public:
 	CUsersDocument* GetDocument() const;
-	void PopulateUsersList();
 	void OnUserAdd();
 	void OnUserEdit();
 	void OnUserDelete();
+private:
+	void PopulateUsersList();
 	// Overrides
 	// ----------------
 protected:

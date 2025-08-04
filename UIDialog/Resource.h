@@ -3,8 +3,6 @@
 // Used by UIDialog.rc
 //
 #define IDD_DLG_USERS                   9
-#define IDOK                            1000
-#define IDCANCEL                        1001
 #define IDC_EDB_USERS_NAME              1003
 #define IDC_EDB_USERS_EMAIL             1004
 #define IDC_STT_USERS_NAME              1005

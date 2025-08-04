@@ -17,7 +17,12 @@ public:
     {
         this->m_strTableName = strTableName;
         CDatabaseContext::getInstance().Connect();
-        m_oSession = CDatabaseContext::getInstance().m_oSession;
+        HRESULT hRes = CDatabaseContext::getInstance().CreateSession(m_oSession);
+        if (FAILED(hRes))
+        {
+            m_oSession.Close();
+            AfxMessageBox(_T("Failed to create session."), MB_ICONERROR);
+        }
     }
     ~CBaseTable()
     {

@@ -3,29 +3,29 @@
 
 #include "pch.h"
 #include "afxdialogex.h"
-#include "CUsersTableDialog.h"
+#include "CUsersDlg.h"
 #include "resource.h"
 
 
 // CUsersTableDialog dialog
 
-IMPLEMENT_DYNAMIC(CUsersTableDialog, CDialogEx)
+IMPLEMENT_DYNAMIC(CUsersDlg, CDialogEx)
 
-CUsersTableDialog::CUsersTableDialog(CWnd* pParent /*=nullptr*/)
+CUsersDlg::CUsersDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DLG_USERS, pParent)
 {
-	if (!m_oJobTitlesAppService.GetAllJobs(m_oJobTitlesArray))
+	if (!CJobTitlesAppService().GetAllJobs(m_oJobTitlesArray))
 	{
 		AfxMessageBox(_T("Failed to load job titles array."));
 	}
 }
 
-CUsersTableDialog::~CUsersTableDialog()
+CUsersDlg::~CUsersDlg()
 {
 	FreeJobTitlesArray();
 }
 
-void CUsersTableDialog::DoDataExchange(CDataExchange* pDX)
+void CUsersDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_STT_USERS_EMAIL, m_sttEmail);
@@ -37,13 +37,13 @@ void CUsersTableDialog::DoDataExchange(CDataExchange* pDX)
 }
 
 
-BEGIN_MESSAGE_MAP(CUsersTableDialog, CDialogEx)
+BEGIN_MESSAGE_MAP(CUsersDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
 // CUsersTableDialog message handlers
 
-BOOL CUsersTableDialog::OnInitDialog()
+BOOL CUsersDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 	if (m_recUser.lID == 0) {
@@ -61,7 +61,7 @@ BOOL CUsersTableDialog::OnInitDialog()
 	if (!FetchTableData()) {
 		AfxMessageBox(_T("Failed to load job titles."), MB_ICONERROR);
 	}
-	m_oJobTitlesAppService.GetJobByID(m_recUser.lJobTitleID, m_recJobTitle);
+	CJobTitlesAppService().GetJobByID(m_recUser.lJobTitleID, m_recJobTitle);
 
 	int nIndex = FindJobTitleIndex(m_recUser.lJobTitleID);
 	if (nIndex != CB_ERR) {
@@ -77,7 +77,7 @@ BOOL CUsersTableDialog::OnInitDialog()
 	return TRUE;
 }
 
-int CUsersTableDialog::FindJobTitleIndex(long lJobTitleID)
+int CUsersDlg::FindJobTitleIndex(long lJobTitleID)
 {
 	for (int i = 0; i < m_cmbJobTitle.GetCount(); ++i) {
 		if (m_cmbJobTitle.GetItemData(i) == (DWORD_PTR)lJobTitleID) {
@@ -87,10 +87,10 @@ int CUsersTableDialog::FindJobTitleIndex(long lJobTitleID)
 	return CB_ERR;
 }
 
-BOOL CUsersTableDialog::FetchTableData() {
+BOOL CUsersDlg::FetchTableData() {
 	FreeJobTitlesArray();
 
-	if (!m_oJobTitlesAppService.GetAllJobs(m_oJobTitlesArray))
+	if (!CJobTitlesAppService().GetAllJobs(m_oJobTitlesArray))
 	{
 		AfxMessageBox(_T("Failed to load job titles."));
 		return FALSE;
@@ -108,8 +108,8 @@ BOOL CUsersTableDialog::FetchTableData() {
 	}
 	return TRUE;
 }
-//не е само тук
-void CUsersTableDialog::FreeJobTitlesArray()
+
+void CUsersDlg::FreeJobTitlesArray()
 {
 	for (INT_PTR i = 0; i < m_oJobTitlesArray.GetCount();i++)
 	{
@@ -118,7 +118,7 @@ void CUsersTableDialog::FreeJobTitlesArray()
 	m_oJobTitlesArray.RemoveAll();
 }
 
-void CUsersTableDialog::OnOK()
+void CUsersDlg::OnOK()
 {
 	// TODO: Add your specialized code here and/or call the base class
 	if (!UpdateData(TRUE))

@@ -37,19 +37,21 @@ bool CDatabaseContext::Connect() {
         MessageBox(NULL, _T("Failed to get connecttion"), _T("DB connection error"), MB_ICONWARNING);
         return false;
     }
-    hRes = m_oSession.Open(m_oDataSource);
-    if (FAILED(hRes))
-    {
-        m_oDataSource.Close();
-        return false;
-    }
+
     m_bConnected = true;
     return true;
 }
 
 void CDatabaseContext::Disconnect() {
-    m_oSession.Close();
     m_oDataSource.Close();
     m_bConnected = false;
 }
+
+HRESULT CDatabaseContext::CreateSession(CSession& oSession) {
+    if (!m_bConnected) {
+        return E_FAIL;
+    }
+    return (HRESULT)oSession.Open(m_oDataSource);
+}
+
 CDatabaseContext* CDatabaseContext::instance = nullptr;

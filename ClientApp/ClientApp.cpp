@@ -14,7 +14,7 @@
 #include <UsersTable.h>
 #include <TestUsersTable.h>
 #include <TestJobTitlesTable.h>
-#include <CUsersTableDialog.h>
+#include <CUsersDlg.h>
 
 
 #ifdef _DEBUG
