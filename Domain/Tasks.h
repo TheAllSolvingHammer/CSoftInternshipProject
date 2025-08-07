@@ -19,3 +19,5 @@ struct TASKS {
         ZeroMemory(this, sizeof(*this));
     }
 };
+
+typedef CTypedPtrArray<CPtrArray, TASKS*> CTasksArray;

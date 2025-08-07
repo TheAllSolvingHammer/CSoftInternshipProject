@@ -15,6 +15,7 @@ struct USERS {
     USERS() {
         ZeroMemory(this, sizeof(*this));
     }
+
 };
 
 typedef CTypedPtrArray<CPtrArray, USERS*> CUsersArray;

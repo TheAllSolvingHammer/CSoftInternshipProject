@@ -2,9 +2,11 @@
 #include "CUsersDocument.h"
 #include <UsersAppService.h>
 #include <JobTitleAppService.h>
+#include "..\Application\ArrayManager.h"
+
 
 /////////////////////////////////////////////////////////////////////////////
-//CCSoftInternshipProjectDocument
+
 
 // Macros
 // ----------------
@@ -69,6 +71,7 @@ bool CUsersDocument::GetJobTitle(const long lID, JOB_TITLES& recJobTitle)
 void CUsersDocument::LoadUsers()
 {
     FreeUsersMemory();
+    
     if (CUsersAppService().GetAllUsers(m_oUsersArray)) {
         UpdateAllViews(NULL);
     }
@@ -82,6 +85,7 @@ void CUsersDocument::LoadUsers()
 
 BOOL CUsersDocument::OnNewDocument()
 {
+    
 	if (!CDocument::OnNewDocument())
 		return FALSE;
 	LoadUsers();

@@ -60,6 +60,12 @@
     <ClCompile Include="UsersTable.cpp">
       <Filter>Source Files\Tables</Filter>
     </ClCompile>
+    <ClCompile Include="ProjectsTable.cpp">
+      <Filter>Source Files\Tables</Filter>
+    </ClCompile>
+    <ClCompile Include="TaskTable.cpp">
+      <Filter>Source Files\Tables</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Database.def">
@@ -114,6 +120,12 @@
     </ClInclude>
     <ClInclude Include="DatabaseContext.h">
       <Filter>Header Files\Contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectsTable.h">
+      <Filter>Header Files\Tables</Filter>
+    </ClInclude>
+    <ClInclude Include="TasksTable.h">
+      <Filter>Header Files\Tables</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

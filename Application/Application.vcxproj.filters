@@ -19,6 +19,9 @@
     <Filter Include="Source Files\Services">
       <UniqueIdentifier>{4caca171-082d-4ea0-86ab-71bf59b45ddf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Utils">
+      <UniqueIdentifier>{58ec2dfd-9dc3-4d69-923e-c7660dd7a555}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp">
@@ -32,6 +35,9 @@
     </ClCompile>
     <ClCompile Include="JobTitlesAppService.cpp">
       <Filter>Source Files\Services</Filter>
+    </ClCompile>
+    <ClCompile Include="ArrayManager.cpp">
+      <Filter>Header Files\Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -63,6 +69,9 @@
     </ClInclude>
     <ClInclude Include="JobTitleAppService.h">
       <Filter>Header Files\Services</Filter>
+    </ClInclude>
+    <ClInclude Include="ArrayManager.h">
+      <Filter>Header Files\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

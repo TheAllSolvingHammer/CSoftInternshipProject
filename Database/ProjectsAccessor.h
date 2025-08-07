@@ -31,6 +31,6 @@ protected:
         END_ACCESSOR()
     END_ACCESSOR_MAP()
 
-protected:
+public:
     PROJECTS m_recProject;
 };

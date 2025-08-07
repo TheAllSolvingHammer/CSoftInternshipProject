@@ -2,6 +2,7 @@
 #include "Users.h"
 #include "DllExport.h"
 #include "..\Database\UsersTable.h"
+#include "ArrayManager.h"
 
 class ApplicationDLL_EXP CUsersAppService {
 public:
@@ -13,4 +14,5 @@ public:
 	bool DeleteUser(const long lID);
 private:
 	CUsersTable m_oUsersTable;
+	CArrayManager& m_oArrayManager;
 };

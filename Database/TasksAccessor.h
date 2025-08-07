@@ -33,6 +33,6 @@ protected:
         END_ACCESSOR()
     END_ACCESSOR_MAP()
 
-protected:
+public:
     TASKS m_recTask;
 };

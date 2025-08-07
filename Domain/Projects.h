@@ -18,3 +18,5 @@ struct PROJECTS {
         ZeroMemory(this, sizeof(*this));
     }
 };
+
+typedef CTypedPtrArray<CPtrArray, PROJECTS*> CProjectsArray;

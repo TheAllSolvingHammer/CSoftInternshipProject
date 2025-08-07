@@ -2,6 +2,9 @@
 #include "DLLExport.h"
 #include <Users.h>
 #include <JobTitles.h>
+#include <Projects.h>
+#include <Tasks.h>
+
 
 
 
@@ -92,4 +95,7 @@ public:
 	// ----------------
 private:
 	CUsersArray m_oUsersArray;
+	CJobTitlesArray m_oJobTitlesArray;
+	CProjectsArray m_oProjectsArray;
+	CTasksArray m_oTasksArray;
 };

@@ -2,7 +2,7 @@
 #include "UsersAppService.h"
 
 
-CUsersAppService::CUsersAppService() 
+CUsersAppService::CUsersAppService():m_oArrayManager(CArrayManager::getInstance())
 {
 
 }
@@ -14,10 +14,35 @@ CUsersAppService::~CUsersAppService()
 
 bool CUsersAppService::GetAllUsers(CUsersArray& oUsersArray) 
 {
+	//CArrayManager& oArrayManager = CArrayManager::getInstance();
+	//CUsersArray* pNewUsersArray = new CUsersArray();
+
+	//if (!m_oUsersTable.SelectAll(*pNewUsersArray)) {
+	//	delete pNewUsersArray;
+	//	return false;
+	//}
+
+	//CArrayManager::getInstance().AddCollection(COLLECTION_USERS, pNewUsersArray);
+	//oArrayManager.GetCollection<USERS>(COLLECTION_USERS, *pNewUsersArray);
+	//return true;
+
 	if (!m_oUsersTable.SelectAll(oUsersArray)) {
-		//TRACE(_T(""))
 		return false;
 	}
+
+	CArrayManager& oArrayManager = CArrayManager::getInstance();
+
+	CUsersArray* pNewUsersArray = new CUsersArray();
+	pNewUsersArray->Copy(oUsersArray);
+
+	oArrayManager.AddCollection(COLLECTION_USERS, pNewUsersArray);
+
+	CUsersArray* pGetUsersArray = new CUsersArray();
+
+	pGetUsersArray=oArrayManager.GetCollection<USERS>(COLLECTION_USERS);
+	CString str;
+	str.Format(_T("Found %d users"), pGetUsersArray->GetCount());
+	AfxMessageBox(str);
 	return true;
 }
 
