@@ -8,6 +8,7 @@
 
 
 
+
 /////////////////////////////////////////////////////////////////////////////
 // CCSoftInternshipProjectDocument
 class DocumentDLL_EXP CUsersDocument : public CDocument
@@ -70,10 +71,14 @@ public:
 	bool GetJobTitle(const long lID, JOB_TITLES& recJobTitle);
 	
 	/// <summary>
-	/// Гетър за typedef на CUsersArray
+	/// Гетър за Array Manager
 	/// </summary>
-	/// <returns>Референция към полето m_oUsersArray </returns>
-	CUsersArray& GetUsersArray() { return this->m_oUsersArray; };
+	/// <returns>Референция към полето </returns>
+	/*CArrayManager& GetArrayManager() { return this->m_oArrayManager; };*/
+	CUsersArray& GetUsers();
+	CJobTitlesArray& GetJobTitles();
+	CProjectsArray& GetProjects();
+	CTasksArray& GetTasks();
 
 private:
 
@@ -93,9 +98,6 @@ public:
 	virtual void OnCloseDocument();
 	// Members
 	// ----------------
-private:
-	CUsersArray m_oUsersArray;
-	CJobTitlesArray m_oJobTitlesArray;
-	CProjectsArray m_oProjectsArray;
-	CTasksArray m_oTasksArray;
+//private:
+//	CArrayManager& m_oArrayManager;
 };

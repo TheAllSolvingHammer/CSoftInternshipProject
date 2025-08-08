@@ -90,7 +90,7 @@ void CUsersView::PopulateUsersList()
         return;
     }
 
-    CUsersArray& oUsersArray = pUsersDocument->GetUsersArray();
+    CUsersArray& oUsersArray = pUsersDocument->GetUsers();
 
     for (int i = 0; i < oUsersArray.GetSize(); ++i) {
         USERS* pRecUser = oUsersArray.GetAt(i);
@@ -136,7 +136,7 @@ void CUsersView::OnUserEdit()
 
 
     USERS* pUserToEdit = nullptr;
-    CUsersArray& oUsersArray = pUsersDocument->GetUsersArray();
+    CUsersArray& oUsersArray = pUsersDocument->GetUsers();
     for (INT_PTR i = 0; i < oUsersArray.GetSize(); ++i) {
         USERS* pUser = oUsersArray.GetAt(i);
         if (pUser && pUser->lID == lID) {

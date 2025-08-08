@@ -1,8 +1,10 @@
 #pragma once
 #include "pch.h"
 #include "JobTitleAppService.h"
+#include <ArrayManager.h>
 
-CJobTitlesAppService::CJobTitlesAppService() :m_oArrayManager(CArrayManager::getInstance())
+
+CJobTitlesAppService::CJobTitlesAppService()
 {
 	
 }
@@ -17,7 +19,7 @@ bool CJobTitlesAppService::GetAllJobs(CJobTitlesArray& oJobTitlesArray)
 		delete pNewJobTitlesArray;
 		return false;
 	}
-	m_oArrayManager.AddCollection(COLLECTION_JOB_TITLES, pNewJobTitlesArray);
+	CArrayManager::getInstance().AddCollection(COLLECTION_JOB_TITLES, pNewJobTitlesArray);
 	return true;
 }
 bool CJobTitlesAppService::GetJobByID(const long lID, JOB_TITLES& recJobTitle)

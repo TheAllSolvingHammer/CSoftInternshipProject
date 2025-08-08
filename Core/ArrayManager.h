@@ -13,26 +13,24 @@ enum Collection
 
 
 /// <summary>
-/// ѕредставл€ва Garbage Collector клас за менижиране на вс€какви TypedPtrArrays
+/// ѕредставл€ва Garbage Collector клас за управление на вс€какви TypedPtrArrays
 /// </summary>
 class CArrayManager
 {
 private:
-	CArrayManager()
-	{
-
-	}
+	CArrayManager();
+	
 public:
 	static CArrayManager& getInstance()
 	{
 		if (m_instance == nullptr)
+		{
 			m_instance = new CArrayManager();
+		}
 		return *m_instance;
 	}
-	~CArrayManager()
-	{
-		ClearAllCollections();
-	}
+
+	~CArrayManager();
 
 	
 	template<typename T>
@@ -71,7 +69,7 @@ public:
 			m_oMap.GetNextAssoc(pos, eKey, pGenericArray);
 			if (pGenericArray)
 			{
-				for (INT_PTR i = 0; i < pGenericArray->GetSize(); ++i)
+				for (INT_PTR i = 0; i < pGenericArray->GetCount(); i++)
 				{
 					delete pGenericArray->GetAt(i);
 				}
@@ -82,7 +80,7 @@ public:
 	}
 
 	template<typename T>
-	CTypedPtrArray<CPtrArray, T*>* GetCollection(Collection eCollection) const
+	CTypedPtrArray<CPtrArray, T*>* GetCollection(const Collection eCollection) const
 	{
 		CTypedPtrArray<CPtrArray, CObject*>* pGenericArray = nullptr;
 		if (m_oMap.Lookup(eCollection, pGenericArray))
@@ -93,13 +91,14 @@ public:
 	}
 
 
-	//template<typename T>
-	//const CTypedPtrArray<CPtrArray, T*>& GetCollectionRef(Collection eCollection) const
-	//{
-	//	CTypedPtrArray<CPtrArray, T*> s_emptyArray;
-	//	CTypedPtrArray<CPtrArray, T*>* pCollection = GetCollection<T>(eCollection);
-	//	return (pCollection) ? *pCollection : s_emptyArray;
-	//}
+	template<typename T>
+	CTypedPtrArray<CPtrArray, T*>& GetCollectionRef(const Collection eCollection)
+	{
+		CTypedPtrArray<CPtrArray, T*> s_emptyArray;
+		CTypedPtrArray<CPtrArray, T*>* pCollection = GetCollection<T>(eCollection);
+		return (pCollection) ? *pCollection : s_emptyArray;
+	}
+
 private:
 	static CArrayManager* m_instance;
 	CMap<Collection, Collection, CTypedPtrArray<CPtrArray, CObject*>*, CTypedPtrArray<CPtrArray, CObject*>*> m_oMap;

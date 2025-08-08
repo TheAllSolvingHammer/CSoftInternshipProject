@@ -2,8 +2,6 @@
 #include "JobTitles.h"
 #include "DllExport.h"
 #include "..\Database\TestJobTitlesTable.h"
-#include "ArrayManager.h"
-
 
 class ApplicationDLL_EXP CJobTitlesAppService {
 public:
@@ -13,5 +11,5 @@ public:
 	bool GetJobByID(const long lID,JOB_TITLES& recJobTitle);
 private:
 	CJobTitlesTable m_oJobTitlesTable;
-	CArrayManager& m_oArrayManager;
+	
 };

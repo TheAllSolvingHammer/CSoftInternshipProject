@@ -2,7 +2,7 @@
 #include "CUsersDocument.h"
 #include <UsersAppService.h>
 #include <JobTitleAppService.h>
-#include "..\Application\ArrayManager.h"
+
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -24,11 +24,28 @@ CUsersDocument::~CUsersDocument()
 
 // Methods
 // ----------------
+CUsersArray& CUsersDocument::GetUsers() {
+
+    return CArrayManager::getInstance().GetCollectionRef<USERS>(COLLECTION_USERS);
+}
+
+CJobTitlesArray& CUsersDocument::GetJobTitles() {
+    return CArrayManager::getInstance().GetCollectionRef<JOB_TITLES>(COLLECTION_JOB_TITLES);
+}
+
+CProjectsArray& CUsersDocument::GetProjects() {
+    return CArrayManager::getInstance().GetCollectionRef<PROJECTS>(COLLECTION_PROJECTS);
+}
+
+CTasksArray& CUsersDocument::GetTasks() {
+    return CArrayManager::getInstance().GetCollectionRef<TASKS>(COLLECTION_TASKS);
+}
+
 void CUsersDocument::FreeUsersMemory() {
-	for (INT_PTR i = 0; i < m_oUsersArray.GetCount(); ++i) {
-		delete m_oUsersArray.GetAt(i);
-	}
-	m_oUsersArray.RemoveAll();
+	//for (INT_PTR i = 0; i < m_oUsersArray.GetCount(); ++i) {
+	//	delete m_oUsersArray.GetAt(i);
+	//}
+	//m_oUsersArray.RemoveAll();
 }
 
 //обърни логика
@@ -72,7 +89,7 @@ void CUsersDocument::LoadUsers()
 {
     FreeUsersMemory();
     
-    if (CUsersAppService().GetAllUsers(m_oUsersArray)) {
+    if (CUsersAppService().GetAllUsers()) {
         UpdateAllViews(NULL);
     }
     else {
