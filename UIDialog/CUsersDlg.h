@@ -47,11 +47,6 @@ private:
 	/// </summary>
 	/// <returns>TRUE при успех/FALSE при неуспех</returns>
 	BOOL FetchTableData();
-	//fix!!!
-	/// <summary>
-	/// Освобождава всички указатели в масива за работните позиции.
-	/// </summary>
-	void FreeJobTitlesArray();
 	/// <summary>
 	/// Намира индекса на Позицията от комбобокса
 	/// </summary>

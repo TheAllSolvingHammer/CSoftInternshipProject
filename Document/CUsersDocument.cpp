@@ -26,29 +26,13 @@ CUsersDocument::~CUsersDocument()
 // ----------------
 CUsersArray& CUsersDocument::GetUsers() {
 
-    return CArrayManager::getInstance().GetCollectionRef<USERS>(COLLECTION_USERS);
+    return this->m_oUsersArray;
 }
 
-CJobTitlesArray& CUsersDocument::GetJobTitles() {
-    return CArrayManager::getInstance().GetCollectionRef<JOB_TITLES>(COLLECTION_JOB_TITLES);
-}
+//CJobTitlesArray& CUsersDocument::GetJobTitles() {
+//    return 
+//}
 
-CProjectsArray& CUsersDocument::GetProjects() {
-    return CArrayManager::getInstance().GetCollectionRef<PROJECTS>(COLLECTION_PROJECTS);
-}
-
-CTasksArray& CUsersDocument::GetTasks() {
-    return CArrayManager::getInstance().GetCollectionRef<TASKS>(COLLECTION_TASKS);
-}
-
-void CUsersDocument::FreeUsersMemory() {
-	//for (INT_PTR i = 0; i < m_oUsersArray.GetCount(); ++i) {
-	//	delete m_oUsersArray.GetAt(i);
-	//}
-	//m_oUsersArray.RemoveAll();
-}
-
-//обърни логика
 bool CUsersDocument::AddNewUser(USERS& newUser)
 {
 
@@ -87,9 +71,7 @@ bool CUsersDocument::GetJobTitle(const long lID, JOB_TITLES& recJobTitle)
 
 void CUsersDocument::LoadUsers()
 {
-    FreeUsersMemory();
-    
-    if (CUsersAppService().GetAllUsers()) {
+    if (CUsersAppService().GetAllUsers(m_oUsersArray)) {
         UpdateAllViews(NULL);
     }
     else {
@@ -111,6 +93,6 @@ BOOL CUsersDocument::OnNewDocument()
 
 void CUsersDocument::OnCloseDocument() 
 {
-	FreeUsersMemory();
+	/*FreeUsersMemory();*/
 	CDocument::OnCloseDocument();
 }

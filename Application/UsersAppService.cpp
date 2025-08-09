@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "UsersAppService.h"
+#include <UsersTable.h>
 
 
 CUsersAppService::CUsersAppService()
@@ -12,20 +13,19 @@ CUsersAppService::~CUsersAppService()
 
 }
 
-bool CUsersAppService::GetAllUsers() 
+bool CUsersAppService::GetAllUsers(CUsersArray& oUsersArray) 
 {
-	CArrayManager& oArrayManager = CArrayManager::getInstance();
-	CUsersArray* pNewUsersArray = new CUsersArray();
-	if (!m_oUsersTable.SelectAll(*pNewUsersArray)) {
+	
+	if (!CUsersTable().SelectAll(oUsersArray)) {
 		return false;
 	}
-	oArrayManager.AddCollection(COLLECTION_USERS, pNewUsersArray);
+
 	return true;
 }
 
 bool CUsersAppService::AddUser(USERS& recUser)
 {
-	if (!m_oUsersTable.Insert(recUser)) {
+	if (!CUsersTable().Insert(recUser)) {
 		return false;
 	}
 	return true;
@@ -33,14 +33,14 @@ bool CUsersAppService::AddUser(USERS& recUser)
 
 bool CUsersAppService::UpdateUser(const long lID,USERS& recUser)
 {
-	if (!m_oUsersTable.UpdateWhereID(lID, recUser)) {
+	if (!CUsersTable().UpdateWhereID(lID, recUser)) {
 		return false;
 	}
 	return true;
 }
 bool CUsersAppService::DeleteUser(const long lID) 
 {
-	if (!m_oUsersTable.DeleteWhereID(lID)) {
+	if (!CUsersTable().DeleteWhereID(lID)) {
 		return false;
 	}
 	return true;

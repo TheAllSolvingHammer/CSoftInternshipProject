@@ -2,6 +2,8 @@
 #include <afxstr.h>
 #include "pch.h"
 
+#include "ArrayUtils.h"
+
 #define PROJECTS_MAX_NAME_SIZE          128
 #define PROJECTS_MAX_DESCRIPTION_SIZE   256
 
@@ -19,4 +21,4 @@ struct PROJECTS {
     }
 };
 
-typedef CTypedPtrArray<CPtrArray, PROJECTS*> CProjectsArray;
+typedef CTypedPtrArray<CArrayAutoManager, PROJECTS*> CProjectsArray;

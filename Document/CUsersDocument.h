@@ -2,8 +2,7 @@
 #include "DLLExport.h"
 #include <Users.h>
 #include <JobTitles.h>
-#include <Projects.h>
-#include <Tasks.h>
+#include "ArrayUtils.h"
 
 
 
@@ -70,23 +69,11 @@ public:
 	/// False ако се срещне проблем при вмъкването</returns>
 	bool GetJobTitle(const long lID, JOB_TITLES& recJobTitle);
 	
-	/// <summary>
-	/// Гетър за Array Manager
-	/// </summary>
-	/// <returns>Референция към полето </returns>
-	/*CArrayManager& GetArrayManager() { return this->m_oArrayManager; };*/
+
 	CUsersArray& GetUsers();
-	CJobTitlesArray& GetJobTitles();
-	CProjectsArray& GetProjects();
-	CTasksArray& GetTasks();
+	/*CJobTitlesArray& GetJobTitles();*/
 
 private:
-
-	/// <summary>
-	/// Освобождава паметта от всички запазени указатели за потребители
-	/// </summary>
-	void FreeUsersMemory();
-
 	/// <summary>
 	/// Зарежда всички потребители от базата, при неуспех ще се изведе съобщение за грешка
 	/// </summary>
@@ -98,6 +85,6 @@ public:
 	virtual void OnCloseDocument();
 	// Members
 	// ----------------
-//private:
-//	CArrayManager& m_oArrayManager;
+private:
+	CUsersArray m_oUsersArray;
 };

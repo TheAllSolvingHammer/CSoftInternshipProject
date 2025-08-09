@@ -2,6 +2,8 @@
 #include <afxstr.h>
 #include "pch.h"
 
+#include "ArrayUtils.h"
+
 #define TASKS_MAX_NAME_SIZE         128
 #define TASKS_MAX_DESCRIPTION_SIZE  256
 
@@ -20,4 +22,4 @@ struct TASKS {
     }
 };
 
-typedef CTypedPtrArray<CPtrArray, TASKS*> CTasksArray;
+typedef CTypedPtrArray<CArrayAutoManager, TASKS*> CTasksArray;

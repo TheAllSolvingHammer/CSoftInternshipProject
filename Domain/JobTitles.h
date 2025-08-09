@@ -1,6 +1,7 @@
 #pragma once
 #include <afxstr.h>
 #include "pch.h"
+#include "ArrayUtils.h"
 
 #define JOB_TITLES_MAX_TITLE_NAME_SIZE      256
 
@@ -13,4 +14,4 @@ struct JOB_TITLES {
     }
 };
 
-typedef CTypedPtrArray<CPtrArray, JOB_TITLES*>CJobTitlesArray;
+typedef CTypedPtrArray<CArrayAutoManager,JOB_TITLES*>CJobTitlesArray;
