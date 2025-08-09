@@ -2,6 +2,8 @@
 #include <afxtempl.h>
 #include "DatabaseContext.h"
 
+#include "ArrayUtils.h"
+
 #define TABLE_DATA_ACCESSOR_INDEX      1
 
 template<typename TRecord,typename TAccessor>
@@ -37,7 +39,7 @@ private:
             return false;
         }
         CString strSQL;
-        strSQL.Format(_T("SELECT * FROM %s WHERE ID = %d"), m_strTableName.GetString(), lID);
+        strSQL.Format(_T("SELECT * FROM %s  WHERE ID = %d"), m_strTableName.GetString(), lID);
 
         HRESULT hRes;
         if (bUpdatable)
@@ -66,7 +68,7 @@ private:
     }
 public:
 
-    bool SelectAll(CTypedPtrArray<CPtrArray, TRecord*>& oArray)
+    bool SelectAll(CTypedPtrArray<CArrayAutoManager, TRecord*>& oArray)
     {
         if (!m_oSession.m_spOpenRowset) {
             AfxMessageBox(_T("Session init error!"));

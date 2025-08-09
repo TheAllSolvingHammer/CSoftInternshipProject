@@ -3,8 +3,10 @@
 #include <UsersAppService.h>
 #include <JobTitleAppService.h>
 
+
+
 /////////////////////////////////////////////////////////////////////////////
-//CCSoftInternshipProjectDocument
+
 
 // Macros
 // ----------------
@@ -22,14 +24,15 @@ CUsersDocument::~CUsersDocument()
 
 // Methods
 // ----------------
-void CUsersDocument::FreeUsersMemory() {
-	for (INT_PTR i = 0; i < m_oUsersArray.GetCount(); ++i) {
-		delete m_oUsersArray.GetAt(i);
-	}
-	m_oUsersArray.RemoveAll();
+CUsersArray& CUsersDocument::GetUsers() {
+
+    return this->m_oUsersArray;
 }
 
-//обърни логика
+//CJobTitlesArray& CUsersDocument::GetJobTitles() {
+//    return 
+//}
+
 bool CUsersDocument::AddNewUser(USERS& newUser)
 {
 
@@ -68,7 +71,6 @@ bool CUsersDocument::GetJobTitle(const long lID, JOB_TITLES& recJobTitle)
 
 void CUsersDocument::LoadUsers()
 {
-    FreeUsersMemory();
     if (CUsersAppService().GetAllUsers(m_oUsersArray)) {
         UpdateAllViews(NULL);
     }
@@ -82,6 +84,7 @@ void CUsersDocument::LoadUsers()
 
 BOOL CUsersDocument::OnNewDocument()
 {
+    
 	if (!CDocument::OnNewDocument())
 		return FALSE;
 	LoadUsers();
@@ -90,6 +93,6 @@ BOOL CUsersDocument::OnNewDocument()
 
 void CUsersDocument::OnCloseDocument() 
 {
-	FreeUsersMemory();
+	/*FreeUsersMemory();*/
 	CDocument::OnCloseDocument();
 }

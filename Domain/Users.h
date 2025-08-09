@@ -2,6 +2,8 @@
 #include <afxstr.h>
 #include "pch.h"
 
+#include "ArrayUtils.h"
+
 #define USERS_MAX_NAME_SIZE     128
 #define USERS_MAX_EMAIL_SIZE    256
 
@@ -15,6 +17,7 @@ struct USERS {
     USERS() {
         ZeroMemory(this, sizeof(*this));
     }
+
 };
 
-typedef CTypedPtrArray<CPtrArray, USERS*> CUsersArray;
+typedef CTypedPtrArray<CArrayAutoManager, USERS*> CUsersArray;

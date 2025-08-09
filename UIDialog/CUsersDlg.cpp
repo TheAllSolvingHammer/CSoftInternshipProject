@@ -22,7 +22,7 @@ CUsersDlg::CUsersDlg(CWnd* pParent /*=nullptr*/)
 
 CUsersDlg::~CUsersDlg()
 {
-	FreeJobTitlesArray();
+
 }
 
 void CUsersDlg::DoDataExchange(CDataExchange* pDX)
@@ -77,7 +77,7 @@ BOOL CUsersDlg::OnInitDialog()
 	return TRUE;
 }
 
-int CUsersDlg::FindJobTitleIndex(long lJobTitleID)
+int CUsersDlg::FindJobTitleIndex(const long lJobTitleID)
 {
 	for (int i = 0; i < m_cmbJobTitle.GetCount(); ++i) {
 		if (m_cmbJobTitle.GetItemData(i) == (DWORD_PTR)lJobTitleID) {
@@ -88,7 +88,6 @@ int CUsersDlg::FindJobTitleIndex(long lJobTitleID)
 }
 
 BOOL CUsersDlg::FetchTableData() {
-	FreeJobTitlesArray();
 
 	if (!CJobTitlesAppService().GetAllJobs(m_oJobTitlesArray))
 	{
@@ -107,15 +106,6 @@ BOOL CUsersDlg::FetchTableData() {
 		}
 	}
 	return TRUE;
-}
-
-void CUsersDlg::FreeJobTitlesArray()
-{
-	for (INT_PTR i = 0; i < m_oJobTitlesArray.GetCount();i++)
-	{
-		delete m_oJobTitlesArray[i];
-	}
-	m_oJobTitlesArray.RemoveAll();
 }
 
 void CUsersDlg::OnOK()
