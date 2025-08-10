@@ -1,8 +1,9 @@
 #pragma once
 #include <atldbcli.h>
-#define DB_LOCATION                    "(LocalDB)\\MSSQLLocalDB"
-#define DB_NAME                        "ProjectmanagementSQL"
-
+#define DB_LOCATION            "(LocalDB)\\MSSQLLocalDB"
+#define DB_NAME                "ProjectmanagementSQL"
+#define MESSAGE_BOX_BODY       "Failed to get connecttion"
+#define MESSAGE_BOX_TITLE      "DB connection error"
 
 class CDatabaseContext {
 public:

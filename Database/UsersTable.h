@@ -6,6 +6,7 @@
 #include "DatabaseTables.h"
 #include "DllExport.h"
 
+#define USERS_TABLE_NAME "USERS"
 
 class DatabaseDLL_EXP CUsersTable: public CBaseTable<USERS,CUsersAccessor>
 {

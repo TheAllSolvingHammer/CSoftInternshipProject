@@ -33,9 +33,6 @@
     <ClCompile Include="JobTitlesAppService.cpp">
       <Filter>Source Files\Services</Filter>
     </ClCompile>
-    <ClCompile Include="ArrayManager.cpp">
-      <Filter>Source Files\Services</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Application.def">

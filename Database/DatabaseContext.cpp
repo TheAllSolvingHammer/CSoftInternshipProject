@@ -29,12 +29,10 @@ bool CDatabaseContext::Connect() {
     oDBPropSet.AddProperty(DBPROP_AUTH_PERSIST_SENSITIVE_AUTHINFO, false);
     oDBPropSet.AddProperty(DBPROP_INIT_LCID, 1033L);
     oDBPropSet.AddProperty(DBPROP_INIT_PROMPT, static_cast<short>(4));
-    //MSOLEDBSQL
-    //SQLOLEDB.1
     HRESULT hRes = m_oDataSource.Open(_T("MSOLEDBSQL"), &oDBPropSet);
     if (FAILED(hRes))
     {
-        MessageBox(NULL, _T("Failed to get connecttion"), _T("DB connection error"), MB_ICONWARNING);
+        MessageBox(NULL, _T(MESSAGE_BOX_BODY), _T(MESSAGE_BOX_TITLE), MB_ICONWARNING);
         return false;
     }
 
