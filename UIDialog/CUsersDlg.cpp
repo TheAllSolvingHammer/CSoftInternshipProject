@@ -5,7 +5,8 @@
 #include "afxdialogex.h"
 #include "CUsersDlg.h"
 #include "resource.h"
-#include <JobTitleAppService.h>
+#include "../Application/JobTitleAppService.h"
+
 
 
 // CUsersTableDialog dialog
