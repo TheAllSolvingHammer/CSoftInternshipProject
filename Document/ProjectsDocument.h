@@ -8,6 +8,7 @@ class DocumentDLL_EXP CProjectsDocument : public CDocument
 {
 protected:
     DECLARE_DYNCREATE(CProjectsDocument)
+
 public:
     CProjectsDocument();
     virtual ~CProjectsDocument();

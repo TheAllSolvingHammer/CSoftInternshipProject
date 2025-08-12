@@ -1,9 +1,12 @@
 #include "pch.h"
 #include "framework.h"
 #include "ProjectsView.h"
-#include "resource.h"
-#include <ProjectDlg.h>
+
+#include "ProjectDlg.h"
+
+#include "CUsersDlg.h"
 #include <Users.h>
+#include "Resource.h"
 
 #define ERR_MESSAGE_SAFE_HWND               "Error in getting the safe HWND"
 #define ERR_MESSAGE_LST_CTRL                "Error in getting the header of the list control"
@@ -30,9 +33,10 @@
 // ----------------
 IMPLEMENT_DYNCREATE(CProjectsView, CListView)
 
+
 BEGIN_MESSAGE_MAP(CProjectsView, CListView)
     ON_COMMAND(ID_MENU_INSERT, &CProjectsView::OnProjectAdd)
-
+    ON_COMMAND(ID_MENU_UPDATE, &CProjectsView::OnProjectEdit)
     ON_COMMAND(ID_MENU_DELETE, &CProjectsView::OnProjectDelete)
     ON_WM_CONTEXTMENU()
     ON_WM_LBUTTONDBLCLK()
@@ -147,7 +151,7 @@ void CProjectsView::OnProjectEdit()
 
     PROJECTS* pProjectToEdit = nullptr;
     CProjectsArray& oProjectsArray = pProjectsDocument->GetProjectsArray();
-    for (INT_PTR i = 0; i < oProjectsArray.GetSize(); ++i) {
+    for (INT_PTR i = 0; i < oProjectsArray.GetCount(); i++) {
         PROJECTS* pRecProject = oProjectsArray.GetAt(i);
         if (pRecProject && pRecProject->lID == lID) {
             pProjectToEdit = pRecProject;

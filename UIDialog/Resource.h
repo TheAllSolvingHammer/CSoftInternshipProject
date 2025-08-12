@@ -38,6 +38,9 @@
 #define IDC_STT_PROJECT_MANAGER         1036
 #define IDC_STT_PROJECT_DESCRIPTION     1037
 #define IDC_STT_PROJECT_NAME            1038
+#define IDC_LIST1                       1040
+#define IDC_LSC_PROJECT_TASKS           1040
+#define IDC_STT_PROJECT_TASKS           1041
 
 // Next default values for new objects
 // 
@@ -45,7 +48,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        1013
 #define _APS_NEXT_COMMAND_VALUE         32775
-#define _APS_NEXT_CONTROL_VALUE         1039
+#define _APS_NEXT_CONTROL_VALUE         1041
 #define _APS_NEXT_SYMED_VALUE           1000
 #endif
 #endif
