@@ -83,10 +83,14 @@ protected:
 public:
 	virtual BOOL OnInitDialog();
 	virtual void OnOK();
+	afx_msg void OnBnClickedBtnProjectAddTask();
+	afx_msg void OnBnClickedBtnProjectTaskDelete();
 private:
 	int FindUserIndex(const long lUserID);
 	int FindStatusIndex(const short status);
 	bool FetchTableData();
+	/*void LoadTasksToList();*/
+	void UpdateEffortTotal();
 private:
 	//Елементи
 	CEdit m_edbName;
@@ -110,4 +114,7 @@ public:
 	PROJECTS m_recProject;
 	CUsersArray& m_oUsersArray;
 	CTasksArray& m_oTasksArray;
+	
+	
+	afx_msg void OnBnClickedBtnProjectTaskUpdate();
 };

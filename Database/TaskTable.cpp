@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "TasksTable.h"
+#include "ProjectsTable.h"
 
 CTasksTable::CTasksTable() : CBaseTable(m_oCommand.m_recTask, _T(TASKS_TABLE_NAME))
 {
@@ -45,5 +46,47 @@ bool CTasksTable::SelectByProjectId(const long lID, CTasksArray& oTasksArray)
 
     m_oCommand.Close();
     m_oSession.Commit();
+    return true;
+}
+
+bool CTasksTable::UpdateProjectAndTasksDuration(PROJECTS& recProject, CTasksArray& oTaskArray)
+{
+    HRESULT hRes = S_OK;
+    hRes = m_oSession.StartTransaction();
+    if (FAILED(hRes))
+    {
+        AfxMessageBox(_T(ERR_TRANSACTION_START), MB_ICONERROR);
+        return false;
+    }
+
+    long lTotalDuration = 0;
+
+    for (INT_PTR i = 0; i < oTaskArray.GetSize(); i++)
+    {
+        TASKS* pTask = oTaskArray.GetAt(i);
+        if (!UpdateWhereID(pTask->lID, *pTask))
+        {
+            m_oSession.Abort();
+            return false;
+        }
+        lTotalDuration += pTask->nTotalEffort;
+    }
+
+    recProject.nTotalEffort = lTotalDuration;
+
+    CProjectsTable projectsTable;
+    if (!projectsTable.UpdateWhereID(recProject.lID, recProject))
+    {
+        m_oSession.Abort();
+        return false;
+    }
+
+    hRes = m_oSession.Commit();
+    if (FAILED(hRes))
+    {
+        AfxMessageBox(_T(ERR_TRANSACTION_START), MB_ICONERROR);
+        return false;
+    }
+
     return true;
 }

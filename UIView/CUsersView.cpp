@@ -272,4 +272,5 @@ void CUsersView::OnLButtonDblClk(UINT nFlags, CPoint point) {
     CListView::OnLButtonDblClk(nFlags, point);
 }
 
+
 #endif 

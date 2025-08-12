@@ -3,6 +3,7 @@
 #include "afxdialogex.h"
 #include "ProjectDlg.h"
 #include "resource.h"
+#include "TaskDlg.h"
 
 
 
@@ -10,6 +11,9 @@
 
 IMPLEMENT_DYNAMIC(CProjectDlg, CDialogEx)
 BEGIN_MESSAGE_MAP(CProjectDlg, CDialogEx)
+	ON_BN_CLICKED(IDC_BTN_PROJECT_ADD_TASK, &CProjectDlg::OnBnClickedBtnProjectAddTask)
+	ON_BN_CLICKED(IDC_BTN_PROJECT_TASK_DELETE, &CProjectDlg::OnBnClickedBtnProjectTaskDelete)
+	ON_BN_CLICKED(IDC_BTN_PROJECT_TASK_UPDATE, &CProjectDlg::OnBnClickedBtnProjectTaskUpdate)
 END_MESSAGE_MAP()
 
 
@@ -55,6 +59,7 @@ BOOL CProjectDlg::OnInitDialog()
 	m_sttStatus.SetWindowText(_T("Status: "));
 	m_sttEffortLabel.SetWindowText(_T("Total Effort: "));
 	m_sttTasks.SetWindowText(_T("Task list: "));
+
 	DWORD dwStyle = m_lscTasks.GetExtendedStyle();
 	dwStyle |= LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES;
 	m_lscTasks.SetExtendedStyle(dwStyle);
@@ -90,16 +95,52 @@ BOOL CProjectDlg::OnInitDialog()
 	
 	m_edbName.SetWindowText(m_recProject.szName);
 	m_recDescription.SetWindowText(m_recProject.szDescription);
-	CString strEffort;
-	strEffort.Format(_T("%d"), m_recProject.nTotalEffort);
-	m_sttEffort.SetWindowText(strEffort.GetString());
+
+	UpdateEffortTotal();
 	UpdateData(FALSE);
 	return TRUE;
 }
 
 void CProjectDlg::OnOK()
 {
-	// TODO: Add your specialized code here and/or call the base class
+	UpdateData(TRUE);
+
+	CString strName;
+	m_edbName.GetWindowText(strName);
+	strName.Trim();
+
+	if (strName.IsEmpty())
+	{
+		AfxMessageBox(_T("Please enter a project name."), MB_ICONWARNING);
+		m_edbName.SetFocus();
+		return;
+	}
+
+	int nManagerIdx = m_cmbManager.GetCurSel();
+	if (nManagerIdx == CB_ERR)
+	{
+		AfxMessageBox(_T("Please select a user in charge (manager)."), MB_ICONWARNING);
+		m_cmbManager.SetFocus();
+		return;
+	}
+
+	int nStatusIdx = m_cmbStatus.GetCurSel();
+	if (nStatusIdx == CB_ERR)
+	{
+		AfxMessageBox(_T("Please select a project status."), MB_ICONWARNING);
+		m_cmbStatus.SetFocus();
+		return;
+	}
+
+	
+	_tcsncpy_s(m_recProject.szName, strName, _TRUNCATE);
+
+	CString strDescription;
+	m_recDescription.GetWindowText(strDescription);
+	_tcsncpy_s(m_recProject.szDescription, strDescription, _TRUNCATE);
+
+	m_recProject.lProjectManagerID = (long)m_cmbManager.GetItemData(nManagerIdx);
+	m_recProject.sProjectStatus = (short)m_cmbStatus.GetItemData(nStatusIdx);
 
 	CDialogEx::OnOK();
 }
@@ -128,6 +169,9 @@ int CProjectDlg::FindStatusIndex(const short sStatus)
 
 bool CProjectDlg::FetchTableData()
 {
+	m_cmbManager.ResetContent();
+	m_cmbStatus.ResetContent();
+	m_lscTasks.DeleteAllItems();
 	for (INT_PTR i = 0; i < m_oUsersArray.GetCount();i++)
 	{
 		USERS* pRecUser = m_oUsersArray.GetAt(i);
@@ -163,9 +207,20 @@ bool CProjectDlg::FetchTableData()
 			}
 		}
 		//fix !!!!!!!!
-		CString strUserID;
+		/*CString strUserID;
 		strUserID.Format(_T("%ld"), pRecTask->lUserInChargeID);
-		m_lscTasks.SetItemText(nIndex, TASK_COLUMN_ASSIGNEE, strUserID.GetString());
+		m_lscTasks.SetItemText(nIndex, TASK_COLUMN_ASSIGNEE, strUserID.GetString());*/
+		CString strAssigneeName = _T("Unknown");
+		for (INT_PTR u = 0; u < m_oUsersArray.GetCount(); u++)
+		{
+			USERS* pRecUser = m_oUsersArray.GetAt(u);
+			if (pRecUser && pRecUser->lID == pRecTask->lUserInChargeID)
+			{
+				strAssigneeName = pRecUser->szName;
+				break;
+			}
+		}
+		m_lscTasks.SetItemText(nIndex, TASK_COLUMN_ASSIGNEE, strAssigneeName);
 
 		CString strEffort;
 		strEffort.Format(_T("%d"), pRecTask->nTotalEffort);
@@ -173,4 +228,102 @@ bool CProjectDlg::FetchTableData()
 	}
 
 	return true;
+}
+
+void CProjectDlg::UpdateEffortTotal()
+{
+	int nTotalEffort = 0;
+	for (INT_PTR i = 0; i < m_oTasksArray.GetCount(); ++i)
+	{
+		TASKS* pTask = m_oTasksArray.GetAt(i);
+		if (pTask)
+			nTotalEffort += pTask->nTotalEffort;
+	}
+	m_recProject.nTotalEffort = nTotalEffort;
+
+	CString strEffort;
+	strEffort.Format(_T("%d"), nTotalEffort);
+	m_sttEffort.SetWindowText(strEffort);
+}
+
+
+void CProjectDlg::OnBnClickedBtnProjectAddTask()
+{
+	TASKS newTask = {};
+	newTask.lID = 0;
+
+	CTaskDlg dlg(this, newTask, m_oUsersArray);
+	if (dlg.DoModal() == IDOK)
+	{
+		m_oTasksArray.Add(new TASKS(dlg.m_recTask)); 
+		FetchTableData();
+		UpdateEffortTotal();
+	}
+}
+
+void CProjectDlg::OnBnClickedBtnProjectTaskDelete()
+{
+	POSITION pos = m_lscTasks.GetFirstSelectedItemPosition();
+	if (pos == NULL)
+	{
+		AfxMessageBox(_T("Please select a task to delete."), MB_ICONEXCLAMATION);
+		return;
+	}
+
+	int nSelected = m_lscTasks.GetNextSelectedItem(pos);
+
+	CString strTaskID = m_lscTasks.GetItemText(nSelected, TASK_COLUMN_ID);
+	long lTaskID = _wtol(strTaskID);
+
+	for (INT_PTR i = 0; i < m_oTasksArray.GetCount(); i++)
+	{
+		TASKS* pRecTask = m_oTasksArray.GetAt(i);
+		if (pRecTask && pRecTask->lID == lTaskID)
+		{
+			delete pRecTask;
+			m_oTasksArray.RemoveAt(i);
+			break;
+		}
+	}
+
+	FetchTableData();
+	UpdateEffortTotal();
+}
+
+
+
+void CProjectDlg::OnBnClickedBtnProjectTaskUpdate()
+{
+	// TODO: Add your control notification handler code here
+	POSITION pos = m_lscTasks.GetFirstSelectedItemPosition();
+	if (pos == nullptr)
+	{
+		AfxMessageBox(_T("Please select a task to edit."));
+		return;
+	}
+
+	int nItem = m_lscTasks.GetNextSelectedItem(pos);
+	CString strTaskID = m_lscTasks.GetItemText(nItem, TASK_COLUMN_ID);
+	long lTaskID = _wtol(strTaskID);
+
+	TASKS* pRecTask = nullptr;
+	for (INT_PTR i = 0; i < m_oTasksArray.GetCount(); ++i)
+	{
+		TASKS* pRecTask = m_oTasksArray.GetAt(i);
+		if (pRecTask && pRecTask->lID == lTaskID)
+		{
+			pRecTask = pRecTask;
+			break;
+		}
+	}
+
+	if (pRecTask)
+	{
+		CTaskDlg dlg(this, *pRecTask, m_oUsersArray);
+		if (dlg.DoModal() == IDOK)
+		{
+			FetchTableData();
+			UpdateEffortTotal();
+		}
+	}
 }

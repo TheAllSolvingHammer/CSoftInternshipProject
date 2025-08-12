@@ -194,7 +194,21 @@ void CProjectsView::OnProjectEdit()
 
 void CProjectsView::OnProjectAdd()
 {
-    CProjectDlg oProjectDlg;
+    
+    CUsersArray oUsersArray;
+    PROJECTS recProject;
+    CProjectsDocument* pProjectsDocument = GetDocument();
+    if (pProjectsDocument == NULL)
+    {
+        return;
+    }
+
+    if (!(pProjectsDocument->GetAllUsers(oUsersArray)))
+    {
+        AfxMessageBox(_T("Failed to load users"));
+        return;
+    }
+    CProjectDlg oProjectDlg(NULL, recProject, oUsersArray);
     if (oProjectDlg.DoModal() == IDOK) {
         CProjectsDocument* pDoc = GetDocument();
         if (pDoc == NULL)

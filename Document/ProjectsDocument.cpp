@@ -61,6 +61,8 @@ bool CProjectsDocument::UpdateProject(const long lID,PROJECTS& recProject)
     LoadProjects();
 }
 
+
+
 bool CProjectsDocument::DeleteProject(long lID)
 {
     if (!CProjectsAppService().DeleteProject(lID))
