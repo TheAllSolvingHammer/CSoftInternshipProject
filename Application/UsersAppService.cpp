@@ -13,9 +13,9 @@ CUsersAppService::~CUsersAppService()
 
 }
 
-bool CUsersAppService::GetAllUsers(CUsersArray& oUsersArray) 
+bool CUsersAppService::GetAllUsers(CUsersArray& oUsersArray)
 {
-	
+
 	if (!CUsersTable().SelectAll(oUsersArray)) {
 		return false;
 	}
@@ -31,16 +31,39 @@ bool CUsersAppService::AddUser(USERS& recUser)
 	return true;
 }
 
-bool CUsersAppService::UpdateUser(const long lID,USERS& recUser)
+bool CUsersAppService::UpdateUser(const long lID, USERS& recUser)
 {
 	if (!CUsersTable().UpdateWhereID(lID, recUser)) {
 		return false;
 	}
 	return true;
 }
-bool CUsersAppService::DeleteUser(const long lID) 
+bool CUsersAppService::DeleteUser(const long lID)
 {
 	if (!CUsersTable().DeleteWhereID(lID)) {
+		return false;
+	}
+	return true;
+}
+
+bool CUsersAppService::FindUserByID(const long lID,USERS& recUser)
+{
+	if (!CUsersTable().SelectWhereID(lID,recUser)) {
+		return false;
+	}
+	return true;
+}
+
+bool CUsersAppService::VerifyUserLogin(CString strUsername, CString strPassword)
+{
+	USERS recFoundUser;
+	if (!CUsersTable().SelectUserByUsername(strUsername, recFoundUser))
+	{
+		return false;
+	}
+	
+	if (recFoundUser.szHashedPassword != strPassword.GetString())
+	{
 		return false;
 	}
 	return true;

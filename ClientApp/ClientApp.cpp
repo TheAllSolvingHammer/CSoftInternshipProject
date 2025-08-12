@@ -6,14 +6,10 @@
 #include "ClientApp.h"
 #include "MainFrm.h"
 #include "ChildFrm.h"
-#include "CUsersView.h"
-#include "CUsersDocument.h"
-#include <iostream>
+#include "ProjectsView.h"
+#include "ProjectsDocument.h"
 #include <afxwin.h> 
-#include <DatabaseTables.h>
-#include <UsersTable.h>
-#include <TestUsersTable.h>
-#include <TestJobTitlesTable.h>
+
 #include <CUsersDlg.h>
 
 
@@ -36,7 +32,6 @@ ClientApp theApp;
 
 BOOL ClientApp::InitInstance()
 {
-	//problem s coinita
 	HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
 	if (FAILED(hr))
 	{
@@ -52,9 +47,9 @@ BOOL ClientApp::InitInstance()
 
 	CMultiDocTemplate* pDocTemplate;
 	pDocTemplate = new CMultiDocTemplate(IDR_CSoftInternshipProjectTYPE,
-		RUNTIME_CLASS(CUsersDocument),
+		RUNTIME_CLASS(CProjectsDocument),
 		RUNTIME_CLASS(CChildFrame),
-		RUNTIME_CLASS(CUsersView));
+		RUNTIME_CLASS(CProjectsView));
 
 	if (!pDocTemplate)
 		return FALSE;
@@ -77,14 +72,6 @@ BOOL ClientApp::InitInstance()
 
 	pMainFrame->ShowWindow(m_nCmdShow);
 	pMainFrame->UpdateWindow();
-
-
-	/*CTestUsersTable oTestUsersTable;
-	oTestUsersTable.RunAllTests();*/
-
-	/*CTestJobTitlesTable oTestJobTitlesTable;
-	oTestJobTitlesTable.RunAllTests();*/
-
 
 	return TRUE;
 }

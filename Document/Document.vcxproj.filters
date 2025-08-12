@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Documents">
+      <UniqueIdentifier>{3c65cb04-79ec-4d9b-b60e-1de9eb5d4447}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Documents">
+      <UniqueIdentifier>{dc98eea2-b939-49b9-ab68-75fcabf4e0be}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Document.cpp">
@@ -24,11 +30,14 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CUsersDocument.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CSoftInternshipProjectDoc.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CUsersDocument.cpp">
+      <Filter>Source Files\Documents</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjectsDocument.cpp">
+      <Filter>Source Files\Documents</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -52,11 +61,14 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CUsersDocument.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CSoftInternshipProjectDoc.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CUsersDocument.h">
+      <Filter>Header Files\Documents</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectsDocument.h">
+      <Filter>Header Files\Documents</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

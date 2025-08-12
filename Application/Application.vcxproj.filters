@@ -33,7 +33,7 @@
     <ClCompile Include="JobTitlesAppService.cpp">
       <Filter>Source Files\Services</Filter>
     </ClCompile>
-    <ClCompile Include="ArrayManager.cpp">
+    <ClCompile Include="ProjectsAppService.cpp">
       <Filter>Source Files\Services</Filter>
     </ClCompile>
   </ItemGroup>
@@ -67,7 +67,7 @@
     <ClInclude Include="JobTitleAppService.h">
       <Filter>Header Files\Services</Filter>
     </ClInclude>
-    <ClInclude Include="ArrayManager.h">
+    <ClInclude Include="ProjectsAppService.h">
       <Filter>Header Files\Services</Filter>
     </ClInclude>
   </ItemGroup>

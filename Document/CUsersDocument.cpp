@@ -20,6 +20,7 @@ CUsersDocument::CUsersDocument() noexcept
 
 CUsersDocument::~CUsersDocument()
 {
+    
 }
 
 // Methods
@@ -71,6 +72,7 @@ bool CUsersDocument::GetJobTitle(const long lID, JOB_TITLES& recJobTitle)
 
 void CUsersDocument::LoadUsers()
 {
+    m_oUsersArray.ClearAll();
     if (CUsersAppService().GetAllUsers(m_oUsersArray)) {
         UpdateAllViews(NULL);
     }

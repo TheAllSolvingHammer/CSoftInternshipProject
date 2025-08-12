@@ -4,23 +4,23 @@
 #include "resource.h"
 #include <CUsersDlg.h>
 
-#define ERR_MESSAGE_SAFE_HWND "Error in getting the safe HWND"
-#define ERR_MESSAGE_LST_CTRL "Error in getting the header of the list control"
-#define ERR_UNKNOWN "Unknown"
-#define ERR_NOT_SELECTED_USER_EDIT "Please select a user to edit."
-#define SCS_USER_UPDATE "User updated successfully!"
-#define ERR_USER_UPDATE "Failed to update user."
-#define ERR_USER_NOT_FOUND "Selected user not found in document data."
+#define ERR_MESSAGE_SAFE_HWND           "Error in getting the safe HWND"
+#define ERR_MESSAGE_LST_CTRL            "Error in getting the header of the list control"
+#define ERR_UNKNOWN                     "Unknown"
+#define ERR_NOT_SELECTED_USER_EDIT      "Please select a user to edit."
+#define SCS_USER_UPDATE                 "User updated successfully!"
+#define ERR_USER_UPDATE                 "Failed to update user."
+#define ERR_USER_NOT_FOUND              "Selected user not found in document data."
 
 
-#define SCS_USER_ADD "User added successfully!"
-#define ERR_USER_ADD "Failed to add user."
+#define SCS_USER_ADD                    "User added successfully!"
+#define ERR_USER_ADD                    "Failed to add user."
 
-#define ERR_NOT_SELECTED_USER_DELETE "Please select a user to delete."
-#define CONF_DELETE_USER "Are you sure to delete the selected user?"
+#define ERR_NOT_SELECTED_USER_DELETE    "Please select a user to delete."
+#define CONF_DELETE_USER                "Are you sure to delete the selected user?"
 
-#define SCS_USER_DELETE "User deleted successfully!"
-#define ERR_USER_DELETE "Failed to delete user."
+#define SCS_USER_DELETE                 "User deleted successfully!"
+#define ERR_USER_DELETE                 "Failed to delete user."
 
 /////////////////////////////////////////////////////////////////////////////
 //CUsersView

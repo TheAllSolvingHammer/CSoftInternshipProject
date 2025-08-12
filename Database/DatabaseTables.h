@@ -6,6 +6,18 @@
 
 #define TABLE_DATA_ACCESSOR_INDEX      1
 
+#define ERR_SESSION_CREATION            "Failed to create session."
+#define ERR_SESSION_INIT                "Session init error!"
+
+#define QUERY_SELECT_UPDATE             "SELECT * FROM %s WITH (UPDLOCK) WHERE ID = %d"
+#define QUERY_SELECT_SINGLE             "SELECT * FROM %s WHERE ID = %d"
+
+#define QUERY_SELECT_ALL                "SELECT * FROM %s"
+
+#define ERR_TRANSACTION_START           "Failed to start transaction."
+#define ERR_CONCURENCY_CONFLICT         "Update failed: concurrency conflict."
+
+
 template<typename TRecord,typename TAccessor>
 class CBaseTable
 {
@@ -23,7 +35,7 @@ public:
         if (FAILED(hRes))
         {
             m_oSession.Close();
-            AfxMessageBox(_T("Failed to create session."), MB_ICONERROR);
+            AfxMessageBox(_T(ERR_SESSION_CREATION), MB_ICONERROR);
         }
     }
     ~CBaseTable()
@@ -34,12 +46,20 @@ public:
 private:
     bool OpenRowByID(long lID, CSession& oSession, bool bUpdatable)
     {
-        if (!m_oSession.m_spOpenRowset) {
-            AfxMessageBox(_T("Session init error!"));
+        if (!m_oSession.m_spOpenRowset) 
+        {
+            AfxMessageBox(_T(ERR_SESSION_INIT));
             return false;
         }
         CString strSQL;
-        strSQL.Format(_T("SELECT * FROM %s  WHERE ID = %d"), m_strTableName.GetString(), lID);
+        if (bUpdatable)
+        {
+            strSQL.Format(_T(QUERY_SELECT_UPDATE), m_strTableName.GetString(), lID);
+        }
+        else
+        {
+            strSQL.Format(_T(QUERY_SELECT_SINGLE), m_strTableName.GetString(), lID);
+        }
 
         HRESULT hRes;
         if (bUpdatable)
@@ -49,6 +69,7 @@ private:
             props.AddProperty(DBPROP_IRowsetScroll, true);
             props.AddProperty(DBPROP_IRowsetChange, true);
             props.AddProperty(DBPROP_UPDATABILITY, DBPROPVAL_UP_CHANGE);
+
             hRes = m_oCommand.Open(oSession, strSQL, &props);
         }
         else
@@ -70,13 +91,15 @@ public:
 
     bool SelectAll(CTypedPtrArray<CArrayAutoManager, TRecord*>& oArray)
     {
-        if (!m_oSession.m_spOpenRowset) {
-            AfxMessageBox(_T("Session init error!"));
+        HRESULT hRes = m_oSession.StartTransaction();
+        if (FAILED(hRes))
+        {
+            AfxMessageBox(_T(ERR_TRANSACTION_START), MB_ICONERROR);
             return false;
         }
 
         CString strSQL;
-        strSQL.Format(_T("SELECT * FROM %s"), m_strTableName.GetString());
+        strSQL.Format(_T(QUERY_SELECT_ALL), m_strTableName.GetString());
 
         CDBPropSet props(DBPROPSET_ROWSET);
         props.AddProperty(DBPROP_CANFETCHBACKWARDS, true);
@@ -84,9 +107,12 @@ public:
         props.AddProperty(DBPROP_IRowsetChange, true);
         props.AddProperty(DBPROP_UPDATABILITY, DBPROPVAL_UP_CHANGE);
 
-        HRESULT hRes = m_oCommand.Open(m_oSession, strSQL, &props);
+        hRes = m_oCommand.Open(m_oSession, strSQL, &props);
         if (FAILED(hRes))
+        {
+            m_oSession.Abort();
             return false;
+        }
 
         while (m_oCommand.MoveNext() == S_OK)
         {
@@ -96,28 +122,49 @@ public:
         }
 
         m_oCommand.Close();
+        m_oSession.Commit();
         return true;
     }
 
     bool SelectWhereID(const long lID, TRecord& rec)
     {
-        if (!OpenRowByID(lID, m_oSession, false))
+        HRESULT hRes = m_oSession.StartTransaction();
+        if (FAILED(hRes))
         {
+            AfxMessageBox(_T(ERR_TRANSACTION_START), MB_ICONERROR);
             return false;
         }
+
+        if (!OpenRowByID(lID, m_oSession, false))
+        {
+            m_oSession.Abort();
+            return false;
+        }
+
         rec = m_recRecord;
         m_oCommand.Close();
+        m_oSession.Commit();
         return true;
         
     }
     bool UpdateWhereID(const long lID, TRecord& rec)
     {
-        if (!OpenRowByID(lID, m_oSession, true))
-        {
+        HRESULT hRes = m_oSession.StartTransaction();
+        if (FAILED(hRes)) {
+            AfxMessageBox(_T(ERR_TRANSACTION_START), MB_ICONERROR);
             return false;
         }
 
-        if (m_recRecord.nUpdateCounter != rec.nUpdateCounter) {
+        if (!OpenRowByID(lID, m_oSession, true))
+        {
+            m_oSession.Abort();
+            return false;
+        }
+
+        if (m_recRecord.nUpdateCounter != rec.nUpdateCounter) 
+        {
+            m_oSession.Abort();
+            AfxMessageBox(_T(ERR_CONCURENCY_CONFLICT));
             return false;
         }
 
@@ -125,21 +172,28 @@ public:
         m_recRecord.nUpdateCounter++;
         rec = m_recRecord;
 
-        HRESULT hRes = m_oCommand.SetData(TABLE_DATA_ACCESSOR_INDEX);
+        hRes = m_oCommand.SetData(TABLE_DATA_ACCESSOR_INDEX);
         m_oCommand.Close();
-        return SUCCEEDED(hRes);
-
+        if (FAILED(hRes))
+        {
+            m_oSession.Abort();
+            return false;
+        }
+        m_oSession.Commit();
+        return true;
     }
 
     bool Insert(TRecord& rec)
     {
-        if (!m_oSession.m_spOpenRowset) {
-            AfxMessageBox(_T("Session init error!"));
+        HRESULT hRes = m_oSession.StartTransaction();
+        if (FAILED(hRes)) 
+        {
+            AfxMessageBox(_T(ERR_TRANSACTION_START), MB_ICONERROR);
             return false;
         }
 
         CString strSQL;
-        strSQL.Format(_T("SELECT * FROM %s"), m_strTableName.GetString());
+        strSQL.Format(_T(QUERY_SELECT_ALL), m_strTableName.GetString());
 
         CDBPropSet props(DBPROPSET_ROWSET);
         props.AddProperty(DBPROP_IRowsetChange, true);
@@ -147,8 +201,9 @@ public:
         props.AddProperty(DBPROP_CANFETCHBACKWARDS, true);
         props.AddProperty(DBPROP_QUICKRESTART, true);
 
-        HRESULT hRes = m_oCommand.Open(m_oSession, strSQL, &props);
+        hRes = m_oCommand.Open(m_oSession, strSQL, &props);
         if (FAILED(hRes)) {
+            m_oSession.Abort();
             return false;
         }
 
@@ -156,47 +211,57 @@ public:
         hRes = m_oCommand.Insert(TABLE_DATA_ACCESSOR_INDEX);
         if (FAILED(hRes))
         {
+            m_oSession.Abort();
             return false;
         }
 
         hRes = m_oCommand.MoveLast();
         if (FAILED(hRes))
         {
+            m_oSession.Abort();
             return false;
         }
         rec = m_recRecord;
         m_oCommand.Close();
-        return SUCCEEDED(hRes);
+        m_oSession.Commit();
+        return true;
     }
     
     bool DeleteWhereID(const long lID)
     {
-        if (!m_oSession.m_spOpenRowset) {
-            AfxMessageBox(_T("Session init error!"));
+        HRESULT hRes = m_oSession.StartTransaction();
+        if (FAILED(hRes))
+        {
+            AfxMessageBox(_T(ERR_TRANSACTION_START), MB_ICONERROR);
             return false;
         }
 
         CString strSQL;
-        strSQL.Format(_T("SELECT * FROM %s WHERE ID = %d"), m_strTableName.GetString(), lID);
+        strSQL.Format(_T(QUERY_SELECT_SINGLE), m_strTableName.GetString(), lID);
 
         CDBPropSet props(DBPROPSET_ROWSET);
         props.AddProperty(DBPROP_IRowsetChange, true);
         props.AddProperty(DBPROP_UPDATABILITY, DBPROPVAL_UP_DELETE);
 
-        HRESULT hRes = m_oCommand.Open(m_oSession, strSQL, &props);
+        hRes = m_oCommand.Open(m_oSession, strSQL, &props);
         if (FAILED(hRes)) {
+            m_oSession.Abort();
             return false;
         }
 
         if (m_oCommand.MoveFirst() != S_OK) {
+            m_oSession.Abort();
             return false;
         }
 
         hRes = m_oCommand.Delete();
         if (FAILED(hRes)) {
+            m_oSession.Abort();
             return false;
         }
+
         m_oCommand.Close();
+        m_oSession.Commit();
         return true;
     }
 };
