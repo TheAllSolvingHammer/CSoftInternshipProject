@@ -39,12 +39,16 @@ BOOL ClientApp::InitInstance()
 		return FALSE;
 	}
 	CWinApp::InitInstance();
+	///!!!!!!!!
 
+	AfxInitRichEdit2();
 	EnableTaskbarInteraction(FALSE);
 
 	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
 	LoadStdProfileSettings(4);
 
+	///
+	//Session->LoggedUser - > 
 	CMultiDocTemplate* pDocTemplate;
 	pDocTemplate = new CMultiDocTemplate(IDR_CSoftInternshipProjectTYPE,
 		RUNTIME_CLASS(CProjectsDocument),

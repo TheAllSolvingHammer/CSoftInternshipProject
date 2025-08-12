@@ -23,3 +23,4 @@ struct USERS {
 };
 
 typedef CTypedPtrArray<CArrayAutoManager, USERS*> CUsersArray;
+//typedef CArrayAutoManager<USERS> CUsersArray;

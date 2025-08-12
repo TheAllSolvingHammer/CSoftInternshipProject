@@ -89,7 +89,7 @@ private:
     }
 public:
 
-    bool SelectAll(CTypedPtrArray<CArrayAutoManager, TRecord*>& oArray)
+    bool SelectAll(/*CArrayAutoManager<TRecord> */ CTypedPtrArray<CArrayAutoManager, TRecord*>& oArray)
     {
         HRESULT hRes = m_oSession.StartTransaction();
         if (FAILED(hRes))

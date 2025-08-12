@@ -1,9 +1,14 @@
 #include "pch.h"
 #include "framework.h"
 #include "ProjectsView.h"
-#include "resource.h"
-#include <ProjectDlg.h>
+
+#include "ProjectDlg.h"
+
+#include "CUsersDlg.h"
 #include <Users.h>
+#include "Resource.h"
+#include "../Application/UsersAppService.h"
+#include "../Application/ProjectsAppService.h"
 
 #define ERR_MESSAGE_SAFE_HWND               "Error in getting the safe HWND"
 #define ERR_MESSAGE_LST_CTRL                "Error in getting the header of the list control"
@@ -30,9 +35,10 @@
 // ----------------
 IMPLEMENT_DYNCREATE(CProjectsView, CListView)
 
+
 BEGIN_MESSAGE_MAP(CProjectsView, CListView)
     ON_COMMAND(ID_MENU_INSERT, &CProjectsView::OnProjectAdd)
-
+    ON_COMMAND(ID_MENU_UPDATE, &CProjectsView::OnProjectEdit)
     ON_COMMAND(ID_MENU_DELETE, &CProjectsView::OnProjectDelete)
     ON_WM_CONTEXTMENU()
     ON_WM_LBUTTONDBLCLK()
@@ -147,7 +153,7 @@ void CProjectsView::OnProjectEdit()
 
     PROJECTS* pProjectToEdit = nullptr;
     CProjectsArray& oProjectsArray = pProjectsDocument->GetProjectsArray();
-    for (INT_PTR i = 0; i < oProjectsArray.GetSize(); ++i) {
+    for (INT_PTR i = 0; i < oProjectsArray.GetCount(); i++) {
         PROJECTS* pRecProject = oProjectsArray.GetAt(i);
         if (pRecProject && pRecProject->lID == lID) {
             pProjectToEdit = pRecProject;
@@ -156,8 +162,21 @@ void CProjectsView::OnProjectEdit()
     }
 
     if (pProjectToEdit) {
-        CProjectDlg oProjectDlg;
-        oProjectDlg.m_recProject = *pProjectToEdit;
+        CUsersArray oUsersArray;
+        CTasksArray oTasksArray;
+        if (!(pProjectsDocument->GetAllUsers(oUsersArray)))
+        {
+            AfxMessageBox(_T("Failed to load users"));
+            return;
+        }
+        if (!(pProjectsDocument->GetTasksByProject(pProjectToEdit->lID, oTasksArray)))
+        {
+	        AfxMessageBox(_T("Failed to load Tasks"));
+            return;
+        }
+
+        CProjectDlg oProjectDlg(NULL, *pProjectToEdit, oUsersArray, oTasksArray);
+        
         if (oProjectDlg.DoModal() == IDOK) {
 
             if (pProjectsDocument->UpdateProject(lID, oProjectDlg.m_recProject)) {
@@ -175,7 +194,21 @@ void CProjectsView::OnProjectEdit()
 
 void CProjectsView::OnProjectAdd()
 {
-    CProjectDlg oProjectDlg;
+    
+    CUsersArray oUsersArray;
+    PROJECTS recProject;
+    CProjectsDocument* pProjectsDocument = GetDocument();
+    if (pProjectsDocument == NULL)
+    {
+        return;
+    }
+
+    if (!(pProjectsDocument->GetAllUsers(oUsersArray)))
+    {
+        AfxMessageBox(_T("Failed to load users"));
+        return;
+    }
+    CProjectDlg oProjectDlg(NULL, recProject, oUsersArray);
     if (oProjectDlg.DoModal() == IDOK) {
         CProjectsDocument* pDoc = GetDocument();
         if (pDoc == NULL)

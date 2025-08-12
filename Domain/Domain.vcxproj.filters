@@ -24,6 +24,9 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ArrayUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Domain.def">
@@ -63,6 +66,9 @@
     </ClInclude>
     <ClInclude Include="DomainExports.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ArrayUtils.h">
+      <Filter>Header Files\Models</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

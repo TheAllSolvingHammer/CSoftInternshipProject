@@ -3,6 +3,7 @@
 #include "DLLExport.h"
 #include <afx.h>
 #include "CUsersDocument.h"
+#include "Users.h"
 
 
 /////////////////////////////////////////////////////////////////////////////

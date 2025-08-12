@@ -2,7 +2,7 @@
 #include "framework.h"
 #include "CUsersView.h"
 #include "resource.h"
-#include <CUsersDlg.h>
+#include "CUsersDlg.h"
 
 #define ERR_MESSAGE_SAFE_HWND           "Error in getting the safe HWND"
 #define ERR_MESSAGE_LST_CTRL            "Error in getting the header of the list control"
@@ -271,5 +271,6 @@ void CUsersView::OnLButtonDblClk(UINT nFlags, CPoint point) {
 
     CListView::OnLButtonDblClk(nFlags, point);
 }
+
 
 #endif 

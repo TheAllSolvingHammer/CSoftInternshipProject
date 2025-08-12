@@ -39,6 +39,7 @@ bool CProjectsAppService::UpdateProject(const long lID, PROJECTS& recProject)
 	}
 	return true;
 }
+
 bool CProjectsAppService::DeleteProject(const long lID)
 {
 	if (!CProjectsTable().DeleteWhereID(lID)) {
@@ -46,3 +47,13 @@ bool CProjectsAppService::DeleteProject(const long lID)
 	}
 	return true;
 }
+
+bool CProjectsAppService::SelectTasksByProject(const long lID, CTasksArray& oTasksArray)
+{
+	if (!CProjectsTable().SelectTasksByProjectId(lID,oTasksArray)) {
+		return false;
+	}
+	return true;
+}
+
+

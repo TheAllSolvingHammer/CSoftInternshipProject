@@ -191,7 +191,6 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ArrayUtils.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -205,7 +204,6 @@
     <None Include="res\Core.rc2" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ArrayUtils.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="DLLExport.h" />
     <ClInclude Include="framework.h" />

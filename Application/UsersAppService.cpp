@@ -1,7 +1,8 @@
 #include "pch.h"
 #include "UsersAppService.h"
-#include <UsersTable.h>
+#include "UsersTable.h"
 
+#include "ArrayUtils.h"
 
 CUsersAppService::CUsersAppService()
 {

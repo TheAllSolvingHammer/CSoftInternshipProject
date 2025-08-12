@@ -13,7 +13,7 @@ CProjectsDocument::CProjectsDocument()
 
 CProjectsDocument::~CProjectsDocument()
 {
-    m_oProjectsArray.ClearAll();
+    
 }
 
 BOOL CProjectsDocument::OnNewDocument()
@@ -35,7 +35,7 @@ void CProjectsDocument::LoadProjects()
     m_oProjectsArray.ClearAll();
 
     if (!CProjectsAppService().GetAllProjects(m_oProjectsArray)) {
-        AfxMessageBox(_T("Failed to load users."));
+        AfxMessageBox(MSG_ERR_LOAD_USERS);
     }
     else
     {
@@ -61,6 +61,8 @@ bool CProjectsDocument::UpdateProject(const long lID,PROJECTS& recProject)
     LoadProjects();
 }
 
+
+
 bool CProjectsDocument::DeleteProject(long lID)
 {
     if (!CProjectsAppService().DeleteProject(lID))
@@ -77,9 +79,28 @@ CProjectsArray& CProjectsDocument::GetProjectsArray()
 
 bool CProjectsDocument::GetUser(const long lID, USERS& recUser)
 {
-    if (!CUsersAppService().FindUserByID(lID, recUser)) {
+    if (!CUsersAppService().FindUserByID(lID, recUser)) 
+    {
         return false;
     }
 
+    return true;
+}
+
+bool CProjectsDocument::GetAllUsers(CUsersArray& oUsersArray)
+{
+    if (!CUsersAppService().GetAllUsers(oUsersArray)) 
+    {
+        return false;
+    }
+    return true;
+}
+
+bool CProjectsDocument::GetTasksByProject(const long lID, CTasksArray& oTasksArray)
+{   
+    if (!CProjectsAppService().SelectTasksByProject(lID, oTasksArray))
+    {
+        return false;
+    }
     return true;
 }

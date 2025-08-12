@@ -13,6 +13,7 @@
 
 IMPLEMENT_DYNAMIC(CUsersDlg, CDialogEx)
 
+//pass params thorugh constructor
 CUsersDlg::CUsersDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_DLG_USERS, pParent)
 {
@@ -24,6 +25,7 @@ CUsersDlg::CUsersDlg(CWnd* pParent /*=nullptr*/)
 
 CUsersDlg::~CUsersDlg()
 {
+
 
 }
 

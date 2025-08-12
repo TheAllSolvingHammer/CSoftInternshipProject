@@ -1,6 +1,7 @@
 #pragma once
 #include "DllExport.h"
 #include <Projects.h>
+#include <Tasks.h>
 
 class ApplicationDLL_EXP CProjectsAppService {
 public:
@@ -10,5 +11,6 @@ public:
 	bool AddProject(PROJECTS& recProject);
 	bool UpdateProject(const long lID, PROJECTS& recProject);
 	bool DeleteProject(const long lID);
+	bool SelectTasksByProject(const long lID, CTasksArray& oTasksArray);
 
 };

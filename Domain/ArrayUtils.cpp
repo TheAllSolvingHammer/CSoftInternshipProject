@@ -1,5 +1,4 @@
 #include "pch.h"
-
 #include "ArrayUtils.h"
 
 CArrayAutoManager::CArrayAutoManager() 
@@ -13,9 +12,9 @@ CArrayAutoManager::~CArrayAutoManager()
 }
 
 void CArrayAutoManager::ClearAll() {
-    for (INT_PTR i = 0; i < this->CPtrArray::GetCount(); i++)
+    for (INT_PTR i = 0; i < GetCount(); i++)
     {
-        delete this->CPtrArray::GetAt(i);
+        delete GetAt(i);
     }
-    this->CPtrArray::RemoveAll();
+    RemoveAll();
 }
