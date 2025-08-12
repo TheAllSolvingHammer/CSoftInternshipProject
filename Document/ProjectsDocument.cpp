@@ -13,7 +13,7 @@ CProjectsDocument::CProjectsDocument()
 
 CProjectsDocument::~CProjectsDocument()
 {
-    m_oProjectsArray.ClearAll();
+    
 }
 
 BOOL CProjectsDocument::OnNewDocument()

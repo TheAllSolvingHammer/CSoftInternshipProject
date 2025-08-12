@@ -27,9 +27,6 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ArrayUtils.cpp">
-      <Filter>Source Files\Utils</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Core.def">
@@ -57,9 +54,6 @@
     </ClInclude>
     <ClInclude Include="DLLExport.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ArrayUtils.h">
-      <Filter>Header Files\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
