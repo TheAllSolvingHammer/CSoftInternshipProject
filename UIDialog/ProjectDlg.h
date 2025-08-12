@@ -1,10 +1,14 @@
 #pragma once
 #include "afxdialogex.h"
+#include <Projects.h>
+
+#include <Users.h>
 
 
 // CProjectDlg dialog
 
-class CProjectDlg : public CDialogEx
+
+class UIDialogDLL_EXP CProjectDlg : public CDialogEx
 {
 	DECLARE_DYNAMIC(CProjectDlg)
 
@@ -25,6 +29,9 @@ public:
 	virtual BOOL OnInitDialog();
 	virtual void OnOK();
 private:
+	int FindUserIndex(const long lUserID);
+	bool FetchTableData();
+private:
 	CEdit m_edbName;
 	CRichEditCtrl m_recDescription;
 	CComboBox m_cmbManager;
@@ -36,4 +43,8 @@ private:
 	CStatic m_sttManager;
 	CStatic m_sttStatus;
 	CStatic m_sttEffortLabel;
+public:
+	USERS m_recUser;
+	PROJECTS m_recProject;
+	CUsersArray m_oUsersArray;
 };

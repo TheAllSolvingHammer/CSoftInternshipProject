@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "ProjectsDocument.h"
+#include <ProjectsAppService.h>
+#include <UsersAppService.h>
 
 
 IMPLEMENT_DYNCREATE(CProjectsDocument, CDocument)
@@ -41,18 +43,18 @@ void CProjectsDocument::LoadProjects()
     }    
 }
 
-bool CProjectsDocument::AddProject(PROJECTS& project)
+bool CProjectsDocument::AddProject(PROJECTS& recProject)
 {
-    if (!CProjectsAppService().AddProject(project))
+    if (!CProjectsAppService().AddProject(recProject))
     {
         return false;
     }
     LoadProjects();
 }
 
-bool CProjectsDocument::UpdateProject(const long lID,PROJECTS& project)
+bool CProjectsDocument::UpdateProject(const long lID,PROJECTS& recProject)
 {
-    if (!CProjectsAppService().UpdateProject(lID, project))
+    if (!CProjectsAppService().UpdateProject(lID, recProject))
     {
         return false;
     }
@@ -71,4 +73,13 @@ bool CProjectsDocument::DeleteProject(long lID)
 CProjectsArray& CProjectsDocument::GetProjectsArray()
 {
     return this->m_oProjectsArray;
+}
+
+bool CProjectsDocument::GetUser(const long lID, USERS& recUser)
+{
+    if (!CUsersAppService().FindUserByID(lID, recUser)) {
+        return false;
+    }
+
+    return true;
 }

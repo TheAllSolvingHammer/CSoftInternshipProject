@@ -20,6 +20,7 @@ CUsersDocument::CUsersDocument() noexcept
 
 CUsersDocument::~CUsersDocument()
 {
+    
 }
 
 // Methods

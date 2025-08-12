@@ -46,6 +46,14 @@ bool CUsersAppService::DeleteUser(const long lID)
 	return true;
 }
 
+bool CUsersAppService::FindUserByID(const long lID,USERS& recUser)
+{
+	if (!CUsersTable().SelectWhereID(lID,recUser)) {
+		return false;
+	}
+	return true;
+}
+
 bool CUsersAppService::VerifyUserLogin(CString strUsername, CString strPassword)
 {
 	USERS recFoundUser;

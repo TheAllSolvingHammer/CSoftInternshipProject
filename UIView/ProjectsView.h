@@ -22,7 +22,7 @@ enum ProjectColumns
 	PROJECT_COLUMN_COUNT
 };
 
-const TCHAR* gl_szColumnHeaders[] = {
+const TCHAR* gl_szColumnHeadersProject[] = {
 	_T("ID"),
 	_T("Name"),
 	_T("Description"),
@@ -31,13 +31,25 @@ const TCHAR* gl_szColumnHeaders[] = {
 	_T("Effort"),
 };
 
-const int gl_nColumnWidths[] = {
+const int gl_nColumnWidthsProject[] = {
 	50,
 	150,
 	200,
 	150,
 	100,
 	150
+};
+
+enum ProjectState
+{
+	PROJECT_STATE_ACTIVE = 0,
+	PROJECT_STATE_FINISHED,
+	PROJECT_STATE_COUNT
+};
+
+const TCHAR* gl_szProjectStateDescription[] = {
+	_T("Active"),
+	_T("Finished")
 };
 
 
