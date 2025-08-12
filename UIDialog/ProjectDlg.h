@@ -68,7 +68,7 @@ class UIDialogDLL_EXP CProjectDlg : public CDialogEx
 	DECLARE_DYNAMIC(CProjectDlg)
 
 public:
-	CProjectDlg(CWnd* pParent = nullptr);   // standard constructor
+	CProjectDlg(CWnd* pParent = nullptr, PROJECTS& recProject=PROJECTS(), CUsersArray& oUsersArray=CUsersArray(), CTasksArray& oTasksArray=CTasksArray());   // standard constructor
 	virtual ~CProjectDlg();
 
 // Dialog Data
@@ -106,8 +106,8 @@ private:
 
 	//Помощни променливи
 public:
-	USERS m_recUser;
+	/*USERS m_recUser;*/
 	PROJECTS m_recProject;
-	CUsersArray m_oUsersArray;
-	CTasksArray m_oTasksArray;
+	CUsersArray& m_oUsersArray;
+	CTasksArray& m_oTasksArray;
 };

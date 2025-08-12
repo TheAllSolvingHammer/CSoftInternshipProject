@@ -7,6 +7,8 @@
 #include "CUsersDlg.h"
 #include <Users.h>
 #include "Resource.h"
+#include "../Application/UsersAppService.h"
+#include "../Application/ProjectsAppService.h"
 
 #define ERR_MESSAGE_SAFE_HWND               "Error in getting the safe HWND"
 #define ERR_MESSAGE_LST_CTRL                "Error in getting the header of the list control"
@@ -160,8 +162,21 @@ void CProjectsView::OnProjectEdit()
     }
 
     if (pProjectToEdit) {
-        CProjectDlg oProjectDlg;
-        oProjectDlg.m_recProject = *pProjectToEdit;
+        CUsersArray oUsersArray;
+        CTasksArray oTasksArray;
+        if (!(pProjectsDocument->GetAllUsers(oUsersArray)))
+        {
+            AfxMessageBox(_T("Failed to load users"));
+            return;
+        }
+        if (!(pProjectsDocument->GetTasksByProject(pProjectToEdit->lID, oTasksArray)))
+        {
+	        AfxMessageBox(_T("Failed to load Tasks"));
+            return;
+        }
+
+        CProjectDlg oProjectDlg(NULL, *pProjectToEdit, oUsersArray, oTasksArray);
+        
         if (oProjectDlg.DoModal() == IDOK) {
 
             if (pProjectsDocument->UpdateProject(lID, oProjectDlg.m_recProject)) {

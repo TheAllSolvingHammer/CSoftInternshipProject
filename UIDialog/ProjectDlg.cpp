@@ -1,12 +1,9 @@
 // ProjectDlg.cpp : implementation file
-//
-
 #include "pch.h"
 #include "afxdialogex.h"
 #include "ProjectDlg.h"
 #include "resource.h"
-#include <..\Application\UsersAppService.h>
-#include <..\Application\ProjectsAppService.h>
+
 
 
 // CProjectDlg dialog
@@ -15,8 +12,12 @@ IMPLEMENT_DYNAMIC(CProjectDlg, CDialogEx)
 BEGIN_MESSAGE_MAP(CProjectDlg, CDialogEx)
 END_MESSAGE_MAP()
 
-CProjectDlg::CProjectDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(IDD_PROJECT_DIALOG, pParent)
+
+CProjectDlg::CProjectDlg(CWnd* pParent /*=nullptr*/, PROJECTS& recProject, CUsersArray& oUsersArray, CTasksArray& oTasksArray)
+	: CDialogEx(IDD_PROJECT_DIALOG, pParent),
+	m_recProject(recProject),
+	m_oUsersArray(oUsersArray),
+	m_oTasksArray(oTasksArray)
 {
 
 }
@@ -41,10 +42,6 @@ void CProjectDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LSC_PROJECT_TASKS, m_lscTasks);
 	DDX_Control(pDX, IDC_STT_PROJECT_TASKS, m_sttTasks);
 }
-
-
-
-
 
 // CProjectDlg message handlers
 
@@ -82,10 +79,12 @@ BOOL CProjectDlg::OnInitDialog()
 	}
 
 	nIndex = FindStatusIndex(m_recProject.sProjectStatus);
-	if (nIndex != CB_ERR) {
+	if (nIndex != CB_ERR) 
+	{
 		m_cmbStatus.SetCurSel(nIndex);
 	}
-	else {
+	else 
+	{
 		m_cmbStatus.SetCurSel(-1);
 	}
 	
@@ -107,8 +106,10 @@ void CProjectDlg::OnOK()
 
 int CProjectDlg::FindUserIndex(const long lUserID)
 {
-	for (int i = 0; i < m_cmbManager.GetCount(); ++i) {
-		if (m_cmbManager.GetItemData(i) == (DWORD_PTR)lUserID) {
+	for (int i = 0; i < m_cmbManager.GetCount(); ++i) 
+	{
+		if (m_cmbManager.GetItemData(i) == (DWORD_PTR)lUserID) 
+		{
 			return i;
 		}
 	}
@@ -125,20 +126,16 @@ int CProjectDlg::FindStatusIndex(const short sStatus)
 	return CB_ERR;
 }
 
-bool CProjectDlg::FetchTableData() {
-
-	if (!CUsersAppService().GetAllUsers(m_oUsersArray))
-	{
-		AfxMessageBox(_T("Failed to load users"));
-		return false;
-	}
-
+bool CProjectDlg::FetchTableData()
+{
 	for (INT_PTR i = 0; i < m_oUsersArray.GetCount();i++)
 	{
 		USERS* pRecUser = m_oUsersArray.GetAt(i);
-		if (pRecUser) {
+		if (pRecUser) 
+		{
 			int nIndex = m_cmbManager.AddString(pRecUser->szName);
-			if (nIndex != CB_ERR) {
+			if (nIndex != CB_ERR) 
+			{
 				m_cmbManager.SetItemData(nIndex, pRecUser->lID);
 			}
 		}
@@ -148,12 +145,6 @@ bool CProjectDlg::FetchTableData() {
 	{
 		int nIdx = m_cmbStatus.AddString(gl_szProjectStateDescriptionDialog[i]);
 		m_cmbStatus.SetItemData(nIdx, i+1);
-	}
-
-	if (!CProjectsAppService().SelectTasksByProject(m_recProject.lID,m_oTasksArray))
-	{
-		AfxMessageBox(_T("Failed to load Tasks"));
-		return false;
 	}
 
 	for (INT_PTR i = 0; i < m_oTasksArray.GetCount(); i++)
@@ -180,5 +171,6 @@ bool CProjectDlg::FetchTableData() {
 		strEffort.Format(_T("%d"), pRecTask->nTotalEffort);
 		m_lscTasks.SetItemText(nIndex, TASK_COLUMN_EFFORT,strEffort.GetString());
 	}
+
 	return true;
 }
