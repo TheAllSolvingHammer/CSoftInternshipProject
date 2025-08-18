@@ -2,6 +2,7 @@
 #include "ProjectsDocument.h"
 #include <ProjectsAppService.h>
 #include <UsersAppService.h>
+#include <TasksAppService.h>
 
 
 IMPLEMENT_DYNCREATE(CProjectsDocument, CDocument)
@@ -39,7 +40,7 @@ void CProjectsDocument::LoadProjects()
     }
     else
     {
-        UpdateAllViews(NULL);
+        UpdateAllViews(NULL, HINT_NONE);
     }    
 }
 
@@ -49,18 +50,23 @@ bool CProjectsDocument::AddProject(PROJECTS& recProject)
     {
         return false;
     }
-    LoadProjects();
+    PROJECTS* pNewProject = new PROJECTS;
+    *pNewProject = recProject;
+    m_oProjectsArray.Add(pNewProject);
+    UpdateAllViews(nullptr, HINT_PROJECT_ADDED);
+    return true;
 }
 
-bool CProjectsDocument::UpdateProject(const long lID,PROJECTS& recProject)
+bool CProjectsDocument::UpdateProject(PROJECTS& recProject, CTasksArray& oTasksArray, CTasksArray& oUpdatedTasksArray, CTasksArray& oDeletedTasksArray)
 {
-    if (!CProjectsAppService().UpdateProject(lID, recProject))
+    if (!CTasksAppService().UpdateProjectAndTasksDuration(recProject, oTasksArray, oUpdatedTasksArray, oDeletedTasksArray))
     {
         return false;
     }
-    LoadProjects();
+    LoadSingleProject(recProject);
+    UpdateAllViews(NULL,HINT_PROJECT_UPDATED);
+    return true;
 }
-
 
 
 bool CProjectsDocument::DeleteProject(long lID)
@@ -69,7 +75,9 @@ bool CProjectsDocument::DeleteProject(long lID)
     {
         return false;
     }
-    LoadProjects();
+    DeleteSingleProject(lID);
+    UpdateAllViews(NULL, HINT_PROJECT_DELETED);
+    return true;
 }
 
 CProjectsArray& CProjectsDocument::GetProjectsArray()
@@ -103,4 +111,25 @@ bool CProjectsDocument::GetTasksByProject(const long lID, CTasksArray& oTasksArr
         return false;
     }
     return true;
+}
+
+void CProjectsDocument::LoadSingleProject(PROJECTS& recProject) {
+    for (INT_PTR i = 0;i < m_oProjectsArray.GetCount();i++) {
+        PROJECTS* pRecProject = m_oProjectsArray.GetAt(i);
+        if (pRecProject && pRecProject->lID == recProject.lID) {
+            *pRecProject = recProject;
+            break;
+        }
+    }
+}
+
+void CProjectsDocument::DeleteSingleProject(const long lID) {
+    for (INT_PTR i = 0;i < m_oProjectsArray.GetCount();i++) {
+        PROJECTS* pRecProject = m_oProjectsArray.GetAt(i);
+        if (pRecProject && pRecProject->lID == lID) {
+            delete pRecProject;
+            m_oProjectsArray.RemoveAt(i);
+            break;
+        }
+    }
 }

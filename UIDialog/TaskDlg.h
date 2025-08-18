@@ -3,12 +3,18 @@
 #include <Tasks.h>
 #include <Users.h>
 
+
 enum TaskStatus
 {
 	TASK_DIALOG_STATE_PENDING = 0,
 	TASK_DIALOG_STATE_IN_PROGRESS,
 	TASK_DIALOG_STATE_ENDED,
 	TASK_DIALOG_STATE_COUNT
+};
+
+enum TaskDlgMode { 
+	TASK_ADD=0, 
+	TASK_UPDATE 
 };
 
 
@@ -19,7 +25,10 @@ class UIDialogDLL_EXP CTaskDlg : public CDialogEx
 	DECLARE_DYNAMIC(CTaskDlg)
 
 public:
-	CTaskDlg(CWnd* pParent = nullptr, TASKS& recTask= TASKS(), CUsersArray& oUsersArray= CUsersArray());   // standard constructor
+	CTaskDlg(CWnd* pParent = nullptr, 
+		TASKS& recTask=TASKS(),
+		CUsersArray& oUsersArray=CUsersArray(),
+		TaskDlgMode eTaskDlgMode=TASK_ADD);  
 	virtual ~CTaskDlg();
 
 // Dialog Data
@@ -49,6 +58,7 @@ private:
 	CStatic m_sttAssignee;
 	CStatic m_sttStatus;
 	CStatic m_sttEffortLabel;
+	TaskDlgMode m_eTaskDlgMode;
 public:
 	TASKS& m_recTask;
 	CUsersArray& m_oUsersArray;

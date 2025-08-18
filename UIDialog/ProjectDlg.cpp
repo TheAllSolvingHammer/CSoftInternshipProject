@@ -17,11 +17,18 @@ BEGIN_MESSAGE_MAP(CProjectDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-CProjectDlg::CProjectDlg(CWnd* pParent /*=nullptr*/, PROJECTS& recProject, CUsersArray& oUsersArray, CTasksArray& oTasksArray)
+CProjectDlg::CProjectDlg(CWnd* pParent /*=nullptr*/, 
+	PROJECTS& recProject, 
+	CUsersArray& oUsersArray, 
+	CTasksArray& oTasksArray,
+	CTasksArray& oUpdatedTasksArray,
+	CTasksArray& oDeletedTasksArray)
 	: CDialogEx(IDD_PROJECT_DIALOG, pParent),
 	m_recProject(recProject),
 	m_oUsersArray(oUsersArray),
-	m_oTasksArray(oTasksArray)
+	m_oTasksArray(oTasksArray),
+	m_oUpdatedTasks(oUpdatedTasksArray),
+	m_oDeletedTasks(oDeletedTasksArray)
 {
 
 }
@@ -103,8 +110,6 @@ BOOL CProjectDlg::OnInitDialog()
 
 void CProjectDlg::OnOK()
 {
-	UpdateData(TRUE);
-
 	CString strName;
 	m_edbName.GetWindowText(strName);
 	strName.Trim();
@@ -143,6 +148,7 @@ void CProjectDlg::OnOK()
 	m_recProject.sProjectStatus = (short)m_cmbStatus.GetItemData(nStatusIdx);
 
 	CDialogEx::OnOK();
+
 }
 
 int CProjectDlg::FindUserIndex(const long lUserID)
@@ -169,8 +175,8 @@ int CProjectDlg::FindStatusIndex(const short sStatus)
 
 bool CProjectDlg::FetchTableData()
 {
-	m_cmbManager.ResetContent();
-	m_cmbStatus.ResetContent();
+	m_cmbManager.Clear();
+	m_cmbStatus.Clear();
 	m_lscTasks.DeleteAllItems();
 	for (INT_PTR i = 0; i < m_oUsersArray.GetCount();i++)
 	{
@@ -206,10 +212,6 @@ bool CProjectDlg::FetchTableData()
 				break;
 			}
 		}
-		//fix !!!!!!!!
-		/*CString strUserID;
-		strUserID.Format(_T("%ld"), pRecTask->lUserInChargeID);
-		m_lscTasks.SetItemText(nIndex, TASK_COLUMN_ASSIGNEE, strUserID.GetString());*/
 		CString strAssigneeName = _T("Unknown");
 		for (INT_PTR u = 0; u < m_oUsersArray.GetCount(); u++)
 		{
@@ -239,7 +241,6 @@ void CProjectDlg::UpdateEffortTotal()
 		if (pTask)
 			nTotalEffort += pTask->nTotalEffort;
 	}
-	m_recProject.nTotalEffort = nTotalEffort;
 
 	CString strEffort;
 	strEffort.Format(_T("%d"), nTotalEffort);
@@ -251,14 +252,16 @@ void CProjectDlg::OnBnClickedBtnProjectAddTask()
 {
 	TASKS newTask = {};
 	newTask.lID = 0;
+	newTask.lProjectID = m_recProject.lID;
 
-	CTaskDlg dlg(this, newTask, m_oUsersArray);
+	CTaskDlg dlg(this, newTask, m_oUsersArray, TASK_ADD);
 	if (dlg.DoModal() == IDOK)
 	{
 		m_oTasksArray.Add(new TASKS(dlg.m_recTask)); 
-		FetchTableData();
-		UpdateEffortTotal();
+		m_oUpdatedTasks.Add(new TASKS(dlg.m_recTask));
 	}
+	FetchTableData();
+	UpdateEffortTotal();
 }
 
 void CProjectDlg::OnBnClickedBtnProjectTaskDelete()
@@ -280,21 +283,34 @@ void CProjectDlg::OnBnClickedBtnProjectTaskDelete()
 		TASKS* pRecTask = m_oTasksArray.GetAt(i);
 		if (pRecTask && pRecTask->lID == lTaskID)
 		{
-			delete pRecTask;
 			m_oTasksArray.RemoveAt(i);
+			CheckUpdateArrayExistance(pRecTask->lID);
+			m_oDeletedTasks.Add(pRecTask);
+			delete pRecTask;
 			break;
 		}
 	}
 
+
 	FetchTableData();
 	UpdateEffortTotal();
 }
-
+void CProjectDlg::CheckUpdateArrayExistance(long lID)
+{
+	for (INT_PTR i = 0;i < m_oUpdatedTasks.GetCount();i++) 
+	{
+		TASKS* pRecTask = m_oUpdatedTasks.GetAt(i);
+		if (pRecTask->lID == lID)
+		{
+			delete pRecTask;
+			break;
+		}
+	}
+}
 
 
 void CProjectDlg::OnBnClickedBtnProjectTaskUpdate()
 {
-	// TODO: Add your control notification handler code here
 	POSITION pos = m_lscTasks.GetFirstSelectedItemPosition();
 	if (pos == nullptr)
 	{
@@ -309,21 +325,32 @@ void CProjectDlg::OnBnClickedBtnProjectTaskUpdate()
 	TASKS* pRecTask = nullptr;
 	for (INT_PTR i = 0; i < m_oTasksArray.GetCount(); ++i)
 	{
-		TASKS* pRecTask = m_oTasksArray.GetAt(i);
-		if (pRecTask && pRecTask->lID == lTaskID)
+		TASKS* pTask = m_oTasksArray.GetAt(i);
+		if (pTask && pTask->lID == lTaskID)
 		{
-			pRecTask = pRecTask;
+			pRecTask = pTask;
 			break;
 		}
 	}
 
 	if (pRecTask)
 	{
-		CTaskDlg dlg(this, *pRecTask, m_oUsersArray);
+		CTaskDlg dlg(this, *pRecTask, m_oUsersArray,TASK_UPDATE);
 		if (dlg.DoModal() == IDOK)
 		{
+			for (INT_PTR i = 0; i < m_oUpdatedTasks.GetCount(); ++i)
+			{
+				if (m_oUpdatedTasks.GetAt(i)->lID == pRecTask->lID)
+				{
+					TASKS* pNewTask = new TASKS();
+					*pNewTask = *pRecTask;
+					m_oUpdatedTasks.Add(pNewTask);
+					break;
+				}
+			}
 			FetchTableData();
 			UpdateEffortTotal();
 		}
 	}
+	
 }

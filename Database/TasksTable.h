@@ -17,5 +17,4 @@ public:
     CTasksTable();
     ~CTasksTable();
     bool SelectByProjectId(const long lID, CTasksArray& oTasksArray);
-    bool UpdateProjectAndTasksDuration(PROJECTS& recProject, CTasksArray& oTasksArray);
 };

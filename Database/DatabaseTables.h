@@ -16,6 +16,7 @@
 
 #define ERR_TRANSACTION_START           "Failed to start transaction."
 #define ERR_CONCURENCY_CONFLICT         "Update failed: concurrency conflict."
+#define ERR_TRANSACTION_COMMIT          "Failed to commit transaction."
 
 
 template<typename TRecord,typename TAccessor>
@@ -149,21 +150,13 @@ public:
     }
     bool UpdateWhereID(const long lID, TRecord& rec)
     {
-        HRESULT hRes = m_oSession.StartTransaction();
-        if (FAILED(hRes)) {
-            AfxMessageBox(_T(ERR_TRANSACTION_START), MB_ICONERROR);
-            return false;
-        }
-
         if (!OpenRowByID(lID, m_oSession, true))
         {
-            m_oSession.Abort();
             return false;
         }
 
-        if (m_recRecord.nUpdateCounter != rec.nUpdateCounter) 
+        if (m_recRecord.nUpdateCounter != rec.nUpdateCounter)
         {
-            m_oSession.Abort();
             AfxMessageBox(_T(ERR_CONCURENCY_CONFLICT));
             return false;
         }
@@ -172,26 +165,14 @@ public:
         m_recRecord.nUpdateCounter++;
         rec = m_recRecord;
 
-        hRes = m_oCommand.SetData(TABLE_DATA_ACCESSOR_INDEX);
+        HRESULT hRes = m_oCommand.SetData(TABLE_DATA_ACCESSOR_INDEX);
         m_oCommand.Close();
-        if (FAILED(hRes))
-        {
-            m_oSession.Abort();
-            return false;
-        }
-        m_oSession.Commit();
-        return true;
+
+        return SUCCEEDED(hRes);
     }
 
     bool Insert(TRecord& rec)
     {
-        HRESULT hRes = m_oSession.StartTransaction();
-        if (FAILED(hRes)) 
-        {
-            AfxMessageBox(_T(ERR_TRANSACTION_START), MB_ICONERROR);
-            return false;
-        }
-
         CString strSQL;
         strSQL.Format(_T(QUERY_SELECT_ALL), m_strTableName.GetString());
 
@@ -201,9 +182,9 @@ public:
         props.AddProperty(DBPROP_CANFETCHBACKWARDS, true);
         props.AddProperty(DBPROP_QUICKRESTART, true);
 
-        hRes = m_oCommand.Open(m_oSession, strSQL, &props);
-        if (FAILED(hRes)) {
-            m_oSession.Abort();
+        HRESULT hRes = m_oCommand.Open(m_oSession, strSQL, &props);
+        if (FAILED(hRes))
+        {
             return false;
         }
 
@@ -211,31 +192,21 @@ public:
         hRes = m_oCommand.Insert(TABLE_DATA_ACCESSOR_INDEX);
         if (FAILED(hRes))
         {
-            m_oSession.Abort();
             return false;
         }
 
-        hRes = m_oCommand.MoveLast();
-        if (FAILED(hRes))
+        if (m_oCommand.MoveLast() != S_OK)
         {
-            m_oSession.Abort();
             return false;
         }
+
         rec = m_recRecord;
         m_oCommand.Close();
-        m_oSession.Commit();
         return true;
     }
     
     bool DeleteWhereID(const long lID)
     {
-        HRESULT hRes = m_oSession.StartTransaction();
-        if (FAILED(hRes))
-        {
-            AfxMessageBox(_T(ERR_TRANSACTION_START), MB_ICONERROR);
-            return false;
-        }
-
         CString strSQL;
         strSQL.Format(_T(QUERY_SELECT_SINGLE), m_strTableName.GetString(), lID);
 
@@ -243,25 +214,24 @@ public:
         props.AddProperty(DBPROP_IRowsetChange, true);
         props.AddProperty(DBPROP_UPDATABILITY, DBPROPVAL_UP_DELETE);
 
-        hRes = m_oCommand.Open(m_oSession, strSQL, &props);
-        if (FAILED(hRes)) {
-            m_oSession.Abort();
+        HRESULT hRes = m_oCommand.Open(m_oSession, strSQL, &props);
+        if (FAILED(hRes))
+        {
             return false;
         }
 
-        if (m_oCommand.MoveFirst() != S_OK) {
-            m_oSession.Abort();
+        if (m_oCommand.MoveFirst() != S_OK)
+        {
             return false;
         }
 
         hRes = m_oCommand.Delete();
-        if (FAILED(hRes)) {
-            m_oSession.Abort();
+        if (FAILED(hRes))
+        {
             return false;
         }
 
         m_oCommand.Close();
-        m_oSession.Commit();
         return true;
     }
 };

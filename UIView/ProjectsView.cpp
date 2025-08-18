@@ -104,7 +104,9 @@ void CProjectsView::PopulateProjectsList()
         if (pRecProject) {
             CString strID;
             strID.Format(_T("%ld"), pRecProject->lID);
+       
             int index = oListCtrl.InsertItem(i, strID);
+            //insert item vij LPARAM attributes
             oListCtrl.SetItemText(index, PROJECT_COLUMN_NAME, pRecProject->szName);
             oListCtrl.SetItemText(index, PROJECT_COLUMN_DESCRIPTION, pRecProject->szDescription);
 
@@ -164,6 +166,9 @@ void CProjectsView::OnProjectEdit()
     if (pProjectToEdit) {
         CUsersArray oUsersArray;
         CTasksArray oTasksArray;
+        CTasksArray oUpdatedTasks;
+        CTasksArray oDeletedTasks;
+        
         if (!(pProjectsDocument->GetAllUsers(oUsersArray)))
         {
             AfxMessageBox(_T("Failed to load users"));
@@ -175,17 +180,19 @@ void CProjectsView::OnProjectEdit()
             return;
         }
 
-        CProjectDlg oProjectDlg(NULL, *pProjectToEdit, oUsersArray, oTasksArray);
+        CProjectDlg oProjectDlg(NULL, *pProjectToEdit, oUsersArray, oTasksArray, oUpdatedTasks, oDeletedTasks);
         
         if (oProjectDlg.DoModal() == IDOK) {
 
-            if (pProjectsDocument->UpdateProject(lID, oProjectDlg.m_recProject)) {
+            if (pProjectsDocument->UpdateProject(*pProjectToEdit, oTasksArray, oUpdatedTasks, oDeletedTasks)) {
                 AfxMessageBox(_T(SCS_PROJECT_UPDATE));
             }
             else {
                 AfxMessageBox(_T(ERR_PROJECT_UPDATE), MB_ICONERROR);
             }
+            
         }
+
     }
     else {
         AfxMessageBox(_T(ERR_PROJECT_NOT_FOUND), MB_ICONERROR);

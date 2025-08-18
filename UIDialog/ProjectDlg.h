@@ -68,7 +68,12 @@ class UIDialogDLL_EXP CProjectDlg : public CDialogEx
 	DECLARE_DYNAMIC(CProjectDlg)
 
 public:
-	CProjectDlg(CWnd* pParent = nullptr, PROJECTS& recProject=PROJECTS(), CUsersArray& oUsersArray=CUsersArray(), CTasksArray& oTasksArray=CTasksArray());   // standard constructor
+	CProjectDlg(CWnd* pParent = nullptr, 
+		PROJECTS& recProject=PROJECTS(),
+		CUsersArray& oUsersArray=CUsersArray(), 
+		CTasksArray& oTasksArray=CTasksArray(), 
+		CTasksArray& oUpdatedTasksArray = CTasksArray(),
+		CTasksArray& oDeletedtasksArray = CTasksArray());   // standard constructor
 	virtual ~CProjectDlg();
 
 // Dialog Data
@@ -85,12 +90,13 @@ public:
 	virtual void OnOK();
 	afx_msg void OnBnClickedBtnProjectAddTask();
 	afx_msg void OnBnClickedBtnProjectTaskDelete();
+	afx_msg void OnBnClickedBtnProjectTaskUpdate();
 private:
 	int FindUserIndex(const long lUserID);
 	int FindStatusIndex(const short status);
 	bool FetchTableData();
-	/*void LoadTasksToList();*/
 	void UpdateEffortTotal();
+	void CheckUpdateArrayExistance(long lID);
 private:
 	//Елементи
 	CEdit m_edbName;
@@ -111,10 +117,9 @@ private:
 	//Помощни променливи
 public:
 	/*USERS m_recUser;*/
-	PROJECTS m_recProject;
+	PROJECTS& m_recProject;
 	CUsersArray& m_oUsersArray;
 	CTasksArray& m_oTasksArray;
-	
-	
-	afx_msg void OnBnClickedBtnProjectTaskUpdate();
+	CTasksArray& m_oUpdatedTasks;
+	CTasksArray& m_oDeletedTasks;
 };

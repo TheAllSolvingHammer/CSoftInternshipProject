@@ -1,11 +1,13 @@
 #pragma once
 #include <atldbcli.h>
+#include "DllExport.h"
+
 #define DB_LOCATION            "(LocalDB)\\MSSQLLocalDB"
 #define DB_NAME                "ProjectmanagementSQL"
 #define MESSAGE_BOX_BODY       "Failed to get connecttion"
 #define MESSAGE_BOX_TITLE      "DB connection error"
 
-class CDatabaseContext {
+class DatabaseDLL_EXP CDatabaseContext {
 public:
     CDataSource m_oDataSource;
     bool m_bConnected = false;

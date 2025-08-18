@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\Dialogs">
+      <UniqueIdentifier>{1a62b0ec-0927-4513-8d2e-658687c42a5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Dialogs">
+      <UniqueIdentifier>{c305f5b6-c4a1-473e-b9b1-31f5cf453181}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UIDialog.cpp">
@@ -24,20 +30,20 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CUsersDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CLoginDlg.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
-    <ClCompile Include="RegisterDlg.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="CUsersDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="ProjectDlg.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="RegisterDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="TaskDlg.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -61,20 +67,20 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CUsersDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CLoginDlg.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Dialogs</Filter>
     </ClInclude>
-    <ClInclude Include="RegisterDlg.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="CUsersDlg.h">
+      <Filter>Header Files\Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="ProjectDlg.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="RegisterDlg.h">
+      <Filter>Header Files\Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="TaskDlg.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Dialogs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
