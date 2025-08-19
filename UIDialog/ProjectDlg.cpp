@@ -6,6 +6,26 @@
 #include "TaskDlg.h"
 
 #define DLG_PROJECT_TITLE _T("Project")
+#define DLG_PROJECT_NAME _T("Name: ")
+#define DLG_PROJECT_DESCRIPTION _T("Description: ")
+#define DLG_PROJECT_USER_IN_CHARGE _T("User in charge: ")
+#define DLG_PROJECT_STATUS _T("Status: ")
+#define DLG_PROJECT_EFFORT _T("Total Effort: ")
+#define DLG_PROJECT_TASKS _T("Task list: ")
+
+#define DLG_FAIL_COMBO_BOX _T("Failed to load combo boxes")
+#define DLG_ENTER_PROJECT_NAME _T("Please enter a project name.")
+#define DLG_SELECT_USER_IN_CHANGE _T("Please select a user in charge (manager).")
+#define DLG_FAIL_COMBO_BOX_STATUS _T("Error in combo box status")
+
+#define DLG_PROJECT_UNKNOWN_ASSIGNEE _T("Unknown")
+
+#define DLG_HINT_TASK_DELETE _T("Please select a task to delete.")
+#define DLG_HINT_TASK_NOT_FOUND _T("Task not found.")
+#define DLG_HINT_TASK_DELETION_ENDED _T("Tasks with status 'Ended' can not be deleted.")
+#define DLG_TASK_DELETION_SUCCESS _T("Task deleted successfully.")
+
+#define DLG_HINT_TASK_UPDATE _T("Please select a task to edit.")
 
 // CProjectDlg dialog
 
@@ -22,13 +42,15 @@ CProjectDlg::CProjectDlg(CWnd* pParent /*=nullptr*/,
 	CUsersArray& oUsersArray, 
 	CTasksArray& oTasksArray,
 	CTasksArray& oUpdatedTasksArray,
-	CTasksArray& oDeletedTasksArray)
+	CTasksArray& oDeletedTasksArray,
+	ProjectDialogMode eProjectDialogMode)
 	: CDialogEx(IDD_PROJECT_DIALOG, pParent),
 	m_recProject(recProject),
 	m_oUsersArray(oUsersArray),
 	m_oTasksArray(oTasksArray),
 	m_oUpdatedTasks(oUpdatedTasksArray),
-	m_oDeletedTasks(oDeletedTasksArray)
+	m_oDeletedTasks(oDeletedTasksArray),
+	m_eProjectDialogMode(eProjectDialogMode)
 {
 
 }
@@ -49,10 +71,13 @@ void CProjectDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STT_PROJECT_MANAGER, m_sttManager);
 	DDX_Control(pDX, IDC_CMB_PROJECT_STATUS, m_cmbStatus);
 	DDX_Control(pDX, IDC_STT_PROJECT_STATUS, m_sttStatus);
-	DDX_Control(pDX, IDC_STT_PROJECT_EFFORT, m_sttEffort);
+	DDX_Control(pDX, IDC_EDB_PROJECT_EFFORT, m_edbEffort);
 	DDX_Control(pDX, IDC_STT_PROJECT_LABEL_EFFORT, m_sttEffortLabel);
 	DDX_Control(pDX, IDC_LSC_PROJECT_TASKS, m_lscTasks);
 	DDX_Control(pDX, IDC_STT_PROJECT_TASKS, m_sttTasks);
+	DDX_Control(pDX, IDC_BTN_PROJECT_ADD_TASK, m_btnAddTask);
+	DDX_Control(pDX, IDC_BTN_PROJECT_TASK_UPDATE, m_btnEditTask);
+	DDX_Control(pDX, IDC_BTN_PROJECT_TASK_DELETE, m_btnDeleteTask);
 }
 
 // CProjectDlg message handlers
@@ -61,12 +86,16 @@ BOOL CProjectDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 	SetWindowText(DLG_PROJECT_TITLE);
-	m_sttName.SetWindowText(_T("Name: "));
-	m_sttDescription.SetWindowText(_T("Description: "));
-	m_sttManager.SetWindowText(_T("User in charge: "));
-	m_sttStatus.SetWindowText(_T("Status: "));
-	m_sttEffortLabel.SetWindowText(_T("Total Effort: "));
-	m_sttTasks.SetWindowText(_T("Task list: "));
+	m_sttName.SetWindowText(DLG_PROJECT_NAME);
+	m_sttDescription.SetWindowText(DLG_PROJECT_DESCRIPTION);
+	m_sttManager.SetWindowText(DLG_PROJECT_USER_IN_CHARGE);
+	m_sttStatus.SetWindowText(DLG_PROJECT_STATUS);
+	m_sttEffortLabel.SetWindowText(DLG_PROJECT_EFFORT);
+	m_sttTasks.SetWindowText(DLG_PROJECT_TASKS);
+	m_recDescription.SetTargetDevice(NULL, 0);
+	m_recDescription.ModifyStyle(0, WS_VSCROLL | ES_AUTOVSCROLL);
+	m_edbEffort.SetReadOnly(TRUE);
+	m_cmbStatus.EnableWindow(FALSE);
 
 	DWORD dwStyle = m_lscTasks.GetExtendedStyle();
 	dwStyle |= LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES;
@@ -79,7 +108,7 @@ BOOL CProjectDlg::OnInitDialog()
 	}
 
 	if (!FetchTableData()) {
-		AfxMessageBox(_T("Failed to load combo boxes"), MB_ICONERROR);
+		AfxMessageBox(DLG_FAIL_COMBO_BOX, MB_ICONERROR);
 		return FALSE;
 	}
 
@@ -105,19 +134,53 @@ BOOL CProjectDlg::OnInitDialog()
 	m_recDescription.SetWindowText(m_recProject.szDescription);
 
 	UpdateEffortTotal();
+	CheckProjectStatus();
+	switch (m_eProjectDialogMode)
+	{
+	case PROEJCT_DIALOG_MODE_READ_ONLY:
+
+		m_edbName.SetReadOnly(TRUE);
+		m_recDescription.SetReadOnly(TRUE);
+		m_cmbManager.EnableWindow(FALSE);
+		m_cmbStatus.EnableWindow(FALSE);
+		m_btnAddTask.EnableWindow(FALSE);
+		m_btnEditTask.EnableWindow(FALSE);
+		m_btnDeleteTask.EnableWindow(FALSE);
+		break;
+
+	case PROEJCT_DIALOG_MODE_EDITABLE:
+		m_edbEffort.SetReadOnly(TRUE);
+		m_cmbStatus.EnableWindow(FALSE);
+		break;
+	case PROEJCT_DIALOG_MODE_CREATE:
+		m_btnAddTask.EnableWindow(FALSE);
+		m_btnEditTask.EnableWindow(FALSE);
+		m_btnDeleteTask.EnableWindow(FALSE);
+		m_edbEffort.SetReadOnly(TRUE);
+		m_cmbStatus.EnableWindow(FALSE);
+		break;
+
+	default:
+		m_edbEffort.SetReadOnly(TRUE);
+		m_cmbStatus.EnableWindow(FALSE);
+		break;
+	}
 	UpdateData(FALSE);
 	return TRUE;
 }
 
 void CProjectDlg::OnOK()
 {
+	if (m_eProjectDialogMode == PROEJCT_DIALOG_MODE_READ_ONLY) {
+		CDialogEx::OnOK();
+	}
 	CString strName;
 	m_edbName.GetWindowText(strName);
 	strName.Trim();
 
 	if (strName.IsEmpty())
 	{
-		AfxMessageBox(_T("Please enter a project name."), MB_ICONWARNING);
+		AfxMessageBox(DLG_ENTER_PROJECT_NAME, MB_ICONWARNING);
 		m_edbName.SetFocus();
 		return;
 	}
@@ -125,16 +188,15 @@ void CProjectDlg::OnOK()
 	int nManagerIdx = m_cmbManager.GetCurSel();
 	if (nManagerIdx == CB_ERR)
 	{
-		AfxMessageBox(_T("Please select a user in charge (manager)."), MB_ICONWARNING);
+		AfxMessageBox(DLG_SELECT_USER_IN_CHANGE, MB_ICONWARNING);
 		m_cmbManager.SetFocus();
 		return;
 	}
-
+	CheckProjectStatus();
 	int nStatusIdx = m_cmbStatus.GetCurSel();
 	if (nStatusIdx == CB_ERR)
 	{
-		AfxMessageBox(_T("Please select a project status."), MB_ICONWARNING);
-		m_cmbStatus.SetFocus();
+		AfxMessageBox(DLG_FAIL_COMBO_BOX_STATUS, MB_ICONWARNING);
 		return;
 	}
 
@@ -231,7 +293,7 @@ bool CProjectDlg::FetchTableData()
 				}
 			}
 
-			CString strAssigneeName = _T("Unknown");
+			CString strAssigneeName = DLG_PROJECT_UNKNOWN_ASSIGNEE;
 			for (INT_PTR u = 0; u < m_oUsersArray.GetCount(); u++)
 			{
 				USERS* pRecUser = m_oUsersArray.GetAt(u);
@@ -259,14 +321,50 @@ void CProjectDlg::UpdateEffortTotal()
 	{
 		TASKS* pTask = m_oTasksArray.GetAt(i);
 		if (pTask)
+		{
 			nTotalEffort += pTask->nTotalEffort;
+		}
 	}
 
 	CString strEffort;
 	strEffort.Format(_T("%d"), nTotalEffort);
-	m_sttEffort.SetWindowText(strEffort);
+	m_edbEffort.SetWindowText(strEffort);
 }
 
+void CProjectDlg::CheckProjectStatus()
+{
+	bool bAllTasksEnded = true;
+	for (INT_PTR i = 0; i < m_oTasksArray.GetCount(); ++i)
+	{
+		TASKS* pTask = m_oTasksArray.GetAt(i);
+		if (pTask && pTask->sTaskStatus != (TASK_STATE_ENDED + 1))
+		{
+			bAllTasksEnded = false;
+			break;
+		}
+	}
+
+	if (bAllTasksEnded)
+	{
+		m_recProject.sProjectStatus = (short)(PROJECT_DIALOG_STATE_FINISHED + 1);
+
+		int nIndex = FindStatusIndex(m_recProject.sProjectStatus);
+		if (nIndex != CB_ERR)
+		{
+			m_cmbStatus.SetCurSel(nIndex);
+		}
+	}
+	else 
+	{
+		m_recProject.sProjectStatus = (short)(PROJECT_DIALOG_STATE_ACTIVE + 1);
+
+		int nIndex = FindStatusIndex(m_recProject.sProjectStatus);
+		if (nIndex != CB_ERR)
+		{
+			m_cmbStatus.SetCurSel(nIndex);
+		}
+	}
+}
 
 void CProjectDlg::OnBnClickedBtnProjectAddTask()
 {
@@ -287,6 +385,7 @@ void CProjectDlg::OnBnClickedBtnProjectAddTask()
 
 	FetchTableData();
 	UpdateEffortTotal();
+	CheckProjectStatus();
 }
 
 void CProjectDlg::OnBnClickedBtnProjectTaskDelete()
@@ -294,7 +393,7 @@ void CProjectDlg::OnBnClickedBtnProjectTaskDelete()
 	POSITION pos = m_lscTasks.GetFirstSelectedItemPosition();
 	if (!pos)
 	{
-		AfxMessageBox(_T("Please select a task to delete."), MB_ICONEXCLAMATION);
+		AfxMessageBox(DLG_HINT_TASK_DELETE, MB_ICONEXCLAMATION);
 		return;
 	}
 
@@ -303,13 +402,13 @@ void CProjectDlg::OnBnClickedBtnProjectTaskDelete()
 
 	if (!pTask)
 	{
-		AfxMessageBox(_T("Task not found."), MB_ICONERROR);
+		AfxMessageBox(DLG_HINT_TASK_NOT_FOUND, MB_ICONERROR);
 		return;
 	}
 
 	if (pTask->sTaskStatus == (TASK_STATE_ENDED + 1))
 	{
-		AfxMessageBox(_T("Tasks with status 'Ended' can not be deleted."), MB_ICONEXCLAMATION);
+		AfxMessageBox(DLG_HINT_TASK_DELETION_ENDED, MB_ICONEXCLAMATION);
 		return;
 	}
 
@@ -346,8 +445,9 @@ void CProjectDlg::OnBnClickedBtnProjectTaskDelete()
 
 	FetchTableData();
 	UpdateEffortTotal();
+	CheckProjectStatus();
 
-	AfxMessageBox(_T("Task deleted successfully."), MB_ICONINFORMATION);
+	AfxMessageBox(DLG_TASK_DELETION_SUCCESS, MB_ICONINFORMATION);
 }
 
 
@@ -356,7 +456,7 @@ void CProjectDlg::OnBnClickedBtnProjectTaskUpdate()
 	POSITION pos = m_lscTasks.GetFirstSelectedItemPosition();
 	if (!pos)
 	{
-		AfxMessageBox(_T("Please select a task to edit."));
+		AfxMessageBox(DLG_HINT_TASK_UPDATE);
 		return;
 	}
 
@@ -386,5 +486,6 @@ void CProjectDlg::OnBnClickedBtnProjectTaskUpdate()
 
 		FetchTableData();
 		UpdateEffortTotal();
+		CheckProjectStatus();
 	}
 }

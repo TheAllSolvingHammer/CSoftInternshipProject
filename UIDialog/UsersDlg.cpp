@@ -3,7 +3,7 @@
 
 #include "pch.h"
 #include "afxdialogex.h"
-#include "CUsersDlg.h"
+#include "UsersDlg.h"
 #include "resource.h"
 #include "JobTitleAppService.h"
 

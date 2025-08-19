@@ -6,6 +6,9 @@
 #include "TaskDlg.h"
 #include "resource.h"
 
+/// <summary>
+/// Текстови маси за състоянието на задача
+/// </summary>
 const TCHAR* gl_szTaskDialogState[] = {
 	_T("Pending"),
 	_T("In Progress"),

@@ -1,14 +1,10 @@
 #include "pch.h"
 #include "framework.h"
 #include "ProjectsView.h"
-
 #include "ProjectDlg.h"
-
-#include "CUsersDlg.h"
 #include <Users.h>
 #include "Resource.h"
-#include "../Application/UsersAppService.h"
-#include "../Application/ProjectsAppService.h"
+
 
 #define ERR_MESSAGE_SAFE_HWND               "Error in getting the safe HWND"
 #define ERR_MESSAGE_LST_CTRL                "Error in getting the header of the list control"
@@ -23,7 +19,7 @@
 #define ERR_PROJECT_ADD                     "Failed to add project."
 
 #define ERR_NOT_SELECTED_PROJECT_DELETE     "Please select a project to delete."
-#define CONF_PROJECT_DELETE                   "Are you sure to delete the selected project?"
+#define CONF_PROJECT_DELETE                 "Are you sure to delete the selected project?"
 
 #define SCS_PROJECT_DELETE                  "project deleted successfully!"
 #define ERR_PROJECT_DELETE                  "Failed to delete project."
@@ -62,13 +58,6 @@ CProjectsDocument* CProjectsView::GetDocument() const
     return (CProjectsDocument*)m_pDocument;
 }
 
-
-// MFC Message Handlers
-// ----------------
-
-
-//Methods
-// ----------------
 void CProjectsView::PopulateProjectsList()
 {
     CListCtrl& oListCtrl = GetListCtrl();
@@ -106,7 +95,6 @@ void CProjectsView::PopulateProjectsList()
             strID.Format(_T("%ld"), pRecProject->lID);
        
             int index = oListCtrl.InsertItem(i, strID);
-            //insert item vij LPARAM attributes
             oListCtrl.SetItemText(index, PROJECT_COLUMN_NAME, pRecProject->szName);
             oListCtrl.SetItemText(index, PROJECT_COLUMN_DESCRIPTION, pRecProject->szDescription);
 
@@ -121,7 +109,7 @@ void CProjectsView::PopulateProjectsList()
 
             oListCtrl.SetItemText(index, PROJECT_COLUMN_STATUS, _T(ERR_UNKNOWN));
             for (int i = 0;i < PROJECT_STATE_COUNT;i++) {
-                if (pRecProject->sProjectStatus = i + 1) {
+                if (pRecProject->sProjectStatus == i + 1) {
                     oListCtrl.SetItemText(index, PROJECT_COLUMN_STATUS, gl_szProjectStateDescription[i]);
                     break;
                 }
@@ -201,7 +189,6 @@ void CProjectsView::OnProjectEdit()
 
 void CProjectsView::OnProjectAdd()
 {
-    
     CUsersArray oUsersArray;
     PROJECTS recProject;
     CProjectsDocument* pProjectsDocument = GetDocument();
@@ -215,7 +202,9 @@ void CProjectsView::OnProjectAdd()
         AfxMessageBox(_T("Failed to load users"));
         return;
     }
-    CProjectDlg oProjectDlg(NULL, recProject, oUsersArray);
+
+    CProjectDlg oProjectDlg(NULL, recProject, oUsersArray, CTasksArray(), CTasksArray(), CTasksArray(), PROEJCT_DIALOG_MODE_CREATE);
+
     if (oProjectDlg.DoModal() == IDOK) {
         CProjectsDocument* pDoc = GetDocument();
         if (pDoc == NULL)
@@ -316,7 +305,40 @@ void CProjectsView::OnLButtonDblClk(UINT nFlags, CPoint point) {
     if (nItem != -1)
     {
         listCtrl.SetItemState(nItem, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
-        OnProjectEdit();
+
+        CProjectsDocument* pProjectsDocument = GetDocument();
+        if (!pProjectsDocument) return;
+
+        CString strID = listCtrl.GetItemText(nItem, PROJECT_COLUMN_ID);
+        long lID = _ttol(strID);
+        PROJECTS* pProjectToView = nullptr;
+        CProjectsArray& oProjectsArray = pProjectsDocument->GetProjectsArray();
+        for (INT_PTR i = 0; i < oProjectsArray.GetCount(); i++) {
+            PROJECTS* pRecProject = oProjectsArray.GetAt(i);
+            if (pRecProject && pRecProject->lID == lID) {
+                pProjectToView = pRecProject;
+                break;
+            }
+        }
+
+        if (pProjectToView) {
+            CUsersArray oUsersArray;
+            CTasksArray oTasksArray;
+            CTasksArray oUpdatedTasks;
+            CTasksArray oDeletedTasks;
+
+            if (!(pProjectsDocument->GetAllUsers(oUsersArray))) {
+                AfxMessageBox(_T("Failed to load users"));
+                return;
+            }
+            if (!(pProjectsDocument->GetTasksByProject(pProjectToView->lID, oTasksArray))) {
+                AfxMessageBox(_T("Failed to load Tasks"));
+                return;
+            }
+
+            CProjectDlg oProjectDlg(NULL, *pProjectToView, oUsersArray, oTasksArray, oUpdatedTasks, oDeletedTasks, PROEJCT_DIALOG_MODE_READ_ONLY);
+            oProjectDlg.DoModal();
+        }
     }
 
     CListView::OnLButtonDblClk(nFlags, point);

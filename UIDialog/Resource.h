@@ -54,6 +54,8 @@
 #define IDC_STT_TASK_ASSIGNEE           1050
 #define IDC_STT_TASK_DESCRIPTION        1051
 #define IDC_STT_TASK_NAME               1052
+#define IDC_EDIT1                       1054
+#define IDC_EDB_PROJECT_EFFORT          1054
 
 // Next default values for new objects
 // 
@@ -61,7 +63,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        1015
 #define _APS_NEXT_COMMAND_VALUE         32775
-#define _APS_NEXT_CONTROL_VALUE         1054
+#define _APS_NEXT_CONTROL_VALUE         1055
 #define _APS_NEXT_SYMED_VALUE           1000
 #endif
 #endif

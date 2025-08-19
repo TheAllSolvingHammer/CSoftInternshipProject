@@ -10,7 +10,7 @@
 #include "ProjectsDocument.h"
 #include <afxwin.h> 
 
-#include <CUsersDlg.h>
+#include <UsersDlg.h>
 
 
 #ifdef _DEBUG

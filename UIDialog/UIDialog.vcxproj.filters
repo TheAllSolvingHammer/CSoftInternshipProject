@@ -30,10 +30,10 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CLoginDlg.cpp">
+    <ClCompile Include="LoginDlg.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
-    <ClCompile Include="CUsersDlg.cpp">
+    <ClCompile Include="UsersDlg.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="ProjectDlg.cpp">
@@ -67,10 +67,10 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CLoginDlg.h">
+    <ClInclude Include="LoginDlg.h">
       <Filter>Header Files\Dialogs</Filter>
     </ClInclude>
-    <ClInclude Include="CUsersDlg.h">
+    <ClInclude Include="UsersDlg.h">
       <Filter>Header Files\Dialogs</Filter>
     </ClInclude>
     <ClInclude Include="ProjectDlg.h">

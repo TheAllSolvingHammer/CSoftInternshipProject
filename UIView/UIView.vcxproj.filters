@@ -16,6 +16,9 @@
     <Filter Include="Source Files\Views">
       <UniqueIdentifier>{fcb310eb-18b6-48ce-b4b6-58c4d0aafb45}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Views">
+      <UniqueIdentifier>{31bc14ae-e818-481e-829d-546dce5e6d3e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UIView.cpp">
@@ -27,13 +30,13 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CSoftInternshipProjectView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CUsersView.cpp">
+    <ClCompile Include="UsersView.cpp">
       <Filter>Source Files\Views</Filter>
     </ClCompile>
     <ClCompile Include="ProjectsView.cpp">
+      <Filter>Source Files\Views</Filter>
+    </ClCompile>
+    <ClCompile Include="CSoftInternshipProjectView.cpp">
       <Filter>Source Files\Views</Filter>
     </ClCompile>
   </ItemGroup>
@@ -58,14 +61,14 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CUsersView.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CSoftInternshipProjectView.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Views</Filter>
+    </ClInclude>
+    <ClInclude Include="UsersView.h">
+      <Filter>Header Files\Views</Filter>
     </ClInclude>
     <ClInclude Include="ProjectsView.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Views</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

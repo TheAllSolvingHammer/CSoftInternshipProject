@@ -15,6 +15,9 @@
 #define TASKS_COLUMN_TASK_STATUS        7
 #define TASKS_COLUMN_TOTAL_EFFORT       8
 
+/// <summary>
+/// Аксесор на задачите
+/// </summary>
 class CTasksAccessor {
 protected:
     BEGIN_ACCESSOR_MAP(CTasksAccessor, TASKS_ACCESSORS_COUNT)

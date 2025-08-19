@@ -19,6 +19,9 @@
 #define ERR_CONCURENCY_CONFLICT         "Update failed: concurrency conflict."
 #define ERR_TRANSACTION_COMMIT          "Failed to commit transaction."
 
+/// <summary>
+/// Енумерация за заключване на вид запис
+/// </summary>
 enum EQueryLock
 {
 	NoLock,
@@ -26,19 +29,15 @@ enum EQueryLock
 	ExclusiveLock,
 };
 
+/// <summary>
+/// Клас за базови операции с таблици
+/// </summary>
+/// <typeparam name="TRecord"></typeparam>
+/// <typeparam name="TAccessor"></typeparam>
 template<typename TRecord,typename TAccessor>
 class CBaseTable
 {
-private:
-	bool m_bSessionIsOwned;
-protected:
-	CString m_strTableName;
-	CSession m_oSession;
 public:
-	CCommand<CAccessor<TAccessor>> m_oCommand;
-    TRecord& m_recRecord;
-public:
-
 	CBaseTable(TRecord& recRecord, const CString strTableName, CSession& oExternalSession)
 		: m_recRecord(recRecord),
 		m_oSession(oExternalSession)
@@ -146,7 +145,7 @@ private:
 		return true;
 	}
 public:
-	bool SelectAll(CArrayAutoManager_2<TRecord>& oArray)
+	bool SelectAll(CArrayAutoManager<TRecord>& oArray)
 	{
 		if (FAILED(StartOrContinueTransaction()))
 			return false;
@@ -297,5 +296,13 @@ public:
 		m_oCommand.Close();
 		return SUCCEEDED(CommitOrAbortTransaction(true));
 	}
+private:
+	bool m_bSessionIsOwned;
+protected:
+	CString m_strTableName;
+	CSession m_oSession;
+public:
+	CCommand<CAccessor<TAccessor>> m_oCommand;
+	TRecord& m_recRecord;
 };
 

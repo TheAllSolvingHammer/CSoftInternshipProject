@@ -34,12 +34,9 @@ bool CUsersAppService::AddUser(USERS& recUser)
 
 bool CUsersAppService::UpdateUser(const long lID, USERS& recUser)
 {
-	//open transaction
-	//check trnsaction
 	if (!CUsersTable().UpdateWhereID(lID, recUser)) {
 		return false;
 	}
-	//commit
 	return true;
 
 }

@@ -14,6 +14,9 @@
 #define PROJECTS_PROJECT_STATUS             6
 #define PROJECTS_TOTAL_EFFORT               7
 
+/// <summary>
+/// Аксесор на Проектите
+/// </summary>
 class CProjectsAccessor {
 protected:
     BEGIN_ACCESSOR_MAP(CProjectsAccessor, PROJECTS_ACCESSORS_COUNT)

@@ -4,6 +4,7 @@
 
 class ApplicationDLL_EXP CJobTitlesAppService {
 public:
+
 	CJobTitlesAppService();
 	~CJobTitlesAppService();
 	bool GetAllJobs(CJobTitlesArray& oJobTitlesArray);

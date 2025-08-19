@@ -200,7 +200,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CSoftInternshipProjectDoc.cpp" />
-    <ClCompile Include="CUsersDocument.cpp" />
+    <ClCompile Include="UsersDocument.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
@@ -233,7 +233,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CSoftInternshipProjectDoc.h" />
-    <ClInclude Include="CUsersDocument.h" />
+    <ClInclude Include="UsersDocument.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ProjectsDocument.h" />
