@@ -2,9 +2,12 @@
 #include "ProjectsTable.h"
 
 
-
-
 CProjectsTable::CProjectsTable() : CBaseTable(m_oCommand.m_recProject, _T(PROJECTS_TABLE_NAME))
+{
+
+}
+
+CProjectsTable::CProjectsTable(CSession* pSession) : CBaseTable(m_oCommand.m_recProject, _T(PROJECTS_TABLE_NAME), *pSession)
 {
 
 }

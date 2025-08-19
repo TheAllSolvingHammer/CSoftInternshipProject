@@ -10,6 +10,9 @@
 #define JOB_TITLES_COLUMN_TITLE_NAME            2
 #define JOB_TITLES_COLUMN_UPDATE_COUNTER        3
 
+/// <summary>
+/// Аксесор на позициите
+/// </summary>
 class CJobTitlesAccessor {
 protected:
     BEGIN_ACCESSOR_MAP(CJobTitlesAccessor, JOB_TITLES_ACCESSORS_COUNT)

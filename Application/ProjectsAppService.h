@@ -12,5 +12,4 @@ public:
 	bool UpdateProject(const long lID, PROJECTS& recProject);
 	bool DeleteProject(const long lID);
 	bool SelectTasksByProject(const long lID, CTasksArray& oTasksArray);
-
 };

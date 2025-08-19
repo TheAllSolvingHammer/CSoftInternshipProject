@@ -3,9 +3,9 @@
 
 #include "pch.h"
 #include "afxdialogex.h"
-#include "CUsersDlg.h"
+#include "UsersDlg.h"
 #include "resource.h"
-#include "../Application/JobTitleAppService.h"
+#include "JobTitleAppService.h"
 
 
 

@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "framework.h"
-#include "CUsersView.h"
+#include "UsersView.h"
 #include "resource.h"
-#include "CUsersDlg.h"
+#include "UsersDlg.h"
 
 #define ERR_MESSAGE_SAFE_HWND           "Error in getting the safe HWND"
 #define ERR_MESSAGE_LST_CTRL            "Error in getting the header of the list control"

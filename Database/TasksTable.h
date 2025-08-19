@@ -15,7 +15,7 @@ class DatabaseDLL_EXP CTasksTable : public CBaseTable<TASKS,CTasksAccessor>
 {
 public:
     CTasksTable();
+    CTasksTable(CSession* pSession);
     ~CTasksTable();
     bool SelectByProjectId(const long lID, CTasksArray& oTasksArray);
-    bool UpdateProjectAndTasksDuration(PROJECTS& recProject, CTasksArray& oTasksArray);
 };

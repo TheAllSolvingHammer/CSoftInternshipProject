@@ -199,8 +199,8 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CLoginDlg.cpp" />
-    <ClCompile Include="CUsersDlg.cpp" />
+    <ClCompile Include="LoginDlg.cpp" />
+    <ClCompile Include="UsersDlg.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
@@ -231,8 +231,8 @@
     <None Include="UIDialog.def" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CLoginDlg.h" />
-    <ClInclude Include="CUsersDlg.h" />
+    <ClInclude Include="LoginDlg.h" />
+    <ClInclude Include="UsersDlg.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ProjectDlg.h" />

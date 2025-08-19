@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "CUsersDocument.h"
+#include "UsersDocument.h"
 #include <UsersAppService.h>
 #include <JobTitleAppService.h>
 
@@ -30,9 +30,6 @@ CUsersArray& CUsersDocument::GetUsers() {
     return this->m_oUsersArray;
 }
 
-//CJobTitlesArray& CUsersDocument::GetJobTitles() {
-//    return 
-//}
 
 bool CUsersDocument::AddNewUser(USERS& newUser)
 {
@@ -95,6 +92,5 @@ BOOL CUsersDocument::OnNewDocument()
 
 void CUsersDocument::OnCloseDocument() 
 {
-	/*FreeUsersMemory();*/
 	CDocument::OnCloseDocument();
 }

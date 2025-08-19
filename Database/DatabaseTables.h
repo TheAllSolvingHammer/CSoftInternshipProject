@@ -4,7 +4,7 @@
 
 #include "ArrayUtils.h"
 
-#define TABLE_DATA_ACCESSOR_INDEX      1
+#define TABLE_DATA_ACCESSOR_INDEX		1
 
 #define ERR_SESSION_CREATION            "Failed to create session."
 #define ERR_SESSION_INIT                "Session init error!"
@@ -13,256 +13,296 @@
 #define QUERY_SELECT_SINGLE             "SELECT * FROM %s WHERE ID = %d"
 
 #define QUERY_SELECT_ALL                "SELECT * FROM %s"
+#define QUERY_SELECT_ALL_UPDATABLE		"SELECT * FROM %s WITH (UPDLOCK)"
 
 #define ERR_TRANSACTION_START           "Failed to start transaction."
 #define ERR_CONCURENCY_CONFLICT         "Update failed: concurrency conflict."
+#define ERR_TRANSACTION_COMMIT          "Failed to commit transaction."
 
+/// <summary>
+/// Енумерация за заключване на вид запис
+/// </summary>
+enum EQueryLock
+{
+	NoLock,
+	UpdLock,
+	ExclusiveLock,
+};
 
+/// <summary>
+/// Клас за базови операции с таблици
+/// </summary>
+/// <typeparam name="TRecord"></typeparam>
+/// <typeparam name="TAccessor"></typeparam>
 template<typename TRecord,typename TAccessor>
 class CBaseTable
 {
 public:
-    CString m_strTableName;
-    CSession m_oSession;
-    TRecord& m_recRecord;
-    CCommand<CAccessor<TAccessor>> m_oCommand;
-    CBaseTable(TRecord& recRecord,const CString strTableName) 
-        : m_recRecord(recRecord)
-    {
-        this->m_strTableName = strTableName;
-        CDatabaseContext::getInstance().Connect();
-        HRESULT hRes = CDatabaseContext::getInstance().CreateSession(m_oSession);
-        if (FAILED(hRes))
-        {
-            m_oSession.Close();
-            AfxMessageBox(_T(ERR_SESSION_CREATION), MB_ICONERROR);
-        }
-    }
-    ~CBaseTable()
-    {
-        m_oCommand.Close();
-        m_oSession.Close();
-    }
+	CBaseTable(TRecord& recRecord, const CString strTableName, CSession& oExternalSession)
+		: m_recRecord(recRecord),
+		m_oSession(oExternalSession)
+	{
+		this->m_strTableName = strTableName;
+		this->m_bSessionIsOwned = false;
+	}
+
+	CBaseTable(TRecord& recRecord, const CString strTableName)
+		: m_recRecord(recRecord)
+	{
+		this->m_strTableName = strTableName;
+		CDatabaseContext::getInstance().Connect();
+		HRESULT hRes = CDatabaseContext::getInstance().CreateSession(m_oSession);
+		if (FAILED(hRes))
+		{
+			m_oSession.Close();
+			AfxMessageBox(_T(ERR_SESSION_CREATION), MB_ICONERROR);
+		}
+		this->m_bSessionIsOwned = true;
+	}
+
+	~CBaseTable()
+	{
+		m_oCommand.Close();
+		if (m_bSessionIsOwned)
+		{
+			m_oSession.Close();
+		}
+	}
+
+protected:
+	HRESULT StartOrContinueTransaction()
+	{
+		if (m_bSessionIsOwned)
+		{
+			HRESULT hRes = m_oSession.StartTransaction();
+			if (FAILED(hRes))
+			{
+				AfxMessageBox(_T(ERR_TRANSACTION_START), MB_ICONERROR);
+				return hRes;
+			}
+		}
+		return S_OK;
+	}
+
+	HRESULT CommitOrAbortTransaction(bool bCommit)
+	{
+		if (m_bSessionIsOwned)
+		{
+			if (bCommit)
+			{
+				HRESULT hRes = m_oSession.Commit();
+				if (FAILED(hRes))
+				{
+					AfxMessageBox(_T(ERR_TRANSACTION_COMMIT), MB_ICONERROR);
+					return hRes;
+				}
+			}
+			else
+			{
+				m_oSession.Abort();
+			}
+		}
+		return S_OK;
+	}
+
 private:
-    bool OpenRowByID(long lID, CSession& oSession, bool bUpdatable)
-    {
-        if (!m_oSession.m_spOpenRowset) 
-        {
-            AfxMessageBox(_T(ERR_SESSION_INIT));
-            return false;
-        }
-        CString strSQL;
-        if (bUpdatable)
-        {
-            strSQL.Format(_T(QUERY_SELECT_UPDATE), m_strTableName.GetString(), lID);
-        }
-        else
-        {
-            strSQL.Format(_T(QUERY_SELECT_SINGLE), m_strTableName.GetString(), lID);
-        }
+	bool OpenRowsetWithLock(long lID, EQueryLock eLockMode)
+	{
+		if (!m_oSession.m_spOpenRowset)
+		{
+			AfxMessageBox(_T(ERR_SESSION_INIT));
+			return false;
+		}
 
-        HRESULT hRes;
-        if (bUpdatable)
-        {
-            CDBPropSet props(DBPROPSET_ROWSET);
-            props.AddProperty(DBPROP_CANFETCHBACKWARDS, true);
-            props.AddProperty(DBPROP_IRowsetScroll, true);
-            props.AddProperty(DBPROP_IRowsetChange, true);
-            props.AddProperty(DBPROP_UPDATABILITY, DBPROPVAL_UP_CHANGE);
+		CString strSQL;
+		CDBPropSet props(DBPROPSET_ROWSET);
 
-            hRes = m_oCommand.Open(oSession, strSQL, &props);
-        }
-        else
-        {
-            hRes = m_oCommand.Open(oSession, strSQL);
-        }
+		switch (eLockMode)
+		{
+		case NoLock:
+			strSQL.Format(_T(QUERY_SELECT_SINGLE), m_strTableName.GetString(), lID);
+			break;
+		case UpdLock:
+			strSQL.Format(_T(QUERY_SELECT_UPDATE), m_strTableName.GetString(), lID);
+			props.AddProperty(DBPROP_IRowsetChange, true);
+			props.AddProperty(DBPROP_UPDATABILITY, DBPROPVAL_UP_CHANGE);
+			props.AddProperty(DBPROP_CANFETCHBACKWARDS, true);
+			props.AddProperty(DBPROP_IRowsetScroll, true);
+			break;
+		default:
+			strSQL.Format(_T(QUERY_SELECT_SINGLE), m_strTableName.GetString(), lID);
+			break;
+		}
 
-        if (FAILED(hRes)) {
-            return false;
-        }
+		HRESULT hRes = m_oCommand.Open(m_oSession, strSQL, &props);
+		if (FAILED(hRes)) {
+			return false;
+		}
 
-        if (m_oCommand.MoveFirst() != S_OK) {
-            return false;
-        }
-        return true;
-
-    }
+		if (m_oCommand.MoveFirst() != S_OK) {
+			return false;
+		}
+		return true;
+	}
 public:
+	bool SelectAll(CArrayAutoManager<TRecord>& oArray)
+	{
+		if (FAILED(StartOrContinueTransaction()))
+			return false;
 
-    bool SelectAll(/*CArrayAutoManager<TRecord> */ CTypedPtrArray<CArrayAutoManager, TRecord*>& oArray)
-    {
-        HRESULT hRes = m_oSession.StartTransaction();
-        if (FAILED(hRes))
-        {
-            AfxMessageBox(_T(ERR_TRANSACTION_START), MB_ICONERROR);
-            return false;
-        }
+		CString strSQL;
+		strSQL.Format(_T(QUERY_SELECT_ALL), m_strTableName.GetString());
 
-        CString strSQL;
-        strSQL.Format(_T(QUERY_SELECT_ALL), m_strTableName.GetString());
+		HRESULT hRes = m_oCommand.Open(m_oSession, strSQL);
+		if (FAILED(hRes))
+		{
+			CommitOrAbortTransaction(false);
+			return false;
+		}
 
-        CDBPropSet props(DBPROPSET_ROWSET);
-        props.AddProperty(DBPROP_CANFETCHBACKWARDS, true);
-        props.AddProperty(DBPROP_IRowsetScroll, true);
-        props.AddProperty(DBPROP_IRowsetChange, true);
-        props.AddProperty(DBPROP_UPDATABILITY, DBPROPVAL_UP_CHANGE);
+		while (m_oCommand.MoveNext() == S_OK)
+		{
+			TRecord* pRecord = new TRecord();
+			*pRecord = m_recRecord;
+			oArray.Add(pRecord);
+		}
 
-        hRes = m_oCommand.Open(m_oSession, strSQL, &props);
-        if (FAILED(hRes))
-        {
-            m_oSession.Abort();
-            return false;
-        }
+		m_oCommand.Close();
+		return SUCCEEDED(CommitOrAbortTransaction(true));
+	}
 
-        while (m_oCommand.MoveNext() == S_OK)
-        {
-            TRecord* pRecord = new TRecord();
-            *pRecord = m_recRecord;
-            oArray.Add(pRecord);
-        }
+	bool SelectWhereID(const long lID, TRecord& rec)
+	{
+		if (FAILED(StartOrContinueTransaction()))
+			return false;
 
-        m_oCommand.Close();
-        m_oSession.Commit();
-        return true;
-    }
+		if (!OpenRowsetWithLock(lID, NoLock))
+		{
+			CommitOrAbortTransaction(false);
+			return false;
+		}
 
-    bool SelectWhereID(const long lID, TRecord& rec)
-    {
-        HRESULT hRes = m_oSession.StartTransaction();
-        if (FAILED(hRes))
-        {
-            AfxMessageBox(_T(ERR_TRANSACTION_START), MB_ICONERROR);
-            return false;
-        }
+		rec = m_recRecord;
+		m_oCommand.Close();
+		return SUCCEEDED(CommitOrAbortTransaction(true));
+	}
 
-        if (!OpenRowByID(lID, m_oSession, false))
-        {
-            m_oSession.Abort();
-            return false;
-        }
 
-        rec = m_recRecord;
-        m_oCommand.Close();
-        m_oSession.Commit();
-        return true;
-        
-    }
-    bool UpdateWhereID(const long lID, TRecord& rec)
-    {
-        HRESULT hRes = m_oSession.StartTransaction();
-        if (FAILED(hRes)) {
-            AfxMessageBox(_T(ERR_TRANSACTION_START), MB_ICONERROR);
-            return false;
-        }
+	bool UpdateWhereID(const long lID, TRecord& rec)
+	{
+		if (FAILED(StartOrContinueTransaction()))
+			return false;
 
-        if (!OpenRowByID(lID, m_oSession, true))
-        {
-            m_oSession.Abort();
-            return false;
-        }
+		if (!OpenRowsetWithLock(lID, UpdLock))
+		{
+			CommitOrAbortTransaction(false);
+			return false;
+		}
 
-        if (m_recRecord.nUpdateCounter != rec.nUpdateCounter) 
-        {
-            m_oSession.Abort();
-            AfxMessageBox(_T(ERR_CONCURENCY_CONFLICT));
-            return false;
-        }
+		if (m_recRecord.nUpdateCounter != rec.nUpdateCounter)
+		{
+			AfxMessageBox(_T(ERR_CONCURENCY_CONFLICT));
+			m_oCommand.Close();
+			CommitOrAbortTransaction(false);
+			return false;
+		}
 
-        m_recRecord = rec;
-        m_recRecord.nUpdateCounter++;
-        rec = m_recRecord;
+		m_recRecord = rec;
+		m_recRecord.nUpdateCounter++;
+		rec = m_recRecord;
 
-        hRes = m_oCommand.SetData(TABLE_DATA_ACCESSOR_INDEX);
-        m_oCommand.Close();
-        if (FAILED(hRes))
-        {
-            m_oSession.Abort();
-            return false;
-        }
-        m_oSession.Commit();
-        return true;
-    }
+		HRESULT hRes = m_oCommand.SetData(1);
+		m_oCommand.Close();
+		return SUCCEEDED(hRes) && SUCCEEDED(CommitOrAbortTransaction(true));
+	}
 
-    bool Insert(TRecord& rec)
-    {
-        HRESULT hRes = m_oSession.StartTransaction();
-        if (FAILED(hRes)) 
-        {
-            AfxMessageBox(_T(ERR_TRANSACTION_START), MB_ICONERROR);
-            return false;
-        }
 
-        CString strSQL;
-        strSQL.Format(_T(QUERY_SELECT_ALL), m_strTableName.GetString());
+	bool Insert(TRecord& rec)
+	{
+		if (FAILED(StartOrContinueTransaction()))
+			return false;
 
-        CDBPropSet props(DBPROPSET_ROWSET);
-        props.AddProperty(DBPROP_IRowsetChange, true);
-        props.AddProperty(DBPROP_UPDATABILITY, DBPROPVAL_UP_INSERT | DBPROPVAL_UP_DELETE);
-        props.AddProperty(DBPROP_CANFETCHBACKWARDS, true);
-        props.AddProperty(DBPROP_QUICKRESTART, true);
+		CString strSQL;
+		strSQL.Format(_T(QUERY_SELECT_ALL), m_strTableName.GetString());
 
-        hRes = m_oCommand.Open(m_oSession, strSQL, &props);
-        if (FAILED(hRes)) {
-            m_oSession.Abort();
-            return false;
-        }
+		CDBPropSet props(DBPROPSET_ROWSET);
+		props.AddProperty(DBPROP_IRowsetChange, true);
+		props.AddProperty(DBPROP_UPDATABILITY, DBPROPVAL_UP_INSERT);
+		props.AddProperty(DBPROP_CANFETCHBACKWARDS, true);
+		props.AddProperty(DBPROP_QUICKRESTART, true);
 
-        m_recRecord = rec;
-        hRes = m_oCommand.Insert(TABLE_DATA_ACCESSOR_INDEX);
-        if (FAILED(hRes))
-        {
-            m_oSession.Abort();
-            return false;
-        }
+		HRESULT hRes = m_oCommand.Open(m_oSession, strSQL, &props);
+		if (FAILED(hRes))
+		{
+			CommitOrAbortTransaction(false);
+			return false;
+		}
 
-        hRes = m_oCommand.MoveLast();
-        if (FAILED(hRes))
-        {
-            m_oSession.Abort();
-            return false;
-        }
-        rec = m_recRecord;
-        m_oCommand.Close();
-        m_oSession.Commit();
-        return true;
-    }
-    
-    bool DeleteWhereID(const long lID)
-    {
-        HRESULT hRes = m_oSession.StartTransaction();
-        if (FAILED(hRes))
-        {
-            AfxMessageBox(_T(ERR_TRANSACTION_START), MB_ICONERROR);
-            return false;
-        }
+		m_recRecord = rec;
+		hRes = m_oCommand.Insert(1);
+		if (FAILED(hRes))
+		{
+			m_oCommand.Close();
+			CommitOrAbortTransaction(false);
+			return false;
+		}
 
-        CString strSQL;
-        strSQL.Format(_T(QUERY_SELECT_SINGLE), m_strTableName.GetString(), lID);
+		if (m_oCommand.MoveLast() != S_OK)
+		{
+			m_oCommand.Close();
+			CommitOrAbortTransaction(false);
+			return false;
+		}
 
-        CDBPropSet props(DBPROPSET_ROWSET);
-        props.AddProperty(DBPROP_IRowsetChange, true);
-        props.AddProperty(DBPROP_UPDATABILITY, DBPROPVAL_UP_DELETE);
+		rec = m_recRecord;
+		m_oCommand.Close();
+		return SUCCEEDED(CommitOrAbortTransaction(true));
+	}
 
-        hRes = m_oCommand.Open(m_oSession, strSQL, &props);
-        if (FAILED(hRes)) {
-            m_oSession.Abort();
-            return false;
-        }
+	bool DeleteWhereID(const long lID)
+	{
+		if (FAILED(StartOrContinueTransaction()))
+			return false;
 
-        if (m_oCommand.MoveFirst() != S_OK) {
-            m_oSession.Abort();
-            return false;
-        }
+		CString strSQL;
+		strSQL.Format(_T(QUERY_SELECT_SINGLE), m_strTableName.GetString(), lID);
 
-        hRes = m_oCommand.Delete();
-        if (FAILED(hRes)) {
-            m_oSession.Abort();
-            return false;
-        }
+		CDBPropSet props(DBPROPSET_ROWSET);
+		props.AddProperty(DBPROP_IRowsetChange, true);
+		props.AddProperty(DBPROP_UPDATABILITY, DBPROPVAL_UP_DELETE);
 
-        m_oCommand.Close();
-        m_oSession.Commit();
-        return true;
-    }
+		HRESULT hRes = m_oCommand.Open(m_oSession, strSQL, &props);
+		if (FAILED(hRes))
+		{
+			CommitOrAbortTransaction(false);
+			return false;
+		}
+
+		if (m_oCommand.MoveFirst() != S_OK)
+		{
+			m_oCommand.Close();
+			CommitOrAbortTransaction(false);
+			return false;
+		}
+
+		hRes = m_oCommand.Delete();
+		if (FAILED(hRes))
+		{
+			m_oCommand.Close();
+			CommitOrAbortTransaction(false);
+			return false;
+		}
+
+		m_oCommand.Close();
+		return SUCCEEDED(CommitOrAbortTransaction(true));
+	}
+private:
+	bool m_bSessionIsOwned;
+protected:
+	CString m_strTableName;
+	CSession m_oSession;
+public:
+	CCommand<CAccessor<TAccessor>> m_oCommand;
+	TRecord& m_recRecord;
 };
 

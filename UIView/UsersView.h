@@ -2,7 +2,7 @@
 #include <afxcview.h>
 #include "DLLExport.h"
 #include <afx.h>
-#include "CUsersDocument.h"
+#include "UsersDocument.h"
 #include "Users.h"
 
 

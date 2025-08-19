@@ -38,6 +38,7 @@ bool CUsersAppService::UpdateUser(const long lID, USERS& recUser)
 		return false;
 	}
 	return true;
+
 }
 bool CUsersAppService::DeleteUser(const long lID)
 {

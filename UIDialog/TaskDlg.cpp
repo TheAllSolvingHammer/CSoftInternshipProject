@@ -6,6 +6,9 @@
 #include "TaskDlg.h"
 #include "resource.h"
 
+/// <summary>
+/// Текстови маси за състоянието на задача
+/// </summary>
 const TCHAR* gl_szTaskDialogState[] = {
 	_T("Pending"),
 	_T("In Progress"),
@@ -16,11 +19,11 @@ const TCHAR* gl_szTaskDialogState[] = {
 
 IMPLEMENT_DYNAMIC(CTaskDlg, CDialogEx)
 
-CTaskDlg::CTaskDlg(CWnd* pParent /*=nullptr*/, TASKS& recTask, CUsersArray& oUsersArray)
+CTaskDlg::CTaskDlg(CWnd* pParent /*=nullptr*/, TASKS& recTask, CUsersArray& oUsersArray,TaskDlgMode eTaskDlgMode)
 	: CDialogEx(IDD_TASK_DIALOG, pParent),
 	m_recTask(recTask),
-	m_oUsersArray(oUsersArray)
-
+	m_oUsersArray(oUsersArray),
+	m_eTaskDlgMode(eTaskDlgMode)
 {
 
 }
@@ -73,16 +76,6 @@ BOOL CTaskDlg::OnInitDialog()
 		m_cmbAssignee.SetCurSel(-1);
 	}
 
-	nIndex = FindStatusIndex(m_recTask.sTaskStatus);
-	if (nIndex != CB_ERR)
-	{
-		m_cmbStatus.SetCurSel(nIndex);
-	}
-	else
-	{
-		m_cmbStatus.SetCurSel(-1);
-	}
-
 	m_edbName.SetWindowText(m_recTask.szName);
 	m_edbDescription.SetWindowText(m_recTask.szDescription);
 	CString strEffort;
@@ -111,6 +104,19 @@ bool CTaskDlg::FetchTableData()
 	{
 		int nIdx = m_cmbStatus.AddString(gl_szTaskDialogState[i]);
 		m_cmbStatus.SetItemData(nIdx, i + 1);
+	}
+
+	if (m_eTaskDlgMode == TASK_ADD)
+	{
+		int nIndex = FindStatusIndex(1);
+		m_cmbStatus.SetCurSel(nIndex);
+		m_cmbStatus.EnableWindow(FALSE);
+	}
+	else
+	{
+		int nIndex = FindStatusIndex(m_recTask.sTaskStatus);
+		m_cmbStatus.SetCurSel(nIndex != CB_ERR ? nIndex : -1);
+		m_cmbStatus.EnableWindow(TRUE);
 	}
 	
 	return true;

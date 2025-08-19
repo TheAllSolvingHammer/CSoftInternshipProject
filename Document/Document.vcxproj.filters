@@ -33,7 +33,7 @@
     <ClCompile Include="CSoftInternshipProjectDoc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CUsersDocument.cpp">
+    <ClCompile Include="UsersDocument.cpp">
       <Filter>Source Files\Documents</Filter>
     </ClCompile>
     <ClCompile Include="ProjectsDocument.cpp">
@@ -64,7 +64,7 @@
     <ClInclude Include="CSoftInternshipProjectDoc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CUsersDocument.h">
+    <ClInclude Include="UsersDocument.h">
       <Filter>Header Files\Documents</Filter>
     </ClInclude>
     <ClInclude Include="ProjectsDocument.h">

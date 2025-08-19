@@ -1,32 +1,31 @@
 #include "pch.h"
 #include "framework.h"
 #include "ProjectsView.h"
-
 #include "ProjectDlg.h"
-
-#include "CUsersDlg.h"
 #include <Users.h>
 #include "Resource.h"
-#include "../Application/UsersAppService.h"
-#include "../Application/ProjectsAppService.h"
-
-#define ERR_MESSAGE_SAFE_HWND               "Error in getting the safe HWND"
-#define ERR_MESSAGE_LST_CTRL                "Error in getting the header of the list control"
-#define ERR_UNKNOWN                         "Unknown"
-#define ERR_NOT_SELECTED_USER_EDIT          "Please select a project to edit."
-#define SCS_PROJECT_UPDATE                  "Project updated successfully!"
-#define ERR_PROJECT_UPDATE                  "Failed to update project."
-#define ERR_PROJECT_NOT_FOUND               "Selected project not found in document data."
 
 
-#define SCS_PROJECT_ADD                     "Project added successfully!"
-#define ERR_PROJECT_ADD                     "Failed to add project."
+#define ERR_MESSAGE_SAFE_HWND               _T("Error in getting the safe HWND")
+#define ERR_MESSAGE_LST_CTRL                _T("Error in getting the header of the list control")
+#define ERR_UNKNOWN                         _T("Unknown")
+#define ERR_NOT_SELECTED_USER_EDIT          _T("Please select a project to edit.")
+#define SCS_PROJECT_UPDATE                  _T("Project updated successfully!")
+#define ERR_PROJECT_UPDATE                  _T("Failed to update project.")
+#define ERR_PROJECT_NOT_FOUND               _T("Selected project not found in document data.")
 
-#define ERR_NOT_SELECTED_PROJECT_DELETE     "Please select a project to delete."
-#define CONF_PROJECT_DELETE                   "Are you sure to delete the selected project?"
 
-#define SCS_PROJECT_DELETE                  "project deleted successfully!"
-#define ERR_PROJECT_DELETE                  "Failed to delete project."
+#define SCS_PROJECT_ADD                     _T("Project added successfully!")
+#define ERR_PROJECT_ADD                     _T("Failed to add project.")
+
+#define ERR_NOT_SELECTED_PROJECT_DELETE     _T("Please select a project to delete.")
+#define CONF_PROJECT_DELETE                 _T("Are you sure to delete the selected project?")
+
+#define SCS_PROJECT_DELETE                  _T("Project deleted successfully!")
+#define ERR_PROJECT_DELETE                  _T("Failed to delete project.")
+
+#define ERR_PROJECT_USERS_LOAD              _T("Failed to load users")
+#define ERR_PROJECT_TASK_LOAD               _T("Failed to load Tasks")
 
 /////////////////////////////////////////////////////////////////////////////
 //CUsersView
@@ -62,19 +61,12 @@ CProjectsDocument* CProjectsView::GetDocument() const
     return (CProjectsDocument*)m_pDocument;
 }
 
-
-// MFC Message Handlers
-// ----------------
-
-
-//Methods
-// ----------------
 void CProjectsView::PopulateProjectsList()
 {
     CListCtrl& oListCtrl = GetListCtrl();
     if (!oListCtrl.GetSafeHwnd())
     {
-        AfxMessageBox(_T(ERR_MESSAGE_SAFE_HWND));
+        AfxMessageBox(ERR_MESSAGE_SAFE_HWND);
         return;
     }
     oListCtrl.DeleteAllItems();
@@ -82,7 +74,7 @@ void CProjectsView::PopulateProjectsList()
     CHeaderCtrl* pHeaderCtrl = oListCtrl.GetHeaderCtrl();
     if (pHeaderCtrl == NULL)
     {
-        AfxMessageBox(_T(ERR_MESSAGE_LST_CTRL));
+        AfxMessageBox(ERR_MESSAGE_LST_CTRL);
         return;
     }
 
@@ -104,6 +96,7 @@ void CProjectsView::PopulateProjectsList()
         if (pRecProject) {
             CString strID;
             strID.Format(_T("%ld"), pRecProject->lID);
+       
             int index = oListCtrl.InsertItem(i, strID);
             oListCtrl.SetItemText(index, PROJECT_COLUMN_NAME, pRecProject->szName);
             oListCtrl.SetItemText(index, PROJECT_COLUMN_DESCRIPTION, pRecProject->szDescription);
@@ -114,12 +107,12 @@ void CProjectsView::PopulateProjectsList()
             }
             else {
 
-                oListCtrl.SetItemText(index, PROJECT_COLUMN_PROJECT_MANAGER, _T(ERR_UNKNOWN));
+                oListCtrl.SetItemText(index, PROJECT_COLUMN_PROJECT_MANAGER, ERR_UNKNOWN);
             }
 
-            oListCtrl.SetItemText(index, PROJECT_COLUMN_STATUS, _T(ERR_UNKNOWN));
+            oListCtrl.SetItemText(index, PROJECT_COLUMN_STATUS, ERR_UNKNOWN);
             for (int i = 0;i < PROJECT_STATE_COUNT;i++) {
-                if (pRecProject->sProjectStatus = i + 1) {
+                if (pRecProject->sProjectStatus == i + 1) {
                     oListCtrl.SetItemText(index, PROJECT_COLUMN_STATUS, gl_szProjectStateDescription[i]);
                     break;
                 }
@@ -138,7 +131,7 @@ void CProjectsView::OnProjectEdit()
 
     if (nSelectedItem == -1)
     {
-        AfxMessageBox(_T(ERR_NOT_SELECTED_USER_EDIT), MB_ICONINFORMATION);
+        AfxMessageBox(ERR_NOT_SELECTED_USER_EDIT, MB_ICONINFORMATION);
         return;
     }
 
@@ -164,37 +157,41 @@ void CProjectsView::OnProjectEdit()
     if (pProjectToEdit) {
         CUsersArray oUsersArray;
         CTasksArray oTasksArray;
+        CTasksArray oUpdatedTasks;
+        CTasksArray oDeletedTasks;
+        
         if (!(pProjectsDocument->GetAllUsers(oUsersArray)))
         {
-            AfxMessageBox(_T("Failed to load users"));
+            AfxMessageBox(ERR_PROJECT_USERS_LOAD);
             return;
         }
         if (!(pProjectsDocument->GetTasksByProject(pProjectToEdit->lID, oTasksArray)))
         {
-	        AfxMessageBox(_T("Failed to load Tasks"));
+	        AfxMessageBox(ERR_PROJECT_TASK_LOAD);
             return;
         }
 
-        CProjectDlg oProjectDlg(NULL, *pProjectToEdit, oUsersArray, oTasksArray);
+        CProjectDlg oProjectDlg(NULL, *pProjectToEdit, oUsersArray, oTasksArray, oUpdatedTasks, oDeletedTasks);
         
         if (oProjectDlg.DoModal() == IDOK) {
 
-            if (pProjectsDocument->UpdateProject(lID, oProjectDlg.m_recProject)) {
-                AfxMessageBox(_T(SCS_PROJECT_UPDATE));
+            if (pProjectsDocument->UpdateProject(*pProjectToEdit, oTasksArray, oUpdatedTasks, oDeletedTasks)) {
+                AfxMessageBox(SCS_PROJECT_UPDATE);
             }
             else {
-                AfxMessageBox(_T(ERR_PROJECT_UPDATE), MB_ICONERROR);
+                AfxMessageBox(ERR_PROJECT_UPDATE, MB_ICONERROR);
             }
+            
         }
+
     }
     else {
-        AfxMessageBox(_T(ERR_PROJECT_NOT_FOUND), MB_ICONERROR);
+        AfxMessageBox(ERR_PROJECT_NOT_FOUND, MB_ICONERROR);
     }
 }
 
 void CProjectsView::OnProjectAdd()
 {
-    
     CUsersArray oUsersArray;
     PROJECTS recProject;
     CProjectsDocument* pProjectsDocument = GetDocument();
@@ -205,10 +202,12 @@ void CProjectsView::OnProjectAdd()
 
     if (!(pProjectsDocument->GetAllUsers(oUsersArray)))
     {
-        AfxMessageBox(_T("Failed to load users"));
+        AfxMessageBox(ERR_PROJECT_USERS_LOAD);
         return;
     }
-    CProjectDlg oProjectDlg(NULL, recProject, oUsersArray);
+
+    CProjectDlg oProjectDlg(NULL, recProject, oUsersArray, CTasksArray(), CTasksArray(), CTasksArray(), PROEJCT_DIALOG_MODE_CREATE);
+
     if (oProjectDlg.DoModal() == IDOK) {
         CProjectsDocument* pDoc = GetDocument();
         if (pDoc == NULL)
@@ -217,10 +216,10 @@ void CProjectsView::OnProjectAdd()
         }
         if (pDoc) {
             if (pDoc->AddProject(oProjectDlg.m_recProject)) {
-                AfxMessageBox(_T(SCS_PROJECT_ADD));
+                AfxMessageBox(SCS_PROJECT_ADD);
             }
             else {
-                AfxMessageBox(_T(ERR_PROJECT_ADD), MB_ICONERROR);
+                AfxMessageBox(ERR_PROJECT_ADD, MB_ICONERROR);
             }
         }
     }
@@ -232,11 +231,11 @@ void CProjectsView::OnProjectDelete()
     int nSelectedItem = oListCtrl.GetNextItem(-1, LVNI_SELECTED);
 
     if (nSelectedItem == -1) {
-        AfxMessageBox(_T(ERR_NOT_SELECTED_PROJECT_DELETE), MB_ICONINFORMATION);
+        AfxMessageBox(ERR_NOT_SELECTED_PROJECT_DELETE, MB_ICONINFORMATION);
         return;
     }
 
-    if (AfxMessageBox(_T(CONF_PROJECT_DELETE), MB_YESNO | MB_ICONQUESTION) == IDNO) {
+    if (AfxMessageBox(CONF_PROJECT_DELETE, MB_YESNO | MB_ICONQUESTION) == IDNO) {
         return;
     }
 
@@ -250,10 +249,10 @@ void CProjectsView::OnProjectDelete()
     long lID = _ttol(strID);
 
     if (pProjectsDocument->DeleteProject(lID)) {
-        AfxMessageBox(_T(SCS_PROJECT_DELETE));
+        AfxMessageBox(SCS_PROJECT_DELETE);
     }
     else {
-        AfxMessageBox(_T(ERR_PROJECT_DELETE), MB_ICONERROR);
+        AfxMessageBox(ERR_PROJECT_DELETE, MB_ICONERROR);
     }
 }
 
@@ -309,7 +308,40 @@ void CProjectsView::OnLButtonDblClk(UINT nFlags, CPoint point) {
     if (nItem != -1)
     {
         listCtrl.SetItemState(nItem, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
-        OnProjectEdit();
+
+        CProjectsDocument* pProjectsDocument = GetDocument();
+        if (!pProjectsDocument) return;
+
+        CString strID = listCtrl.GetItemText(nItem, PROJECT_COLUMN_ID);
+        long lID = _ttol(strID);
+        PROJECTS* pProjectToView = nullptr;
+        CProjectsArray& oProjectsArray = pProjectsDocument->GetProjectsArray();
+        for (INT_PTR i = 0; i < oProjectsArray.GetCount(); i++) {
+            PROJECTS* pRecProject = oProjectsArray.GetAt(i);
+            if (pRecProject && pRecProject->lID == lID) {
+                pProjectToView = pRecProject;
+                break;
+            }
+        }
+
+        if (pProjectToView) {
+            CUsersArray oUsersArray;
+            CTasksArray oTasksArray;
+            CTasksArray oUpdatedTasks;
+            CTasksArray oDeletedTasks;
+
+            if (!(pProjectsDocument->GetAllUsers(oUsersArray))) {
+                AfxMessageBox(ERR_PROJECT_USERS_LOAD);
+                return;
+            }
+            if (!(pProjectsDocument->GetTasksByProject(pProjectToView->lID, oTasksArray))) {
+                AfxMessageBox(ERR_PROJECT_TASK_LOAD);
+                return;
+            }
+
+            CProjectDlg oProjectDlg(NULL, *pProjectToView, oUsersArray, oTasksArray, oUpdatedTasks, oDeletedTasks, PROEJCT_DIALOG_MODE_READ_ONLY);
+            oProjectDlg.DoModal();
+        }
     }
 
     CListView::OnLButtonDblClk(nFlags, point);

@@ -4,10 +4,6 @@
 #include <JobTitles.h>
 
 
-
-
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CCSoftInternshipProjectDocument
 class DocumentDLL_EXP CUsersDocument : public CDocument

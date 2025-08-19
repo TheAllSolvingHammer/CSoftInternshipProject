@@ -3,26 +3,19 @@
 #include "DllExport.h"
 
 
-
-class DomainDLL_EXP CArrayAutoManager : public CPtrArray
-{
-public:
-    CArrayAutoManager();
-    ~CArrayAutoManager();
-
-    void ClearAll();
-};
-
-
+/// <summary>
+/// Клас за управлението на масиви с указатели
+/// </summary>
+/// <typeparam name="T">Тип указател който ще се подаде</typeparam>
 template<class T>
-class DomainDLL_EXP CArrayAutoManager_2
+class CArrayAutoManager : public CTypedPtrArray<CPtrArray, T*>
 {
 public:
-    CArrayAutoManager_2()
+    CArrayAutoManager()
     {
     }
 
-    virtual ~CArrayAutoManager_2()
+    virtual ~CArrayAutoManager()
     {
         ClearAll();
     }
@@ -34,32 +27,6 @@ public:
             delete GetAt(i);
         }
         RemoveAll();
-    }
-
-    T* GetAt(INT_PTR nIndex)
-    {
-
-        return NULL;
-    }
-
-    int GetCount()
-    {
-        return 0;
-    }
-
-    int GetSize()
-    {
-        return 0;
-    }
-
-    void RemoveAll()
-    {
-
-    }
-
-    void Add(T* pRecord)
-    {
-
     }
 };
 

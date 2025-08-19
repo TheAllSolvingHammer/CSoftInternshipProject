@@ -13,6 +13,9 @@
 #define USERS_COLUMN_JOB_TITLE_ID       5
 #define USERS_COLUMN_HASHED_PASSWORD    6
 
+/// <summary>
+/// Аксесор на потребителите
+/// </summary>
 class CUsersAccessor {
 protected:
     BEGIN_ACCESSOR_MAP(CUsersAccessor, USERS_ACCESSORS_COUNT)

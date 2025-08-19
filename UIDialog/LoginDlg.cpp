@@ -3,7 +3,7 @@
 
 #include "pch.h"
 #include "afxdialogex.h"
-#include "CLoginDlg.h"
+#include "LoginDlg.h"
 #include "resource.h"
 #include "RegisterDlg.h"
 

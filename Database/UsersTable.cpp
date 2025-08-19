@@ -7,6 +7,11 @@ CUsersTable::CUsersTable() : CBaseTable(m_oCommand.m_recUser, _T(USERS_TABLE_NAM
 
 }
 
+CUsersTable::CUsersTable(CSession* pSession) : CBaseTable(m_oCommand.m_recUser, _T(USERS_TABLE_NAME), *pSession)
+{
+
+}
+
 CUsersTable::~CUsersTable()
 {
 
@@ -14,36 +19,33 @@ CUsersTable::~CUsersTable()
 
 bool CUsersTable::SelectUserByUsername(const CString& strUsername, USERS& recUser)
 {
-    HRESULT hRes = m_oSession.StartTransaction();
-    if (FAILED(hRes))
-    {
-        AfxMessageBox(_T(ERR_TRANSACTION_START), MB_ICONERROR);
-        return false;
-    }
+	if (FAILED(StartOrContinueTransaction()))
+	{
+		return false;
+	}
 
-    CString strSQL;
-    strSQL.Format(_T(QUERY_SELECT_BY_USERNAME), m_strTableName.GetString(),strUsername.GetString());
+	CString strSQL;
+	strSQL.Format(_T(QUERY_SELECT_BY_USERNAME), m_strTableName.GetString(), strUsername.GetString());
 
-    hRes = m_oCommand.Open(m_oSession, strSQL);
-    if (FAILED(hRes))
-    {
-        m_oSession.Abort();
-        return false;
-    }
+	HRESULT hRes = m_oCommand.Open(m_oSession, strSQL);
+	if (FAILED(hRes))
+	{
+		CommitOrAbortTransaction(false);
+		return false;
+	}
 
-    hRes = m_oCommand.MoveFirst();
-    if (FAILED(hRes))
-    {
-        m_oCommand.Close();
-        m_oSession.Abort();
-        return false;
-    }
+	hRes = m_oCommand.MoveFirst();
+	if (hRes != S_OK)
+	{
+		m_oCommand.Close();
+		CommitOrAbortTransaction(false);
+		return false;
+	}
 
-    recUser = m_oCommand.m_recUser;
+	recUser = m_recRecord;
 
-    m_oCommand.Close();
-    m_oSession.Commit();
-    return true;
+	m_oCommand.Close();
+	return SUCCEEDED(CommitOrAbortTransaction(true));
 }
 
 
