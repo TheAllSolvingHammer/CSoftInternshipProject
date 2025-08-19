@@ -319,10 +319,10 @@ void CProjectDlg::UpdateEffortTotal()
 	int nTotalEffort = 0;
 	for (INT_PTR i = 0; i < m_oTasksArray.GetCount(); ++i)
 	{
-		TASKS* pTask = m_oTasksArray.GetAt(i);
-		if (pTask)
+		TASKS* pRecTask = m_oTasksArray.GetAt(i);
+		if (pRecTask)
 		{
-			nTotalEffort += pTask->nTotalEffort;
+			nTotalEffort += pRecTask->nTotalEffort;
 		}
 	}
 
@@ -336,8 +336,8 @@ void CProjectDlg::CheckProjectStatus()
 	bool bAllTasksEnded = true;
 	for (INT_PTR i = 0; i < m_oTasksArray.GetCount(); ++i)
 	{
-		TASKS* pTask = m_oTasksArray.GetAt(i);
-		if (pTask && pTask->sTaskStatus != (TASK_STATE_ENDED + 1))
+		TASKS* pRecTask = m_oTasksArray.GetAt(i);
+		if (pRecTask && pRecTask->sTaskStatus != (TASK_STATE_ENDED + 1))
 		{
 			bAllTasksEnded = false;
 			break;
@@ -368,19 +368,19 @@ void CProjectDlg::CheckProjectStatus()
 
 void CProjectDlg::OnBnClickedBtnProjectAddTask()
 {
-	TASKS* pNewTask = new TASKS{};
-	pNewTask->lID = 0;
-	pNewTask->lProjectID = m_recProject.lID;
+	TASKS* pRecNewTask = new TASKS{};
+	pRecNewTask->lID = 0;
+	pRecNewTask->lProjectID = m_recProject.lID;
 
-	CTaskDlg dlg(this, *pNewTask, m_oUsersArray, TASK_ADD);
+	CTaskDlg dlg(this, *pRecNewTask, m_oUsersArray, TASK_ADD);
 	if (dlg.DoModal() == IDOK)
 	{		
-		m_oTasksArray.Add(pNewTask);
-		m_oUpdatedTasks.Add(pNewTask);
+		m_oTasksArray.Add(pRecNewTask);
+		m_oUpdatedTasks.Add(pRecNewTask);
 	}
 	else
 	{
-		delete pNewTask;
+		delete pRecNewTask;
 	}
 
 	FetchTableData();
@@ -398,15 +398,15 @@ void CProjectDlg::OnBnClickedBtnProjectTaskDelete()
 	}
 
 	int nItem = m_lscTasks.GetNextSelectedItem(pos);
-	TASKS* pTask = (TASKS*)m_lscTasks.GetItemData(nItem);
+	TASKS* pRecTask = (TASKS*)m_lscTasks.GetItemData(nItem);
 
-	if (!pTask)
+	if (!pRecTask)
 	{
 		AfxMessageBox(DLG_HINT_TASK_NOT_FOUND, MB_ICONERROR);
 		return;
 	}
 
-	if (pTask->sTaskStatus == (TASK_STATE_ENDED + 1))
+	if (pRecTask->sTaskStatus == (TASK_STATE_ENDED + 1))
 	{
 		AfxMessageBox(DLG_HINT_TASK_DELETION_ENDED, MB_ICONEXCLAMATION);
 		return;
@@ -414,23 +414,23 @@ void CProjectDlg::OnBnClickedBtnProjectTaskDelete()
 
 	for (INT_PTR i = 0; i < m_oUpdatedTasks.GetCount(); ++i)
 	{
-		if (m_oUpdatedTasks.GetAt(i) == pTask)
+		if (m_oUpdatedTasks.GetAt(i) == pRecTask)
 		{
 			m_oUpdatedTasks.RemoveAt(i);
 			break;
 		}
 	}
 
-	if (pTask->lID > 0)
+	if (pRecTask->lID > 0)
 	{
-		TASKS* pCopy = new TASKS(*pTask);
+		TASKS* pCopy = new TASKS(*pRecTask);
 		m_oDeletedTasks.Add(pCopy);
 	}
 
 	INT_PTR idxInAll = -1;
 	for (INT_PTR i = 0; i < m_oTasksArray.GetCount(); ++i)
 	{
-		if (m_oTasksArray.GetAt(i) == pTask)
+		if (m_oTasksArray.GetAt(i) == pRecTask)
 		{
 			idxInAll = i;
 			break;

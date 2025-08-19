@@ -144,17 +144,17 @@ void CProjectsView::OnProjectEdit()
     CString strID = oListCtrl.GetItemText(nSelectedItem, PROJECT_COLUMN_ID);
     long lID = _ttol(strID);
 
-    PROJECTS* pProjectToEdit = nullptr;
+    PROJECTS* pRecProjectToEdit = nullptr;
     CProjectsArray& oProjectsArray = pProjectsDocument->GetProjectsArray();
     for (INT_PTR i = 0; i < oProjectsArray.GetCount(); i++) {
         PROJECTS* pRecProject = oProjectsArray.GetAt(i);
         if (pRecProject && pRecProject->lID == lID) {
-            pProjectToEdit = pRecProject;
+            pRecProjectToEdit = pRecProject;
             break;
         }
     }
 
-    if (pProjectToEdit) {
+    if (pRecProjectToEdit) {
         CUsersArray oUsersArray;
         CTasksArray oTasksArray;
         CTasksArray oUpdatedTasks;
@@ -165,17 +165,17 @@ void CProjectsView::OnProjectEdit()
             AfxMessageBox(ERR_PROJECT_USERS_LOAD);
             return;
         }
-        if (!(pProjectsDocument->GetTasksByProject(pProjectToEdit->lID, oTasksArray)))
+        if (!(pProjectsDocument->GetTasksByProject(pRecProjectToEdit->lID, oTasksArray)))
         {
 	        AfxMessageBox(ERR_PROJECT_TASK_LOAD);
             return;
         }
 
-        CProjectDlg oProjectDlg(NULL, *pProjectToEdit, oUsersArray, oTasksArray, oUpdatedTasks, oDeletedTasks);
+        CProjectDlg oProjectDlg(NULL, *pRecProjectToEdit, oUsersArray, oTasksArray, oUpdatedTasks, oDeletedTasks);
         
         if (oProjectDlg.DoModal() == IDOK) {
 
-            if (pProjectsDocument->UpdateProject(*pProjectToEdit, oTasksArray, oUpdatedTasks, oDeletedTasks)) {
+            if (pProjectsDocument->UpdateProject(*pRecProjectToEdit, oTasksArray, oUpdatedTasks, oDeletedTasks)) {
                 AfxMessageBox(SCS_PROJECT_UPDATE);
             }
             else {
@@ -314,17 +314,17 @@ void CProjectsView::OnLButtonDblClk(UINT nFlags, CPoint point) {
 
         CString strID = listCtrl.GetItemText(nItem, PROJECT_COLUMN_ID);
         long lID = _ttol(strID);
-        PROJECTS* pProjectToView = nullptr;
+        PROJECTS* pRecProjectToView = nullptr;
         CProjectsArray& oProjectsArray = pProjectsDocument->GetProjectsArray();
         for (INT_PTR i = 0; i < oProjectsArray.GetCount(); i++) {
             PROJECTS* pRecProject = oProjectsArray.GetAt(i);
             if (pRecProject && pRecProject->lID == lID) {
-                pProjectToView = pRecProject;
+                pRecProjectToView = pRecProject;
                 break;
             }
         }
 
-        if (pProjectToView) {
+        if (pRecProjectToView) {
             CUsersArray oUsersArray;
             CTasksArray oTasksArray;
             CTasksArray oUpdatedTasks;
@@ -334,12 +334,12 @@ void CProjectsView::OnLButtonDblClk(UINT nFlags, CPoint point) {
                 AfxMessageBox(ERR_PROJECT_USERS_LOAD);
                 return;
             }
-            if (!(pProjectsDocument->GetTasksByProject(pProjectToView->lID, oTasksArray))) {
+            if (!(pProjectsDocument->GetTasksByProject(pRecProjectToView->lID, oTasksArray))) {
                 AfxMessageBox(ERR_PROJECT_TASK_LOAD);
                 return;
             }
 
-            CProjectDlg oProjectDlg(NULL, *pProjectToView, oUsersArray, oTasksArray, oUpdatedTasks, oDeletedTasks, PROEJCT_DIALOG_MODE_READ_ONLY);
+            CProjectDlg oProjectDlg(NULL, *pRecProjectToView, oUsersArray, oTasksArray, oUpdatedTasks, oDeletedTasks, PROEJCT_DIALOG_MODE_READ_ONLY);
             oProjectDlg.DoModal();
         }
     }
