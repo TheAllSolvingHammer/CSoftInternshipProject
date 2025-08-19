@@ -178,13 +178,14 @@ bool CProjectDlg::FetchTableData()
 	m_cmbManager.Clear();
 	m_cmbStatus.Clear();
 	m_lscTasks.DeleteAllItems();
-	for (INT_PTR i = 0; i < m_oUsersArray.GetCount();i++)
+
+	for (INT_PTR i = 0; i < m_oUsersArray.GetCount(); i++)
 	{
 		USERS* pRecUser = m_oUsersArray.GetAt(i);
-		if (pRecUser) 
+		if (pRecUser)
 		{
 			int nIndex = m_cmbManager.AddString(pRecUser->szName);
-			if (nIndex != CB_ERR) 
+			if (nIndex != CB_ERR)
 			{
 				m_cmbManager.SetItemData(nIndex, pRecUser->lID);
 			}
@@ -194,39 +195,45 @@ bool CProjectDlg::FetchTableData()
 	for (int i = 0; i < PROJECT_DIALOG_STATE_COUNT; ++i)
 	{
 		int nIdx = m_cmbStatus.AddString(gl_szProjectStateDescriptionDialog[i]);
-		m_cmbStatus.SetItemData(nIdx, i+1);
+		m_cmbStatus.SetItemData(nIdx, i + 1);
 	}
 
 	for (INT_PTR i = 0; i < m_oTasksArray.GetCount(); i++)
 	{
 		TASKS* pRecTask = m_oTasksArray.GetAt(i);
-
-		CString strID;
-		strID.Format(_T("%ld"), pRecTask->lID);
-		int nIndex = m_lscTasks.InsertItem(i, strID);
-		m_lscTasks.SetItemText(nIndex, TASK_COLUMN_NAME, pRecTask->szName);
-		m_lscTasks.SetItemText(nIndex, TASK_COLUMN_DESCRIPTION, pRecTask->szDescription);
-		for (int i = 0;i < TASK_STATE_COUNT;i++) {
-			if (pRecTask->sTaskStatus == i + 1) {
-				m_lscTasks.SetItemText(nIndex, TASK_COLUMN_STATUS, gl_szTaskStateDescription[i]);
-				break;
-			}
-		}
-		CString strAssigneeName = _T("Unknown");
-		for (INT_PTR u = 0; u < m_oUsersArray.GetCount(); u++)
+		if (pRecTask)
 		{
-			USERS* pRecUser = m_oUsersArray.GetAt(u);
-			if (pRecUser && pRecUser->lID == pRecTask->lUserInChargeID)
-			{
-				strAssigneeName = pRecUser->szName;
-				break;
-			}
-		}
-		m_lscTasks.SetItemText(nIndex, TASK_COLUMN_ASSIGNEE, strAssigneeName);
+			CString strID;
+			strID.Format(_T("%ld"), pRecTask->lID);
+			int nIndex = m_lscTasks.InsertItem(i, strID);
 
-		CString strEffort;
-		strEffort.Format(_T("%d"), pRecTask->nTotalEffort);
-		m_lscTasks.SetItemText(nIndex, TASK_COLUMN_EFFORT,strEffort.GetString());
+			m_lscTasks.SetItemData(nIndex, (DWORD_PTR)pRecTask);
+
+			m_lscTasks.SetItemText(nIndex, TASK_COLUMN_NAME, pRecTask->szName);
+			m_lscTasks.SetItemText(nIndex, TASK_COLUMN_DESCRIPTION, pRecTask->szDescription);
+			for (int j = 0; j < TASK_STATE_COUNT; j++) {
+				if (pRecTask->sTaskStatus == j + 1) {
+					m_lscTasks.SetItemText(nIndex, TASK_COLUMN_STATUS, gl_szTaskStateDescription[j]);
+					break;
+				}
+			}
+
+			CString strAssigneeName = _T("Unknown");
+			for (INT_PTR u = 0; u < m_oUsersArray.GetCount(); u++)
+			{
+				USERS* pRecUser = m_oUsersArray.GetAt(u);
+				if (pRecUser && pRecUser->lID == pRecTask->lUserInChargeID)
+				{
+					strAssigneeName = pRecUser->szName;
+					break;
+				}
+			}
+			m_lscTasks.SetItemText(nIndex, TASK_COLUMN_ASSIGNEE, strAssigneeName);
+
+			CString strEffort;
+			strEffort.Format(_T("%d"), pRecTask->nTotalEffort);
+			m_lscTasks.SetItemText(nIndex, TASK_COLUMN_EFFORT, strEffort.GetString());
+		}
 	}
 
 	return true;
@@ -250,16 +257,21 @@ void CProjectDlg::UpdateEffortTotal()
 
 void CProjectDlg::OnBnClickedBtnProjectAddTask()
 {
-	TASKS newTask = {};
-	newTask.lID = 0;
-	newTask.lProjectID = m_recProject.lID;
+	TASKS* pNewTask = new TASKS{};
+	pNewTask->lID = 0;
+	pNewTask->lProjectID = m_recProject.lID;
 
-	CTaskDlg dlg(this, newTask, m_oUsersArray, TASK_ADD);
+	CTaskDlg dlg(this, *pNewTask, m_oUsersArray, TASK_ADD);
 	if (dlg.DoModal() == IDOK)
-	{
-		m_oTasksArray.Add(new TASKS(dlg.m_recTask)); 
-		m_oUpdatedTasks.Add(new TASKS(dlg.m_recTask));
+	{		
+		m_oTasksArray.Add(pNewTask);
+		m_oUpdatedTasks.Add(pNewTask);
 	}
+	else
+	{
+		delete pNewTask;
+	}
+
 	FetchTableData();
 	UpdateEffortTotal();
 }
@@ -272,22 +284,9 @@ void CProjectDlg::OnBnClickedBtnProjectTaskDelete()
 		AfxMessageBox(_T("Please select a task to delete."), MB_ICONEXCLAMATION);
 		return;
 	}
-	int nItem = m_lscTasks.GetNextSelectedItem(pos);
-	CString strTaskID = m_lscTasks.GetItemText(nItem, TASK_COLUMN_ID);
-	long lTaskID = _wtol(strTaskID);
 
-	TASKS* pTask = nullptr;
-	INT_PTR idxInAll = -1;
-	for (INT_PTR i = 0; i < m_oTasksArray.GetCount(); ++i)
-	{
-		TASKS* t = m_oTasksArray.GetAt(i);
-		if (t && t->lID == lTaskID)
-		{
-			pTask = t;
-			idxInAll = i;
-			break;
-		}
-	}
+	int nItem = m_lscTasks.GetNextSelectedItem(pos);
+	TASKS* pTask = (TASKS*)m_lscTasks.GetItemData(nItem);
 
 	if (!pTask)
 	{
@@ -303,22 +302,32 @@ void CProjectDlg::OnBnClickedBtnProjectTaskDelete()
 
 	for (INT_PTR i = 0; i < m_oUpdatedTasks.GetCount(); ++i)
 	{
-		TASKS* u = m_oUpdatedTasks.GetAt(i);
-		if (u && u->lID == lTaskID)
+		if (m_oUpdatedTasks.GetAt(i) == pTask)
 		{
-			delete u;
 			m_oUpdatedTasks.RemoveAt(i);
 			break;
 		}
 	}
 
-	TASKS* pCopy = new TASKS();
-	*pCopy = *pTask;
-	m_oDeletedTasks.Add(pCopy);
+	if (pTask->lID > 0)
+	{
+		TASKS* pCopy = new TASKS(*pTask);
+		m_oDeletedTasks.Add(pCopy);
+	}
+
+	INT_PTR idxInAll = -1;
+	for (INT_PTR i = 0; i < m_oTasksArray.GetCount(); ++i)
+	{
+		if (m_oTasksArray.GetAt(i) == pTask)
+		{
+			idxInAll = i;
+			break;
+		}
+	}
 
 	if (idxInAll != -1)
 	{
-		delete pTask;
+		delete m_oTasksArray.GetAt(idxInAll);
 		m_oTasksArray.RemoveAt(idxInAll);
 	}
 
@@ -327,80 +336,42 @@ void CProjectDlg::OnBnClickedBtnProjectTaskDelete()
 
 	AfxMessageBox(_T("Task deleted successfully."), MB_ICONINFORMATION);
 }
-void CProjectDlg::CheckUpdateArrayExistance(long lID)
-{
-	for (INT_PTR i = 0;i < m_oUpdatedTasks.GetCount();i++) 
-	{
-		TASKS* pRecTask = m_oUpdatedTasks.GetAt(i);
-		if (pRecTask->lID == lID)
-		{
-			delete pRecTask;
-			break;
-		}
-	}
-}
 
 
 void CProjectDlg::OnBnClickedBtnProjectTaskUpdate()
 {
 	POSITION pos = m_lscTasks.GetFirstSelectedItemPosition();
-	if (pos == nullptr)
+	if (!pos)
 	{
 		AfxMessageBox(_T("Please select a task to edit."));
 		return;
 	}
 
 	int nItem = m_lscTasks.GetNextSelectedItem(pos);
-	CString strTaskID = m_lscTasks.GetItemText(nItem, TASK_COLUMN_ID);
-	long lTaskID = _wtol(strTaskID);
+	TASKS* pRecTask = (TASKS*)m_lscTasks.GetItemData(nItem);
 
-	TASKS* pRecTask = nullptr;
-	for (INT_PTR i = 0; i < m_oTasksArray.GetCount(); ++i)
-	{
-		TASKS* pTask = m_oTasksArray.GetAt(i);
-		if (pTask && pTask->lID == lTaskID)
-		{
-			pRecTask = pTask;
-			break;
-		}
-	}
-
-	if (!pRecTask)
-		return;
+	if (!pRecTask) return;
 
 	CTaskDlg dlg(this, *pRecTask, m_oUsersArray, TASK_UPDATE);
 	if (dlg.DoModal() == IDOK)
 	{
-		TASKS* pTask=new TASKS();
-		for (INT_PTR i = 0; i < m_oTasksArray.GetCount(); ++i)
-		{
-			pTask = m_oTasksArray.GetAt(i);
-			if (pTask && pTask->lID == pRecTask->lID)
-			{
-				*pTask = *pRecTask;
-				break;
-			}
-		}
-
-		bool bAlreadyTracked = false;
+		bool bFound = false;
 		for (INT_PTR i = 0; i < m_oUpdatedTasks.GetCount(); ++i)
 		{
-			if (m_oUpdatedTasks.GetAt(i)->lID == pRecTask->lID)
+			if (m_oUpdatedTasks.GetAt(i) == pRecTask)
 			{
-				bAlreadyTracked = true;
+				*m_oUpdatedTasks.GetAt(i) = *pRecTask;
+				bFound = true;
 				break;
 			}
 		}
 
-		if (!bAlreadyTracked)
+		if (!bFound)
 		{
-			TASKS* pNewTask = new TASKS();
-			*pNewTask = *pRecTask;
-			m_oUpdatedTasks.Add(pNewTask);
+			m_oUpdatedTasks.Add(pRecTask);
 		}
 
 		FetchTableData();
 		UpdateEffortTotal();
 	}
-	
 }

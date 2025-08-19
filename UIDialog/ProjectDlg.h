@@ -96,7 +96,7 @@ private:
 	int FindStatusIndex(const short status);
 	bool FetchTableData();
 	void UpdateEffortTotal();
-	void CheckUpdateArrayExistance(long lID);
+	//void CheckUpdateArrayExistance(long lID);
 private:
 	//Елементи
 	CEdit m_edbName;
