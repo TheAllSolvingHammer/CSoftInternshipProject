@@ -207,7 +207,7 @@ bool CProjectDlg::FetchTableData()
 		m_lscTasks.SetItemText(nIndex, TASK_COLUMN_NAME, pRecTask->szName);
 		m_lscTasks.SetItemText(nIndex, TASK_COLUMN_DESCRIPTION, pRecTask->szDescription);
 		for (int i = 0;i < TASK_STATE_COUNT;i++) {
-			if (pRecTask->sTaskStatus = i + 1) {
+			if (pRecTask->sTaskStatus == i + 1) {
 				m_lscTasks.SetItemText(nIndex, TASK_COLUMN_STATUS, gl_szTaskStateDescription[i]);
 				break;
 			}
@@ -267,33 +267,65 @@ void CProjectDlg::OnBnClickedBtnProjectAddTask()
 void CProjectDlg::OnBnClickedBtnProjectTaskDelete()
 {
 	POSITION pos = m_lscTasks.GetFirstSelectedItemPosition();
-	if (pos == NULL)
+	if (!pos)
 	{
 		AfxMessageBox(_T("Please select a task to delete."), MB_ICONEXCLAMATION);
 		return;
 	}
-
-	int nSelected = m_lscTasks.GetNextSelectedItem(pos);
-
-	CString strTaskID = m_lscTasks.GetItemText(nSelected, TASK_COLUMN_ID);
+	int nItem = m_lscTasks.GetNextSelectedItem(pos);
+	CString strTaskID = m_lscTasks.GetItemText(nItem, TASK_COLUMN_ID);
 	long lTaskID = _wtol(strTaskID);
 
-	for (INT_PTR i = 0; i < m_oTasksArray.GetCount(); i++)
+	TASKS* pTask = nullptr;
+	INT_PTR idxInAll = -1;
+	for (INT_PTR i = 0; i < m_oTasksArray.GetCount(); ++i)
 	{
-		TASKS* pRecTask = m_oTasksArray.GetAt(i);
-		if (pRecTask && pRecTask->lID == lTaskID)
+		TASKS* t = m_oTasksArray.GetAt(i);
+		if (t && t->lID == lTaskID)
 		{
-			m_oTasksArray.RemoveAt(i);
-			CheckUpdateArrayExistance(pRecTask->lID);
-			m_oDeletedTasks.Add(pRecTask);
-			delete pRecTask;
+			pTask = t;
+			idxInAll = i;
 			break;
 		}
 	}
 
+	if (!pTask)
+	{
+		AfxMessageBox(_T("Task not found."), MB_ICONERROR);
+		return;
+	}
+
+	if (pTask->sTaskStatus != (TASK_STATE_ENDED + 1))
+	{
+		AfxMessageBox(_T("Only tasks with status 'Ended' can be deleted."), MB_ICONEXCLAMATION);
+		return;
+	}
+
+	for (INT_PTR i = 0; i < m_oUpdatedTasks.GetCount(); ++i)
+	{
+		TASKS* u = m_oUpdatedTasks.GetAt(i);
+		if (u && u->lID == lTaskID)
+		{
+			delete u;
+			m_oUpdatedTasks.RemoveAt(i);
+			break;
+		}
+	}
+
+	TASKS* pCopy = new TASKS();
+	*pCopy = *pTask;
+	m_oDeletedTasks.Add(pCopy);
+
+	if (idxInAll != -1)
+	{
+		delete pTask;
+		m_oTasksArray.RemoveAt(idxInAll);
+	}
 
 	FetchTableData();
 	UpdateEffortTotal();
+
+	AfxMessageBox(_T("Task deleted successfully."), MB_ICONINFORMATION);
 }
 void CProjectDlg::CheckUpdateArrayExistance(long lID)
 {
@@ -333,24 +365,42 @@ void CProjectDlg::OnBnClickedBtnProjectTaskUpdate()
 		}
 	}
 
-	if (pRecTask)
+	if (!pRecTask)
+		return;
+
+	CTaskDlg dlg(this, *pRecTask, m_oUsersArray, TASK_UPDATE);
+	if (dlg.DoModal() == IDOK)
 	{
-		CTaskDlg dlg(this, *pRecTask, m_oUsersArray,TASK_UPDATE);
-		if (dlg.DoModal() == IDOK)
+		TASKS* pTask=new TASKS();
+		for (INT_PTR i = 0; i < m_oTasksArray.GetCount(); ++i)
 		{
-			for (INT_PTR i = 0; i < m_oUpdatedTasks.GetCount(); ++i)
+			pTask = m_oTasksArray.GetAt(i);
+			if (pTask && pTask->lID == pRecTask->lID)
 			{
-				if (m_oUpdatedTasks.GetAt(i)->lID == pRecTask->lID)
-				{
-					TASKS* pNewTask = new TASKS();
-					*pNewTask = *pRecTask;
-					m_oUpdatedTasks.Add(pNewTask);
-					break;
-				}
+				*pTask = *pRecTask;
+				break;
 			}
-			FetchTableData();
-			UpdateEffortTotal();
 		}
+
+		bool bAlreadyTracked = false;
+		for (INT_PTR i = 0; i < m_oUpdatedTasks.GetCount(); ++i)
+		{
+			if (m_oUpdatedTasks.GetAt(i)->lID == pRecTask->lID)
+			{
+				bAlreadyTracked = true;
+				break;
+			}
+		}
+
+		if (!bAlreadyTracked)
+		{
+			TASKS* pNewTask = new TASKS();
+			*pNewTask = *pRecTask;
+			m_oUpdatedTasks.Add(pNewTask);
+		}
+
+		FetchTableData();
+		UpdateEffortTotal();
 	}
 	
 }
