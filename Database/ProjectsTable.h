@@ -16,5 +16,6 @@ class DatabaseDLL_EXP CProjectsTable : public CBaseTable<PROJECTS, CProjectsAcce
 public:
     CProjectsTable();
     ~CProjectsTable();
+    CProjectsTable(CSession* pSession);
     bool SelectTasksByProjectId(const long lID, CTasksArray& oTasksArray);
 };

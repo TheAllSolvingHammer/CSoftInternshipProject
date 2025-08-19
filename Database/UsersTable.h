@@ -13,5 +13,6 @@ class DatabaseDLL_EXP CUsersTable: public CBaseTable<USERS,CUsersAccessor>
 public:
     CUsersTable();
     ~CUsersTable();  
+    CUsersTable(CSession* pSession);
     bool SelectUserByUsername(const CString& strUsername, USERS& recUser);
 };

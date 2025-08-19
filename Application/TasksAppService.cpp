@@ -7,10 +7,12 @@ CTasksAppService::CTasksAppService()
 {
 
 }
+
 CTasksAppService::~CTasksAppService()
 {
 
 }
+
 bool CTasksAppService::AddTask(TASKS& recTask)
 {
 	if (!CTasksTable().Insert(recTask)) {
@@ -35,80 +37,82 @@ bool CTasksAppService::DeleteTask(const long lID)
 
 bool CTasksAppService::UpdateProjectAndTasksDuration(PROJECTS& recProject, CTasksArray& oTasksArray, CTasksArray& oUpdatedTasksArray, CTasksArray& oDeletedTasksArray)
 {
-    HRESULT hRes;
-    CSession oSession;
-    CDatabaseContext::getInstance().CreateSession(oSession);
-    hRes = oSession.StartTransaction();
-    if (FAILED(hRes))
-    {
-        AfxMessageBox(_T(ERR_TRANSACTION_START), MB_ICONERROR);
-        return false;
-    }
+	CSession oSession;
+	CDatabaseContext::getInstance().CreateSession(oSession);
+	HRESULT hRes = oSession.StartTransaction();
+	if (FAILED(hRes))
+	{
+		AfxMessageBox(_T(ERR_TRANSACTION_START), MB_ICONERROR);
+		return false;
+	}
 
-    for (INT_PTR i = 0; i < oUpdatedTasksArray.GetSize(); i++)
-    {
-        TASKS* pTask = oUpdatedTasksArray.GetAt(i);
-        if (!pTask)
-            continue;
+	CTasksTable oTasksTable(&oSession);
+	CProjectsTable oProjectsTable(&oSession);
 
-        if (pTask->lID == 0)
-        {
-            if (!CTasksTable().Insert(*pTask))
-            {
-                oSession.Abort();
-                return false;
-            }
-        }
-        else
-        {
-            if (!CTasksTable().UpdateWhereID(pTask->lID, *pTask))
-            {
-                oSession.Abort();
-                return false;
-            }
-        }
+	for (INT_PTR i = 0; i < oUpdatedTasksArray.GetSize(); i++)
+	{
+		TASKS* pTask = oUpdatedTasksArray.GetAt(i);
+		if (!pTask)
+			continue;
 
-    }
+		if (pTask->lID == 0)
+		{
+			if (!oTasksTable.Insert(*pTask))
+			{
+				oSession.Abort();
+				return false;
+			}
+		}
+		else
+		{
+			if (!oTasksTable.UpdateWhereID(pTask->lID, *pTask))
+			{
+				oSession.Abort();
+				return false;
+			}
+		}
+	}
 
-    for (INT_PTR i = 0; i < oDeletedTasksArray.GetCount(); i++)
-    {
-        TASKS* pTask = oDeletedTasksArray.GetAt(i);
-        if (!pTask)
-            continue;
 
-        if (pTask->lID != 0)
-        {
-            if (!CTasksTable().DeleteWhereID(pTask->lID))
-            {
-                oSession.Abort();
-                return false;
-            }
-        }
-    }
+	for (INT_PTR i = 0; i < oDeletedTasksArray.GetCount(); i++)
+	{
+		TASKS* pTask = oDeletedTasksArray.GetAt(i);
+		if (!pTask)
+			continue;
 
-    int nDuration = 0;
-    for (INT_PTR i = 0;i < oTasksArray.GetCount();i++) 
-    {
-        TASKS* pRecTask = oTasksArray.GetAt(i);
-        if (pRecTask) {
-            nDuration += pRecTask->nTotalEffort;
-        }
-    }
+		if (pTask->lID != 0)
+		{
+			if (!oTasksTable.DeleteWhereID(pTask->lID))
+			{
+				oSession.Abort();
+				return false;
+			}
+		}
+	}
 
-    recProject.nTotalEffort = nDuration;
+	int nDuration = 0;
+	for (INT_PTR i = 0; i < oTasksArray.GetCount(); i++)
+	{
+		TASKS* pRecTask = oTasksArray.GetAt(i);
+		if (pRecTask) {
+			nDuration += pRecTask->nTotalEffort;
+		}
+	}
 
-    if (!CProjectsTable().UpdateWhereID(recProject.lID, recProject))
-    {
-        oSession.Abort();
-        return false;
-    }
+	recProject.nTotalEffort = nDuration;
 
-    hRes = oSession.Commit();
-    if (FAILED(hRes))
-    {
-        AfxMessageBox(_T(ERR_TRANSACTION_COMMIT), MB_ICONERROR);
-        return false;
-    }
+	if (!oProjectsTable.UpdateWhereID(recProject.lID, recProject))
+	{
+		oSession.Abort();
+		return false;
+	}
 
-    return true;
+	hRes = oSession.Commit();
+	if (FAILED(hRes))
+	{
+		AfxMessageBox(_T(ERR_TRANSACTION_COMMIT), MB_ICONERROR);
+		return false;
+	}
+
+	return true;
 }

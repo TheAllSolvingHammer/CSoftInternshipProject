@@ -11,5 +11,6 @@ class DatabaseDLL_EXP CJobTitlesTable : public CBaseTable<JOB_TITLES, CJobTitles
 {
 public:
     CJobTitlesTable();
+    CJobTitlesTable(CSession* pSession);
     ~CJobTitlesTable();
 };

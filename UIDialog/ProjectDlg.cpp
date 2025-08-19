@@ -5,7 +5,7 @@
 #include "resource.h"
 #include "TaskDlg.h"
 
-
+#define DLG_PROJECT_TITLE _T("Project")
 
 // CProjectDlg dialog
 
@@ -35,6 +35,7 @@ CProjectDlg::CProjectDlg(CWnd* pParent /*=nullptr*/,
 
 CProjectDlg::~CProjectDlg()
 {
+	m_oUpdatedTasks.RemoveAll();
 }
 
 void CProjectDlg::DoDataExchange(CDataExchange* pDX)
@@ -59,7 +60,7 @@ void CProjectDlg::DoDataExchange(CDataExchange* pDX)
 BOOL CProjectDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-	SetWindowText(_T("Project"));
+	SetWindowText(DLG_PROJECT_TITLE);
 	m_sttName.SetWindowText(_T("Name: "));
 	m_sttDescription.SetWindowText(_T("Description: "));
 	m_sttManager.SetWindowText(_T("User in charge: "));
@@ -306,9 +307,9 @@ void CProjectDlg::OnBnClickedBtnProjectTaskDelete()
 		return;
 	}
 
-	if (pTask->sTaskStatus != (TASK_STATE_ENDED + 1))
+	if (pTask->sTaskStatus == (TASK_STATE_ENDED + 1))
 	{
-		AfxMessageBox(_T("Only tasks with status 'Ended' can be deleted."), MB_ICONEXCLAMATION);
+		AfxMessageBox(_T("Tasks with status 'Ended' can not be deleted."), MB_ICONEXCLAMATION);
 		return;
 	}
 
