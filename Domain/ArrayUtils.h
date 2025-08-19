@@ -15,7 +15,7 @@ public:
 
 
 template<class T>
-class DomainDLL_EXP CArrayAutoManager_2
+class CArrayAutoManager_2 : public CTypedPtrArray<CPtrArray, T*>
 {
 public:
     CArrayAutoManager_2()
@@ -34,32 +34,6 @@ public:
             delete GetAt(i);
         }
         RemoveAll();
-    }
-
-    T* GetAt(INT_PTR nIndex)
-    {
-
-        return NULL;
-    }
-
-    int GetCount()
-    {
-        return 0;
-    }
-
-    int GetSize()
-    {
-        return 0;
-    }
-
-    void RemoveAll()
-    {
-
-    }
-
-    void Add(T* pRecord)
-    {
-
     }
 };
 

@@ -21,6 +21,6 @@ struct PROJECTS {
     }
 };
 
-typedef CTypedPtrArray<CArrayAutoManager, PROJECTS*> CProjectsArray;
+//typedef CTypedPtrArray<CArrayAutoManager, PROJECTS*> CProjectsArray;
 
-//typedef CArrayAutoManager<PROJECTS> CProjectsArray;
+typedef CArrayAutoManager_2<PROJECTS> CProjectsArray;

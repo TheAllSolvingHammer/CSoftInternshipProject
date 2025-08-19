@@ -27,8 +27,9 @@ public:
     CSession m_oSession;
     TRecord& m_recRecord;
     CCommand<CAccessor<TAccessor>> m_oCommand;
-    CBaseTable(TRecord& recRecord,const CString strTableName) 
+    CBaseTable(TRecord& recRecord,const CString strTableName)
         : m_recRecord(recRecord)
+
     {
         this->m_strTableName = strTableName;
         CDatabaseContext::getInstance().Connect();
@@ -90,7 +91,7 @@ private:
     }
 public:
 
-    bool SelectAll(/*CArrayAutoManager<TRecord> */ CTypedPtrArray<CArrayAutoManager, TRecord*>& oArray)
+    bool SelectAll(CArrayAutoManager_2<TRecord> & oArray)
     {
         HRESULT hRes = m_oSession.StartTransaction();
         if (FAILED(hRes))

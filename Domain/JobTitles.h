@@ -14,5 +14,5 @@ struct JOB_TITLES {
     }
 };
 
-typedef CTypedPtrArray<CArrayAutoManager,JOB_TITLES*>CJobTitlesArray;
-//typedef CArrayAutoManager<JOB_TITLES> CJobTitlesArray;
+//typedef CTypedPtrArray<CArrayAutoManager,JOB_TITLES*>CJobTitlesArray;
+typedef CArrayAutoManager_2<JOB_TITLES> CJobTitlesArray;

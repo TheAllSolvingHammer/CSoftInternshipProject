@@ -22,5 +22,6 @@ struct TASKS {
     }
 };
 
-typedef CTypedPtrArray<CArrayAutoManager, TASKS*> CTasksArray;
-//typedef CArrayAutoManager<TASKS> CTaskArray;
+//typedef CTypedPtrArray<CArrayAutoManager, TASKS*> CTasksArray;
+typedef CArrayAutoManager_2<TASKS> CTasksArray;
+

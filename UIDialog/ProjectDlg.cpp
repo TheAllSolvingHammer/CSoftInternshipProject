@@ -184,18 +184,30 @@ bool CProjectDlg::FetchTableData()
 		USERS* pRecUser = m_oUsersArray.GetAt(i);
 		if (pRecUser)
 		{
-			int nIndex = m_cmbManager.AddString(pRecUser->szName);
-			if (nIndex != CB_ERR)
-			{
-				m_cmbManager.SetItemData(nIndex, pRecUser->lID);
-			}
+				int nIndex = m_cmbManager.AddString(pRecUser->szName);
+				if (nIndex != CB_ERR)
+				{
+					m_cmbManager.SetItemData(nIndex, pRecUser->lID);
+				}	
+		}
+	}
+
+	for (int i = 0; i < m_cmbManager.GetCount(); i++)
+	{
+		if ((LONG)m_cmbManager.GetItemData(i) == m_recProject.lProjectManagerID)
+		{
+			m_cmbManager.SetCurSel(i);
+			break;
 		}
 	}
 
 	for (int i = 0; i < PROJECT_DIALOG_STATE_COUNT; ++i)
 	{
-		int nIdx = m_cmbStatus.AddString(gl_szProjectStateDescriptionDialog[i]);
-		m_cmbStatus.SetItemData(nIdx, i + 1);
+		if (m_cmbStatus.FindStringExact(-1, gl_szProjectStateDescriptionDialog[i]) == CB_ERR)
+		{
+			int nIdx = m_cmbStatus.AddString(gl_szProjectStateDescriptionDialog[i]);
+			m_cmbStatus.SetItemData(nIdx, i + 1);
+		}
 	}
 
 	for (INT_PTR i = 0; i < m_oTasksArray.GetCount(); i++)
